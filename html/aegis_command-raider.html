@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!-- aegis_command-raider.html — v4 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) — 인라인 style·SVG letter-spacing 속성 -->
+<!-- aegis_command-raider.html — v2 (2026-09-09): 미사용 코드 제거 — .mi -->
+<!-- aegis_command-raider.html — v1 (2026-09-08): COMMAND 시각물 — 계층 방어 평면도(LAYERED RINGS).
+     방어 자산을 중심에 두고 사거리대별 담당 장비를 동심원 레이어로 배치. 위협이 방위각을 따라 접근하면
+     각 레이어 위에 요격 가능 지점이 동시에 찍히고, 그중 하나가 확정되어 교전한다. 3 시나리오 x 6초 = 18초 루프.
+     aegis_command_map.html(등고선 지형안)을 대체하지 않고 별도 파일로 병존한다. -->
+<!-- aegis_command-raider.html — v2 (2026-09-08): 레이더 밖 텍스트 제거 — 상단 타이틀/호출부호/시나리오 눈금,
+     하단 판독 3열과 구분선 삭제. aegis.html의 COMMAND 카드가 같은 내용을 이미 싣고 있어 중복이었다.
+     위협 마커에 빨간 적대 태그 추가(마커와 함께 이동). 상하 여백이 비어 fit 기준 높이 990 -> 820. -->
+<!-- aegis_command-raider.html — v3 (2026-09-08): 하단 판독 3열(THREAT / MATCHED PLATFORM / RESPONSE)과
+     구분선 복원 — 상단 타이틀 영역만 비운 상태로 유지. 위협 태그 '적' -> 'HOSTILE'(9.5px, 자간 .18em)로
+     교체해 판 전체를 영문으로 통일. 하단이 다시 차서 fit 기준 높이 820 -> 990 환원. -->
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>AEGIS — Command: Layered Rings</title>
+<style>
+@font-face{font-family:"Michroma";src:url("../fonts/michroma-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{background:#000000;color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+      overflow:hidden;-webkit-font-smoothing:antialiased;}
+/* 880x990 판을 .flow-left 크기에 맞춰 통째로 축소/확대 — 잘리는 요소 없이 letterbox */
+#fit{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.stage{transform:scale(var(--s,1));transform-origin:center center;}
+
+    a { color:#f0ede8; } a:hover { color:#ffffff; }
+    .stage { --ink:#f0ede8; --thr:#ff3b30; --ast:#4096ff; --exe:#ffb300; }
+    .mono { font-family:Consolas,'Lucida Console','Courier New',monospace; }
+    .lay { position:absolute; left:0; top:0; width:880px; height:990px; }
+
+    .scen { position:absolute; left:0; top:0; width:880px; height:990px; opacity:0;
+            animation:scenWin 18s var(--d) linear infinite; }
+    .s1 { --d:0s; } .s2 { --d:-12s; } .s3 { --d:-6s; }
+    @keyframes scenWin { 0%{opacity:0} 1.3%{opacity:1} 31.6%{opacity:1} 33.33%{opacity:0} 100%{opacity:0} }
+
+    /* threat marker travel */
+    .mv1 { animation:mv1 18s var(--d) linear infinite, thrBody 18s var(--d) linear infinite; }
+    .mv2 { animation:mv2 18s var(--d) linear infinite, thrBody 18s var(--d) linear infinite; }
+    .mv3 { animation:mv3 18s var(--d) linear infinite, thrBody 18s var(--d) linear infinite; }
+    @keyframes mv1 { 0%,2.2%{transform:translate(855px,720.6px)} 21.67%,100%{transform:translate(660.7px,617.4px)} }
+    @keyframes mv2 { 0%,2.2%{transform:translate(791.2px,123.3px)} 21.67%,100%{transform:translate(665.1px,258.6px)} }
+    @keyframes mv3 { 0%,2.2%{transform:translate(266.7px,871.6px)} 21.67%,100%{transform:translate(370.3px,649.5px)} }
+
+    @keyframes thrBody { 0%{opacity:0} 2.2%{opacity:1} 22.2%{opacity:1} 23.3%{opacity:0} 100%{opacity:0} }
+
+    /* candidate intercept ticks: appear together, then three retire */
+    .cand { opacity:0; animation:candA 18s var(--d) linear infinite; }
+    .cand.c1 { animation-name:candA; } .cand.c2 { animation-name:candB; }
+    .cand.c3 { animation-name:candC; } .cand.c4 { animation-name:candD; }
+    @keyframes candA { 0%,5.4%{opacity:0} 6.7%{opacity:.85} 13.6%{opacity:.85} 15.6%{opacity:0} 100%{opacity:0} }
+    @keyframes candB { 0%,6.0%{opacity:0} 7.3%{opacity:.85} 13.6%{opacity:.85} 15.6%{opacity:0} 100%{opacity:0} }
+    @keyframes candC { 0%,6.6%{opacity:0} 7.9%{opacity:.85} 13.6%{opacity:.85} 15.6%{opacity:0} 100%{opacity:0} }
+    @keyframes candD { 0%,7.2%{opacity:0} 8.5%{opacity:.85} 13.6%{opacity:.85} 15.6%{opacity:0} 100%{opacity:0} }
+
+    /* the layer that owns the engagement */
+    .win { opacity:0; animation:win 18s var(--d) linear infinite; }
+    @keyframes win { 0%,13.6%{opacity:0} 15.6%{opacity:1} 30%{opacity:1} 31.6%{opacity:0} 100%{opacity:0} }
+    .winLbl { opacity:0; animation:win 18s var(--d) linear infinite; }
+
+    /* effector run-out from the defended core */
+    .run { opacity:0; animation:run1 18s var(--d) linear infinite; }
+    .run.r3 { animation-name:run3; }
+    @keyframes run1 { 0%,16.1%{transform:translate(440px,500px);opacity:0} 17%{opacity:1}
+                      21.67%{transform:translate(660.7px,617.4px);opacity:1}
+                      22.8%{transform:translate(660.7px,617.4px);opacity:0}
+                      100%{transform:translate(440px,500px);opacity:0} }
+    @keyframes run3 { 0%,16.1%{transform:translate(440px,500px);opacity:0} 17%{opacity:1}
+                      21.67%{transform:translate(370.3px,649.5px);opacity:1}
+                      22.8%{transform:translate(370.3px,649.5px);opacity:0}
+                      100%{transform:translate(440px,500px);opacity:0} }
+
+    /* RF emission for the soft-kill layer */
+    .emit { opacity:0; transform-box:view-box; transform-origin:440px 500px; }
+    .e1 { animation:emit 18s var(--d) linear infinite; }
+    .e2 { animation:emit 18s var(--d) linear infinite; animation-delay:calc(var(--d) + 0.28s); }
+    .e3 { animation:emit 18s var(--d) linear infinite; animation-delay:calc(var(--d) + 0.56s); }
+    @keyframes emit { 0%,16.1%{opacity:0;transform:scale(.94)} 17.5%{opacity:.9}
+                      21.9%{opacity:0;transform:scale(1.1)} 100%{opacity:0;transform:scale(.94)} }
+
+    /* resolution */
+    .flash { opacity:0; transform-box:view-box; animation:flash 18s var(--d) linear infinite; }
+    @keyframes flash { 0%,21.4%{opacity:0;transform:scale(.2)} 22%{opacity:.75}
+                       23.6%{opacity:0;transform:scale(1)} 100%{opacity:0;transform:scale(.2)} }
+    .mark { opacity:0; animation:mark 18s var(--d) linear infinite; }
+    @keyframes mark { 0%,22.2%{opacity:0} 23.6%{opacity:1} 30%{opacity:1} 31.6%{opacity:0} 100%{opacity:0} }
+
+  
+/* aegis.html이 COMMAND 단계 진입 시 호출하는 __aegisReset 용 — 전체 애니메이션 재시작 */
+.rst *{animation:none !important;}
+
+@media (prefers-reduced-motion: reduce){
+  .s2, .s3 { display:none; }
+  .stage * { animation-delay:-4.4s !important; animation-play-state:paused !important; }
+}
+</style></head>
+<body>
+<div id="fit">
+<div class="stage" style="flex:none;position:relative;width:880px;height:990px;background:#000000;color:#f0ede8;overflow:hidden;">
+
+  <!-- ── static geometry: defended core, engagement layers, detection horizon ── -->
+  <svg class="lay" viewBox="0 0 880 990" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g stroke="rgba(240,237,232,.05)" stroke-width="1">
+      <line x1="440" y1="415" x2="440" y2="130"/>
+      <line x1="482.5" y1="426.4" x2="625" y2="179.6"/>
+      <line x1="513.6" y1="457.5" x2="760.4" y2="315"/>
+      <line x1="525" y1="500" x2="810" y2="500"/>
+      <line x1="513.6" y1="542.5" x2="760.4" y2="685"/>
+      <line x1="482.5" y1="573.6" x2="625" y2="820.4"/>
+      <line x1="440" y1="585" x2="440" y2="870"/>
+      <line x1="397.5" y1="573.6" x2="255" y2="820.4"/>
+      <line x1="366.4" y1="542.5" x2="119.6" y2="685"/>
+      <line x1="355" y1="500" x2="70" y2="500"/>
+      <line x1="366.4" y1="457.5" x2="119.6" y2="315"/>
+      <line x1="397.5" y1="426.4" x2="255" y2="179.6"/>
+    </g>
+    <g stroke="rgba(240,237,232,.13)" stroke-width="1">
+      <circle cx="440" cy="500" r="85"/>
+      <circle cx="440" cy="500" r="165"/>
+      <circle cx="440" cy="500" r="250"/>
+      <circle cx="440" cy="500" r="330"/>
+    </g>
+    <circle cx="440" cy="500" r="370" stroke="rgba(240,237,232,.2)" stroke-width="1" stroke-dasharray="2 7"/>
+    <g stroke="rgba(240,237,232,.45)" stroke-width="1.2">
+      <rect x="428" y="488" width="24" height="24"/>
+      <line x1="440" y1="479" x2="440" y2="486"/>
+      <line x1="440" y1="514" x2="440" y2="521"/>
+      <line x1="419" y1="500" x2="426" y2="500"/>
+      <line x1="454" y1="500" x2="461" y2="500"/>
+    </g>
+    <rect x="435" y="495" width="10" height="10" fill="rgba(240,237,232,.5)"/>
+    <g stroke="rgba(240,237,232,.3)" stroke-width="1">
+      <line x1="199" y1="267" x2="207" y2="267"/>
+      <line x1="255.3" y1="323.3" x2="263.3" y2="323.3"/>
+      <line x1="315.4" y1="383.4" x2="323.4" y2="383.4"/>
+      <line x1="371.9" y1="439.9" x2="379.9" y2="439.9"/>
+    </g>
+  </svg>
+
+  <!-- ── layer legend ── -->
+  <div style="position:absolute;right:689px;top:253px;text-align:right;white-space:nowrap;">
+    <div style="font-size:10px;letter-spacing:0;color:rgba(240,237,232,.62);">AEGIS-V &middot; MOBILE JAM</div>
+    <div style="font-size:8.5px;letter-spacing:0;color:rgba(240,237,232,.3);margin-top:5px;">SOFT-KILL &middot; LINK DEFEAT</div>
+  </div>
+  <div style="position:absolute;right:633px;top:309px;text-align:right;white-space:nowrap;">
+    <div style="font-size:10px;letter-spacing:0;color:rgba(240,237,232,.62);">AEGIS INTERCEPTOR</div>
+    <div style="font-size:8.5px;letter-spacing:0;color:rgba(240,237,232,.3);margin-top:5px;">HARD-KILL &middot; KINETIC</div>
+  </div>
+  <div style="position:absolute;right:573px;top:369px;text-align:right;white-space:nowrap;">
+    <div style="font-size:10px;letter-spacing:0;color:rgba(240,237,232,.62);">AEGIS SPIDER</div>
+    <div style="font-size:8.5px;letter-spacing:0;color:rgba(240,237,232,.3);margin-top:5px;">CAPTURE &middot; NON-DESTRUCTIVE</div>
+  </div>
+  <div style="position:absolute;right:516px;top:426px;text-align:right;white-space:nowrap;">
+    <div style="font-size:10px;letter-spacing:0;color:rgba(240,237,232,.62);">AEGIS-F FACILITY</div>
+    <div style="font-size:8.5px;letter-spacing:0;color:rgba(240,237,232,.3);margin-top:5px;">SOFT-KILL &middot; TERMINAL</div>
+  </div>
+  <div style="position:absolute;left:0;top:528px;width:880px;text-align:center;font-size:8px;letter-spacing:0;color:rgba(240,237,232,.38);">PROTECTED ASSET</div>
+  <div class="mono" style="position:absolute;left:0;top:104px;width:880px;text-align:center;font-size:9px;color:rgba(240,237,232,.28);">000</div>
+  <div class="mono" style="position:absolute;left:812px;top:494px;font-size:9px;color:rgba(240,237,232,.28);">090</div>
+  <div class="mono" style="position:absolute;left:0;top:878px;width:880px;text-align:center;font-size:9px;color:rgba(240,237,232,.28);">180</div>
+  <div class="mono" style="position:absolute;left:44px;top:494px;font-size:9px;color:rgba(240,237,232,.28);">270</div>
+
+  <!-- ══ SCENARIO 1 — swarm at speed, resolved by the kinetic layer ══ -->
+  <div class="scen s1">
+    <svg class="lay" viewBox="0 0 880 990" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="rgba(240,237,232,.55)" stroke-width="1.4">
+        <line class="cand c4" x1="739.4" y1="639.9" x2="723.4" y2="669.9"/>
+        <line class="cand c3" x1="668.7" y1="602.4" x2="652.7" y2="632.4"/>
+        <line class="cand c2" x1="593.7" y1="562.5" x2="577.7" y2="592.5"/>
+        <line class="cand c1" x1="523" y1="524.9" x2="507" y2="554.9"/>
+      </g>
+      <path class="win" d="M688.6 473.9 A250 250 0 0 1 557.4 720.7" stroke="#f0ede8" stroke-width="2.2"/>
+      <g class="run">
+        <path d="M0 -8 L8 0 L0 8 L-8 0 Z" fill="rgba(255,179,0,.2)" stroke="#ffb300" stroke-width="1.6"/>
+      </g>
+      <circle class="flash" cx="660.7" cy="617.4" r="46" fill="#f0ede8" style="transform-origin:660.7px 617.4px;"/>
+      <g class="mark" stroke="#f0ede8" stroke-width="1.8">
+        <line x1="650.7" y1="607.4" x2="670.7" y2="627.4"/>
+        <line x1="670.7" y1="607.4" x2="650.7" y2="627.4"/>
+      </g>
+      <g class="thrBody mv1">
+        <g stroke="#ff3b30" stroke-width="1.5">
+          <path d="M-11 -5 L-11 -11 L-5 -11 M5 -11 L11 -11 L11 -5 M11 5 L11 11 L5 11 M-5 11 L-11 11 L-11 5"/>
+          <line x1="0" y1="0" x2="23" y2="12.2" stroke-opacity=".55"/>
+        </g>
+        <circle cx="0" cy="0" r="3.4" fill="#ff3b30"/>
+        <text x="-18" y="-13" text-anchor="end" fill="#ff3b30" font-size="9.5" font-weight="600" letter-spacing="0" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif">HOSTILE</text>
+      </g>
+    </svg>
+    <div class="mark" style="position:absolute;left:684px;top:610px;font-size:8.5px;letter-spacing:0;color:rgba(240,237,232,.85);">TARGET DESTROYED</div>
+    <div class="winLbl" style="position:absolute;right:633px;top:309px;width:230px;background:#000000;text-align:right;white-space:nowrap;">
+      <div style="font-size:10px;letter-spacing:0;color:#f0ede8;">AEGIS INTERCEPTOR</div>
+      <div style="font-size:8.5px;letter-spacing:0;color:rgba(255,179,0,.9);margin-top:5px;">ENGAGING &middot; HARD-KILL</div>
+    </div>
+    <div style="position:absolute;left:36px;top:922px;width:269px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">THREAT</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">UAS SWARM &middot; HIGH CLOSURE</div>
+    </div>
+    <div style="position:absolute;left:305px;top:922px;width:269px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">MATCHED PLATFORM</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">AEGIS INTERCEPTOR</div>
+    </div>
+    <div style="position:absolute;left:574px;top:922px;width:270px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">RESPONSE</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">HARD-KILL &middot; KINETIC</div>
+    </div>
+  </div>
+
+  <!-- ══ SCENARIO 2 — live control link, defeated at the outermost layer ══ -->
+  <div class="scen s2">
+    <svg class="lay" viewBox="0 0 880 990" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="rgba(240,237,232,.55)" stroke-width="1.4">
+        <line class="cand c4" x1="653.1" y1="246.6" x2="677.1" y2="270.6"/>
+        <line class="cand c3" x1="598.5" y1="305.2" x2="622.5" y2="329.2"/>
+        <line class="cand c2" x1="540.5" y1="367.3" x2="564.5" y2="391.3"/>
+        <line class="cand c1" x1="486" y1="425.8" x2="510" y2="449.8"/>
+      </g>
+      <path class="win" d="M491.6 174 A330 330 0 0 1 761.5 425.8" stroke="#f0ede8" stroke-width="2.2"/>
+      <g stroke="#ffb300" stroke-width="1.6" fill="none">
+        <path class="emit e1" d="M491.6 174 A330 330 0 0 1 761.5 425.8"/>
+        <path class="emit e2" d="M491.6 174 A330 330 0 0 1 761.5 425.8"/>
+        <path class="emit e3" d="M491.6 174 A330 330 0 0 1 761.5 425.8"/>
+      </g>
+      <circle class="flash" cx="665.1" cy="258.6" r="40" fill="#ffb300" style="transform-origin:665.1px 258.6px;"/>
+      <g class="mark">
+        <g stroke="rgba(240,237,232,.45)" stroke-width="1.4">
+          <path d="M654.1 253.6 L654.1 247.6 L660.1 247.6 M670.1 247.6 L676.1 247.6 L676.1 253.6 M676.1 263.6 L676.1 269.6 L670.1 269.6 M660.1 269.6 L654.1 269.6 L654.1 263.6"/>
+        </g>
+        <circle cx="665.1" cy="258.6" r="3" fill="rgba(240,237,232,.45)"/>
+      </g>
+      <g class="thrBody mv2">
+        <g stroke="#ff3b30" stroke-width="1.5">
+          <path d="M-11 -5 L-11 -11 L-5 -11 M5 -11 L11 -11 L11 -5 M11 5 L11 11 L5 11 M-5 11 L-11 11 L-11 5"/>
+          <line x1="0" y1="0" x2="17.7" y2="-19" stroke-opacity=".55"/>
+        </g>
+        <circle cx="0" cy="0" r="3.4" fill="#ff3b30"/>
+        <text x="-18" y="-13" text-anchor="end" fill="#ff3b30" font-size="9.5" font-weight="600" letter-spacing="0" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif">HOSTILE</text>
+      </g>
+    </svg>
+    <div class="mark" style="position:absolute;left:445px;top:250px;width:200px;text-align:right;font-size:8.5px;letter-spacing:0;color:rgba(255,179,0,.9);">LINK DEFEATED</div>
+    <div class="winLbl" style="position:absolute;right:689px;top:253px;width:230px;background:#000000;text-align:right;white-space:nowrap;">
+      <div style="font-size:10px;letter-spacing:0;color:#f0ede8;">AEGIS-V &middot; MOBILE JAM</div>
+      <div style="font-size:8.5px;letter-spacing:0;color:rgba(255,179,0,.9);margin-top:5px;">ENGAGING &middot; SOFT-KILL</div>
+    </div>
+    <div style="position:absolute;left:36px;top:922px;width:269px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">THREAT</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">RF-LINKED UAS &middot; LINK ACTIVE</div>
+    </div>
+    <div style="position:absolute;left:305px;top:922px;width:269px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">MATCHED PLATFORM</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">AEGIS-V VEHICLE JAMMER</div>
+    </div>
+    <div style="position:absolute;left:574px;top:922px;width:270px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">RESPONSE</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">SOFT-KILL &middot; LINK DEFEAT</div>
+    </div>
+  </div>
+
+  <!-- ══ SCENARIO 3 — low and slow over friendly ground, taken intact ══ -->
+  <div class="scen s3">
+    <svg class="lay" viewBox="0 0 880 990" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="rgba(240,237,232,.55)" stroke-width="1.4">
+        <line class="cand c4" x1="288.5" y1="787.1" x2="312.5" y2="811.1"/>
+        <line class="cand c3" x1="322.4" y1="714.6" x2="346.4" y2="738.6"/>
+        <line class="cand c2" x1="358.3" y1="637.5" x2="382.3" y2="661.5"/>
+        <line class="cand c1" x1="392.1" y1="565" x2="416.1" y2="589"/>
+      </g>
+      <path class="win" d="M465.8 663 A165 165 0 0 1 298.6 585" stroke="#f0ede8" stroke-width="2.2"/>
+      <g class="run r3">
+        <path d="M0 -8 L8 0 L0 8 L-8 0 Z" fill="rgba(255,179,0,.2)" stroke="#ffb300" stroke-width="1.6"/>
+      </g>
+      <circle class="flash" cx="370.3" cy="649.5" r="34" fill="#ffb300" style="transform-origin:370.3px 649.5px;"/>
+      <g class="mark">
+        <circle cx="370.3" cy="649.5" r="15" stroke="#ffb300" stroke-width="1.6" fill="rgba(255,179,0,.1)"/>
+        <g stroke="rgba(255,179,0,.7)" stroke-width="1">
+          <line x1="370.3" y1="634.5" x2="370.3" y2="664.5"/>
+          <line x1="355.3" y1="649.5" x2="385.3" y2="649.5"/>
+        </g>
+      </g>
+      <g class="thrBody mv3">
+        <g stroke="#ff3b30" stroke-width="1.5">
+          <path d="M-11 -5 L-11 -11 L-5 -11 M5 -11 L11 -11 L11 -5 M11 5 L11 11 L5 11 M-5 11 L-11 11 L-11 5"/>
+          <line x1="0" y1="0" x2="-11" y2="23.6" stroke-opacity=".55"/>
+        </g>
+        <circle cx="0" cy="0" r="3.4" fill="#ff3b30"/>
+        <text x="-18" y="-13" text-anchor="end" fill="#ff3b30" font-size="9.5" font-weight="600" letter-spacing="0" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif">HOSTILE</text>
+      </g>
+    </svg>
+    <div class="mark" style="position:absolute;left:394px;top:641px;font-size:8.5px;letter-spacing:0;color:rgba(255,179,0,.9);">CAPTURED INTACT</div>
+    <div class="winLbl" style="position:absolute;right:573px;top:369px;width:230px;background:#000000;text-align:right;white-space:nowrap;">
+      <div style="font-size:10px;letter-spacing:0;color:#f0ede8;">AEGIS SPIDER</div>
+      <div style="font-size:8.5px;letter-spacing:0;color:rgba(255,179,0,.9);margin-top:5px;">ENGAGING &middot; NET CAPTURE</div>
+    </div>
+    <div style="position:absolute;left:36px;top:922px;width:269px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">THREAT</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">ROTARY UAS &middot; LOW / SLOW</div>
+    </div>
+    <div style="position:absolute;left:305px;top:922px;width:269px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">MATCHED PLATFORM</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">AEGIS SPIDER</div>
+    </div>
+    <div style="position:absolute;left:574px;top:922px;width:270px;">
+      <div style="font-size:8px;letter-spacing:0;color:rgba(240,237,232,.3);">RESPONSE</div>
+      <div style="font-size:12px;font-weight:600;color:#f0ede8;margin-top:9px;">CAPTURE &middot; NON-DESTRUCTIVE</div>
+    </div>
+  </div>
+
+  <div style="position:absolute;left:36px;right:36px;top:898px;height:1px;background:rgba(240,237,232,.14);"></div>
+</div>
+</div>
+<script>
+(function(){
+  var root = document.documentElement;
+  function fit(){
+    root.style.setProperty('--s', Math.min(window.innerWidth / 880, window.innerHeight / 990));
+  }
+  window.addEventListener('resize', fit, {passive:true});
+  fit();
+  // 스크롤로 COMMAND 단계에 들어올 때마다 시나리오 1부터 다시 시작
+  window.__aegisReset = function(){
+    document.body.classList.add('rst');
+    void document.body.offsetWidth;
+    document.body.classList.remove('rst');
+  };
+})();
+</script>
+</body></html>

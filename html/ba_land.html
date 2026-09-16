@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<!-- ba_land.html — v25 (2026-09-15): 제품 VIEW DETAILS → ba_air Interceptor 의 View More 버튼(CSS·마크업 동일)으로 교체, 링크를 각 제품 상세 페이지로 -->
+<!-- ba_land.html — v24 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
+<!-- ba_land.html — v23 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: Homepage/반응형_단위가이드.md -->
+<!-- ba_land.html — v22 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A+B형) -->
+<!-- ba_land.html — v21 (2026-09-04): 섹션 십자의 중심이 sec-title 시작선(--pad)을 따라가도록 — left/right를 calc(var(--pad) - 15px)로. 별도 --pad2 불필요 -->
+<!-- ba_land.html — v20 (2026-09-03): CTA 흰색 계열 → #f0ede8 통일 / 640px 이하 CTA 좌우 여백이 고정 28px로 덮여 어긋나던 문제 수정 / .hero-products 폭 계산 누락(*2) 보정 -->
+<!-- ba_land.html — v19 (2026-09-03): CTA 구분선(.aegis-cta-rule) 호버 색상 미적용 버그 수정 — color → background -->
+<!-- ba_land.html — v18 (2026-09-03): 미사용 CSS/JS 제거 — THREAT·레이더·SOLUTIONS(.sc)·DEPLOYMENT·SPECS표·구CTA·구히어로 잔재 -->
+<!-- ba_land.html — v17 (2026-09-03): 잔여 유사검정 배경 → #000000 (.sc:hover #0d0d10→#000000) -->
+<!-- ba_land.html — v16 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
+<!-- ba_land.html — v15 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
+<!-- ba_land.html — v14 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
+<!-- ba_land.html — v15 (2026-09-03): AEGIS 섹션 텍스트 색상도 ba_air.html와 동일하게 — sec-title #000000, sec-desc #fff -->
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>BA Solutions — LAND POWER</title>
+<!-- AEGIS CTA 블록 공용 스타일 (ba_air/ba_sea 와 공유). 페이지 자체 스타일보다 먼저 로드할 것 -->
+<link rel="stylesheet" href="aegis-cta.css">
+
+<style>
+  /* PRODUCT LINEUP 섹션 타이틀 */
+.product-section .sec-title {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* 제품 카드 이름 4개 (AEGIS C-UAS, AEGIS-V, AEGIS-F, AEGIS-B) */
+.pcard-name {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* HOW AEGIS WORKS 타이틀*/
+.aegis-sec .sec-title {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+  color: #000000;
+}
+.aegis-sec .sec-desc {
+  color: #f0ede8;
+}
+/* .aegis-cta-tag 의 Michroma 지정은 aegis-cta.css 로 이관됨 */
+/* v13: ba_air.html와 동일 — 하단 패딩 0으로 CTA 박스가 섹션 바닥에 붙음.
+   .sec 규칙(하단에서 나중에 정의됨)보다 우선하도록 .sec.aegis-sec로 specificity를 높임 */
+.sec.aegis-sec {
+  padding: max(20px, calc(60 * var(--u))) var(--pad) 0;
+  border-top: none;
+  background: #BCB489;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+:root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)))}
+body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+/* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
+html{scrollbar-width:none;}
+html::-webkit-scrollbar{display:none;}
+body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+/* ── 섹션 인디케이터 (우측 고정, 메인페이지 BA_Solutions.html와 동일) ── */
+/* 히어로 구간에서는 숨고, PRODUCTS 섹션에 들어서면 .is-visible 이 붙어 나타난다.
+   박스(#sec-indicator)는 제자리에 고정하고, 내용(.sec-label-box)만 우→좌로 밀려 들어온다.
+   박스의 overflow:hidden 이 밖으로 나간 내용을 잘라내므로 이동 범위는 화면 끝이 아니라
+   박스 자기 폭 안(translateX 100% = 라벨 폭)이다. 페이드 아님 — transform 만 이동. */
+#sec-indicator{position:fixed;right:10px;top:50%;transform:translateY(-50%);overflow:hidden;z-index:999999;pointer-events:none;font-family:"Michroma",'Helvetica Neue',Helvetica,Arial,sans-serif;}
+#sec-indicator .sec-label-box{display:flex;flex-direction:row;gap:2px;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.7,.2,1);}
+#sec-indicator.is-visible .sec-label-box{transform:translateX(0);}
+#sec-indicator .sec-word{writing-mode:vertical-rl;text-orientation:mixed;background:#f0ede8;padding:14px 5px 11px;font-size:10px;font-weight:400;color:#0a0a0c;letter-spacing:.3em;line-height:1;white-space:nowrap;}
+
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(240,237,232,.08);}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.75);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
+.nav-about{background:transparent;border:0.5px solid rgba(240,237,232,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
+.nav-about:hover{background:#f0ede8;color:#000;}
+
+
+#hero{height:100vh;min-height:600px;position:relative;overflow:hidden;background:#000000;}
+#tc{position:absolute;top:0;left:0;width:100%;height:100%;display:block;z-index:0;}
+.hero-fade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,1) 0%,rgba(0,0,0,.7) 35%,rgba(0,0,0,0) 60%);pointer-events:none;z-index:1;}
+.hero-content{position:absolute;bottom:90px;left:var(--pad);z-index:2;}
+h1.ht{font-size:max(40px, calc(70 * var(--u)));font-weight:700;line-height:1.05;margin-bottom:18px;}
+h1.ht span{color:rgba(240,237,232,.25);}
+.hero-sub{font-size:17px;color:rgba(240,237,232,.85);line-height:1.5;max-width:480px;}
+
+.sec{padding:100px var(--pad);border-top:none;}
+.sec-title{font-size:max(22px, calc(43.2 * var(--u)));font-weight:700;letter-spacing:.04em;line-height:1.5;margin-bottom:14px;}
+.sec-desc{font-size:max(15px, calc(20 * var(--u)));color:rgba(240,237,232,.85);line-height:1.3;max-width:580px;font-weight:400;}
+
+.fade-in{opacity:0;transform:translateY(18px);transition:opacity 1.05s ease,transform 1.05s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+.decode{opacity:0;transition:opacity .1s;}
+.decode.visible{opacity:1;}
+
+
+/* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_air/ba_sea 와 공유) ── */
+
+
+/* ── FOOTER ── */
+footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
+.foot-addr{font-size:11px;color:rgba(66, 50, 21, 0.7);line-height:1.5;letter-spacing:.04em;}
+.foot-copy{font-size:10px;color:rgba(240,237,232,.5);letter-spacing:.04em;margin-top:24px;line-height:1.4;}
+.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(240,237,232,.8);text-decoration:none;transition:color .3s;}
+.flinks a:hover{color:#f0ede8;}
+
+/* ── 대문 제품 박스 (가로 4개, 흰색 채우기 + decode) ── */
+/* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (ba_air 의 AEGIS Spider 버튼 기준).
+   부모 .hero-content 가 shrink-to-fit 이라 컨테이너 폭은 트랙 합으로 정해진다:
+     air  2×203 + 1×14 = 420px
+     sea  3×203 + 2×14 = 637px
+     land 4×203 + 3×14 = 854px
+   이름이 203-32(라벨 좌우 패딩)=171px 를 넘으면 그때부터 내용이 폭을 늘린다. */
+.hero-products{display:grid;grid-template-columns:repeat(4,minmax(203px,1fr));gap:14px;margin-top:8px;}
+.hp-btn{position:relative;height:48px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}/* v8: 호버 테두리 제거 — 대신 제품명에 밑줄이 그어짐 (.hp-name 참고) */
+.hp-fill{position:absolute;inset:0;background:#f0ede8;transform-origin:left center;transform:scaleX(0);transition:transform .55s cubic-bezier(.2,.7,.2,1);}
+.hp-btn.hp-filled{border-color:transparent;}
+.hp-btn.hp-filled .hp-fill{transform:scaleX(1);}
+.hp-label{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;height:100%;padding:0 16px;text-align:left;opacity:0;transition:opacity .25s;}
+.hp-btn.hp-revealed .hp-label{opacity:1;}
+.hp-tag{display:none;}
+.hp-name{font-size:13px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
+.hp-btn.hp-revealed:hover .hp-name{background-size:100% 1.5px;}
+.hp-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#000;opacity:0;transition:opacity .3s,right .3s;z-index:2;}
+.hp-btn.hp-revealed:hover .hp-arrow{opacity:.7;right:10px;}
+
+/* ── 큰 제품 카드 (이미지 + 텍스트 좌우 분할) ── */
+.product-section{padding:140px var(--pad);border-top:none;overflow:hidden;}
+.product-section .sec-title{margin-bottom:16px;}
+.product-list{display:flex;flex-direction:column;gap:0;margin-top:80px;}
+.pcard{display:grid;grid-template-columns:1.15fr 1fr;gap:80px;align-items:center;padding:90px 0;border-top:none;scroll-margin-top:30px;}
+.pcard:last-child{border-bottom:none;}
+.pcard.flip{grid-template-columns:1fr 1.15fr;}
+.pcard.flip .pcard-img{order:2;}
+.pcard.flip .pcard-text{order:1;}
+.pcard-img{aspect-ratio:16/7;background:linear-gradient(135deg,rgba(240,237,232,.025) 0%,rgba(240,237,232,.005) 100%);border:0.5px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.pcard-img::before,.pcard-img::after{content:'';position:absolute;background:rgba(255,255,255,.1);}
+.pcard-img::before{top:14px;left:14px;width:30px;height:0.5px;}
+.pcard-img::after{top:14px;left:14px;width:0.5px;height:30px;}
+.pcard-text{padding:0 8px;}
+.pcard-num{display:none;}
+.pcard-num::after{content:'';flex:1;height:0.5px;background:rgba(255,255,255,.1);max-width:80px;}
+.pcard-tag{display:none;}
+.pcard-name{font-size:max(28px, calc(44 * var(--u)));font-weight:700;letter-spacing:.02em;line-height:1.05;margin-bottom:22px;}
+/* v6: 제품 타이틀 → 상세 페이지 링크. 색/크기는 그대로, 호버 시 밑줄만 슬라이드 */
+.pcard-name-link{color:inherit;text-decoration:none;}
+
+.pcard-desc{font-size:20px;color:rgba(240,237,232,.9);line-height:1.3;font-weight:400;}
+
+
+/* View More 링크 (전 제품 공통 — ba_air/ba_land/ba_sea 동일) — hover 시 박스가 아래에서 차오르고 글씨는 검정·굵게.
+   끊김 방지 구조: 박스+검정 글씨를 한 겹(.plf-cover)에 함께 그려두고 clip-path 하나만 움직인다.
+   · 이전 방식(scaleY + color/font-weight 전환)은 끝날 때 합성 레이어가 풀리며 박스 가장자리·글자 렌더링이
+     한 번 바뀌었고, font-weight 는 중간 굵기가 없는 폰트라 도중에 굵기가 툭 바뀌었다.
+   · 이제 바탕 글씨는 그대로 두고 덮개만 드러나므로, 박스와 검정 글씨가 같은 선으로 함께 차오른다.
+   채움 박스는 좌우 8px 까지만 확장: .pcard-text 의 clip-path 가 padding(8px) 밖을 잘라내기 때문
+   위치: 텍스트 영역 우측 끝 (block + fit-content + margin-left:auto) */
+.pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(10px, calc(15 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
+/* 덮개: 바탕 글씨와 같은 자리에 글자가 오도록 top/left 음수만큼 padding 으로 되돌린다.
+   상하 여백(.42em / .3em)은 대문자 윗선~기준선 중앙과 박스 중앙이 일치하는 값 (Helvetica Neue 기준, "View More ↘"는 하강부 없음)
+   덮개는 화살표를 따로 움직이려고 ::before 대신 실제 요소(.plf-cover)로 둔다 */
+.plf-cover{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:#f0ede8;color:#000;font-weight:var(--plf-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none;}
+.pcard-link-fill:hover .plf-cover{clip-path:inset(0 0 0 0);}
+/* 굵은 글자 폭을 미리 확보 — 덮개 글씨가 박스 밖으로 넘치지 않게 */
+.plf-txt{display:inline-grid;}
+.plf-txt::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--plf-weight);height:0;overflow:hidden;visibility:hidden;}
+/* 밑줄 → 화살표 — hover 시 밑줄(.plf-draw)이 ↘ 로 접힌다. 순서:
+   ① 밑줄이 ↘ 글자의 가로 범위(폭 .68em)로 줄어듦  ② 박스 위 화살표 높이로 올라와 "-"
+   ③ 45° 돌며 대각선 길이(.87em)로 늘어나 "\"  ④ 끝에서 두 선이 돋아나 ↘
+   hover 해제 시에는 역순. 속성마다 transition-delay 가 하나뿐이라, 줄어듦/상승은 바깥(.plf-draw),
+   회전/길이는 안쪽(.plf-shaft), 화살촉은 .plf-head 가 나눠 맡는다.
+   치수는 Helvetica Neue ↘ 글리프 실측(em): 잉크 x .03~.71, 대각선 중심 기준선 위 .415em, 화살촉 길이 .25em.
+   덮개(굵기 400)의 ↘ 는 x0 = 100% − .638em 에서 시작 — 덮개 글씨가 바탕(300)보다 .17em 넓어 링크 오른쪽 밖으로 나가 있음. 기준선은 콘텐츠 바닥 위 .13em.
+   진짜 ↘ 글자는 항상 숨기고 자리만 남긴다 — 박스 너비(링크 폭)를 그대로 유지하기 위해.
+   평소 밑줄은 "More" 끝까지만: 오른쪽에서 ↘ 칸(.808em) + 앞 공백(.327em) = 1.135em 을 뺀다 (바탕 굵기 300 실측).
+   두께: 밑줄 1.5px → 줄어드는 동안 화살표 1px 로 가늘어짐 */
+.plf-arr{visibility:hidden;}
+.plf-draw{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:#f0ede8;pointer-events:none;
+  transition:bottom .2s var(--plf-e) .3s,left .2s var(--plf-e) .48s,width .2s var(--plf-e) .48s,height .2s var(--plf-e) .48s,color .15s linear .08s;}
+.pcard-link-fill:hover .plf-draw{left:calc(100% - .61em);width:.68em;height:1px;bottom:calc(.745em + 1px);color:#000;
+  transition:left .22s var(--plf-e),width .22s var(--plf-e),height .22s var(--plf-e),bottom .22s var(--plf-e) .2s,color .12s linear;}
+.plf-shaft{position:absolute;top:0;bottom:0;left:0;right:0;background:currentColor;
+  transition:transform .2s var(--plf-e) .12s,left .2s var(--plf-e) .12s,right .2s var(--plf-e) .12s;}
+.pcard-link-fill:hover .plf-shaft{left:-.095em;right:-.095em;transform:rotate(45deg);
+  transition:transform .22s var(--plf-e) .42s,left .22s var(--plf-e) .42s,right .22s var(--plf-e) .42s;}
+.plf-head{position:absolute;top:0;right:0;width:.25em;height:100%;background:currentColor;transform-origin:100% 50%;transform:rotate(-45deg) scaleX(0);transition:transform .15s var(--plf-e);}
+.plf-head-b{transform:rotate(45deg) scaleX(0);}
+.pcard-link-fill:hover .plf-head{transform:rotate(-45deg) scaleX(1);transition:transform .18s var(--plf-e) .64s;}
+.pcard-link-fill:hover .plf-head-b{transform:rotate(45deg) scaleX(1);}
+@media (prefers-reduced-motion:reduce){.plf-draw,.plf-shaft,.plf-head,.pcard-link-fill:hover .plf-draw,.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:hover .plf-head{transition:none;}}
+
+@media (max-width:760px){
+  /* 760px 이하: 203px 최소값은 데스크톱 모듈이라 2열(2×203+14=420px)이 폰 화면에 안 들어감.
+   → 최소값을 풀고 화면 폭에 맞춘 유동 폭으로 전환 */
+  .hero-products{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100vw - var(--pad) * 2);}
+  .pcard,.pcard.flip{grid-template-columns:1fr;gap:36px;padding:60px 0;}
+  .pcard.flip .pcard-img{order:0;}
+  .pcard.flip .pcard-text{order:1;}
+}
+
+/* ── 제품 카드 등장 애니메이션 ── */
+.product-section { overflow: hidden; }
+
+.pcard .pcard-img {
+  clip-path: inset(0 0 0 100%);
+  transform: translateX(80px);
+  transition: clip-path .6s cubic-bezier(.4,0,.15,1), transform .6s cubic-bezier(.4,0,.15,1);
+}
+.pcard .pcard-text {
+  clip-path: inset(0 100% 0 0);
+  transform: translateX(-80px);
+  transition: clip-path .6s cubic-bezier(.4,0,.15,1) .05s, transform .6s cubic-bezier(.4,0,.15,1) .05s;
+}
+.pcard.flip .pcard-img {
+  clip-path: inset(0 100% 0 0);
+  transform: translateX(-80px);
+}
+.pcard.flip .pcard-text {
+  clip-path: inset(0 0 0 100%);
+  transform: translateX(80px);
+}
+.pcard.in-view .pcard-img,
+.pcard.in-view .pcard-text {
+  clip-path: inset(0 0 0 0);
+  transform: translateX(0);
+}
+
+.sec{position:relative;}
+
+
+</style>
+</head>
+<body>
+
+<!-- 섹션 인디케이터 (우측 고정) -->
+<div id="sec-indicator"><div class="sec-label-box" id="sec-label-box"></div></div>
+
+<!-- NAVBAR -->
+<script src="nav.js"></script>
+
+<section id="hero">
+
+  <canvas id="tc"></canvas>
+  <div class="hero-fade"></div>
+  <div class="hero-content">
+    <h1 class="ht">Ground.<br><span>Secured.</span></h1>
+    <p class="hero-sub">AEGIS-integrated solutions for ground-level drone and RCIED threats.</p>
+    <div class="hero-products">
+      <button class="hp-btn" data-target="prod-cuas" data-tag="C-UAS · MOBILE" data-name="AEGIS C-UAS">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">C-UAS · MOBILE</span><span class="hp-name decode-hp">AEGIS C-UAS</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+      <button class="hp-btn" data-target="prod-aegisv" data-tag="JAMMER · VEHICLE" data-name="AEGIS-V">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">JAMMER · VEHICLE</span><span class="hp-name decode-hp">AEGIS-V</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+      <button class="hp-btn" data-target="prod-aegisf" data-tag="JAMMER · FIXED" data-name="AEGIS-F">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">JAMMER · FIXED</span><span class="hp-name decode-hp">AEGIS-F</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+      <button class="hp-btn" data-target="prod-aegisb" data-tag="JAMMER · PORTABLE" data-name="AEGIS-B">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">JAMMER · PORTABLE</span><span class="hp-name decode-hp">AEGIS-B</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+    </div>
+  </div>
+  </section>
+
+<section class="product-section sec" id="products">
+  <h2 class="sec-title decode">PRODUCT LINEUP</h2>
+  <p class="sec-desc fade-in">Four platforms. One AEGIS intelligence layer.</p>
+
+  <div class="product-list">
+
+    <article class="pcard" id="prod-cuas">
+      <a class="pcard-img" href="product-aegis-cuas.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/cuas.jpg" alt="AEGIS C-UAS" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">01</div>
+        <div class="pcard-tag">C-UAS · MOBILE</div>
+        <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-cuas.html">AEGIS<br>C-UAS System</a></h3>
+        <p class="pcard-desc">Vehicle-mounted counter-drone suite.<br>Detect, Track, Defeat on the move.</p>
+        <a class="pcard-link pcard-link-fill" href="product-aegis-cuas.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+    <article class="pcard flip" id="prod-aegisv">
+      <a class="pcard-img" href="product-aegis-v-jammer.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/aegisv.jpg" alt="AEGIS-V" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">02</div>
+        <div class="pcard-tag">JAMMER · VEHICLE</div>
+        <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-v-jammer.html">AEGIS-V<br>Vehicle Jammer</a></h3>
+        <p class="pcard-desc">The world's first liquid-cooled vehicle RCIED jammer.<br>Silent, Heatless, Unlimited.</p>
+        <a class="pcard-link pcard-link-fill" href="product-aegis-v-jammer.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+    <article class="pcard" id="prod-aegisf">
+      <a class="pcard-img" href="product-aegis-f-jammer.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/aegisf.jpg" alt="AEGIS-F" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">03</div>
+        <div class="pcard-tag">JAMMER · FIXED</div>
+        <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-f-jammer.html">AEGIS-F<br>Facility Jammer</a></h3>
+        <p class="pcard-desc">Fixed-site protection for bases and critical infrastructure.<br>24/7, autonomous.</p>
+        <a class="pcard-link pcard-link-fill" href="product-aegis-f-jammer.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+    <article class="pcard flip" id="prod-aegisb">
+      <a class="pcard-img" href="product-aegis-b-jammer.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/aegisb.jpg" alt="AEGIS-B" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">04</div>
+        <div class="pcard-tag">JAMMER · PORTABLE</div>
+        <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-b-jammer.html">AEGIS-B<br>Backpack Jammer</a></h3>
+        <p class="pcard-desc">Man-portable RF protection for dismounted teams.<br>Instant-on, hot-swap battery.</p>
+        <a class="pcard-link pcard-link-fill" href="product-aegis-b-jammer.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="sec aegis-sec">
+  <h2 class="sec-title decode">HOW AEGIS WORKS</h2>
+  <p class="sec-desc fade-in">The intelligence behind every LAND POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</p>
+  <a href="aegis.html" style="text-decoration:none;display:block;">
+  <div class="aegis-cta-block" id="aegisCta">
+    <div class="aegis-cta-text">
+      <span class="aegis-cta-tag">AEGIS</span>
+      <div class="aegis-cta-rule"></div>
+      <div class="aegis-cta-head">SENSE, DECIDE, COMMAND</div>
+      <span class="aegis-cta-btn">EXPLORE AEGIS ↘</span>
+    </div>
+  </div>
+  </a>
+</section>
+
+<!-- FOOTER -->
+<script src="footer.js"></script>
+
+<script>
+/* ── TERRAIN ── */
+(function(){
+  var c = document.getElementById('tc');
+  var ctx = c.getContext('2d');
+  var W, H, t = 0, pts = [];
+  var COLS=300, ROWS=60, FOV=380, CAM_Y=160, CAM_Z=-60;
+  var COLS_PER_PX = 1/5; // 픽셀당 열 수 (참조 이미지 기준)
+  var MAX_COLS = 140; // 화면이 아무리 넓어도 점 가로 개수 상한
+  var BASE_W=200, X_SCALE=3.5, TERRAIN_BOTTOM=620;
+  // TERRAIN_BOTTOM도 화면 높이에 비례: REF_H에서 620, 화면 높이 따라 변동
+
+  // ── 저주파: 큰 봉우리/계곡 흐름. 주파수 변조로 비반복.
+  function noiseLow(cx,cy){
+    return Math.sin(cx*1 + Math.sin(cx*2+cy*.4)*1.3 + cy*.24)*2.2
+      + Math.sin(cx*2 + Math.cos(cx*3+cy*.6)*0.9 + cy*.55)*1.6
+      + Math.cos(cx*3 + Math.sin(cx*1+cy*.3)*0.7 - cy*.38)*1.3
+      + Math.sin(cx*5 + Math.cos(cx*2+cy*.5)*0.5 + cy*.9)*1.0;
+  }
+  function noiseHigh(cx,cy){
+    return Math.sin(cx*8 + Math.sin(cx*3+cy*1.1)*1.5 - cy*1.7)*.8
+      + Math.cos(cx*13 + Math.cos(cx*5+cy*.7)*1.0 + cy*2.8)*.6
+      + Math.sin(cx*21 + Math.sin(cx*8)*0.8 - cy*3.9)*.45
+      * Math.cos(cx*2+cy*.5+.7)
+      + Math.sin(cx*34 + Math.cos(cx*13)*0.6 - cy*5.8)*.3
+      + Math.cos(cx*55 + Math.sin(cx*21)*0.4 + cy*8.7)*.22
+      + Math.sin(cx*89 + cy*.06)*.18;
+  }
+  function roughnessMask(cx,cy){
+    var r = Math.sin(cx*2 + Math.sin(cx*1+cy*.6)*1.2 + cy*.4)*1.0
+          + Math.sin(cx*3 + Math.cos(cx*2+cy*.3)*0.8 + cy*.8)*.7
+          + Math.cos(cx*1 + Math.sin(cx*5+cy*.4)*0.6 - cy*.5)*.6;
+    var m = (r + 2.3) / 4.6;
+    m = Math.pow(m, 1.6);
+    m = Math.max(0, Math.min(1, m));
+    var MIN = 0.35;
+    return MIN + m * (1 - MIN);
+  }
+  function noise(cx,cy){
+    return noiseLow(cx,cy) + noiseHigh(cx,cy) * roughnessMask(cx,cy);
+  }
+  function r2(a,b){return Math.abs(Math.sin(a*127.1+b*311.7)*43758.5)%1;}
+
+  // 참조 해상도 (이미지1 기준) — 모든 스케일링의 기준점
+  var REF_W = 1138, REF_H = 900;
+
+  function proj(gx,gy,gz){
+    var z=gz*FOV+CAM_Z+FOV; if(z<=0)return null;
+    var sc=FOV/z;
+    // 가로 스케일을 화면 너비에 비례 (REF_W에서 1배, 넓으면 1.05배 정도까지만 늘려서 항상 화면 채움)
+    // 너무 강하게 비례시키면 좁은 창에서 끝이 잘리니까 약간 보수적으로
+    var widthFactor = Math.max(W / REF_W, 0.85);
+    return{
+      x:W*.5+gx*sc*BASE_W*X_SCALE*widthFactor,
+      y:(H-TERRAIN_BOTTOM)-(gy-CAM_Y)*sc,
+      s:sc
+    };
+  }
+
+  // 가로 루프 지형 높이 (각도 기반)
+  function terrainHeight(gx, gz){
+    var angle = (gx + 1) * Math.PI;
+    var n = noise(angle, gz * 13);
+    var heightScale = 0.5 + gz * 1.7;
+    // 화면 높이에 비례해서 진폭 조정 (REF_H에서 1배)
+    var heightFactor = H / REF_H;
+    var ty = (n * 13 * heightScale + (gz * 55) * 0.65) * heightFactor;
+    if(gz > 0.75){
+      var topFade = (gz - 0.75) / 0.25;
+      ty = ty * (1 - topFade * 0.35);
+    }
+    return ty;
+  }
+  function terrainNoise(gx, gz){
+    var angle = (gx + 1) * Math.PI;
+    return noise(angle, gz * 13);
+  }
+
+  function build(){
+    pts=[];
+    for(var row=0;row<ROWS;row++)for(var col=0;col<COLS;col++){
+      var gz=row/(ROWS-1);
+      var wgx_init=(col/(COLS-1)-.5)*2; // 초기 가로 위치 -1~+1
+      var n = terrainNoise(wgx_init, gz);
+      var ty = terrainHeight(wgx_init, gz);
+      var isSp=r2(col*.91,row*.73)<.18;
+      var introDelay = (col / (COLS-1)) * 0.55;
+      var introDur   = 0.30 + r2(col*.17,row*.53) * 0.15;
+      // 점이 바뀌지 않으면 일정한 값들 미리 계산
+      var frontFade = Math.min(1.0, Math.pow(gz / 0.10, 1.8));
+      var hf = Math.max(0, (n + 2) / 4.5);
+      var df = 1 - gz * 0.58;
+      var aBase = Math.min(Math.max(.22, (.38 + hf * .40) * df), .95);
+      // 너무 어두운 점은 어차피 안 보임 → skip 플래그
+      var aFinal = aBase * frontFade;
+      var visible = aFinal >= 0.01;
+      // 뒤쪽 점은 정적 처리: 작고 어둡고 진동도 미미해서 캐시로 충분
+      // v5: 기준을 0.55 → 0.8로 후퇴. 인트로 종료 시 캐시로 전환되며 진동이
+      //     멈추는 게 눈에 띄던 중간 거리 점들을 계속 실시간 렌더링한다.
+      var isStatic = gz > 0.8 && !isSp;
+      pts.push({col,row,gz,wgx_init,ty,n,
+        frontFade, hf, df, aBase, aFinal, visible, isStatic,
+        vp:r2(col*.3,row*.17)*Math.PI*2,
+        vs:(2.5+r2(col*.7,row*.41)*4.5)*4,
+        ap:r2(col*.53,row*.29)*Math.PI*2,
+        as:.8+r2(col*.19,row*.67)*2,
+        ab:.15+r2(col*.11,row*.23)*.35,
+        ar:.1+r2(col*.47,row*.61)*.55,
+        isSp,
+        sp:r2(col*.37,row*.83)*Math.PI*2,
+        ss:.3+r2(col*.61,row*.19)*.4,
+        svs:18+r2(col*.43,row*.67)*14,
+        sa:4+r2(col*.29,row*.57)*4,
+        introDelay, introDur
+      });
+    }
+  }
+
+  function resize(){
+    W = window.innerWidth;
+    H = window.innerHeight;
+    // ── DPR 캡: 실제 그리기는 1x, CSS 크기만 화면 크기. 레티나에서 픽셀 수 1/4 ~ 1/9
+    c.width = W;
+    c.height = H;
+    c.style.width = W + 'px';
+    c.style.height = H + 'px';
+    // 화면 너비에 비례해서 COLS 재계산 (점 밀도 일정 유지)
+    COLS = Math.max(60, Math.min(MAX_COLS, Math.round(W * COLS_PER_PX)));
+    // 화면 높이에 비례해서 TERRAIN_BOTTOM 재계산 (지형 세로 위치)
+    TERRAIN_BOTTOM = Math.round(H * (620 / 900));
+    if(typeof build === 'function' && pts.length > 0){ build(); }
+  }
+
+  var mx=-9999, my=-9999;
+  var pulses=[];
+  var lastPulseT=0;
+
+  document.getElementById('hero').addEventListener('mousemove',function(e){
+    var rect=document.getElementById('tc').getBoundingClientRect();
+    mx=e.clientX-rect.left; my=e.clientY-rect.top;
+  });
+  document.getElementById('hero').addEventListener('mouseleave',function(){ mx=-9999; my=-9999; });
+
+  var INTRO_TOTAL = 1.0; // 전체 인트로 1초
+
+  var DRIFT_SPEED = 0.06; // 초당 가로 이동량
+
+  function frame(){
+    t+=.016;
+    ctx.fillStyle='#000000'; ctx.fillRect(0,0,W,H);
+
+    var shift = t * DRIFT_SPEED;
+
+    // 인트로 끝난 직후 한 번 정적 캐시 생성
+    if(!staticReady && t > INTRO_TOTAL + 0.05){
+      buildStaticCache();
+    }
+
+    // 정적 캐시 그리기 (인트로 끝났을 때만)
+    if(staticReady){
+      // shift만큼 캐시를 좌측으로 이동시켜서 화면에 복사
+      // wgx_init=-1이 화면 좌단(x=0), staticCanvas에서는 staticX = (-1+2)*W/2 = W/2
+      // drift 적용 후 wgx = wgx_init - shift, 그러나 staticCanvas는 wgx_init 기준
+      // 화면에 그릴 때: 캔버스의 (W/2 + shift*W/2) 위치부터 W만큼 잘라서 그림
+      var shiftMod = ((shift % 2) + 2) % 2; // 0~2 범위
+      var srcX = W * 0.5 + shiftMod * W * 0.5; // 0.5W ~ 1.5W
+      // 한 번에 못 그리면 두 번으로 나눠 그림 (wrap)
+      if(srcX + W <= W * 2){
+        ctx.drawImage(staticCanvas, srcX, 0, W, H, 0, 0, W, H);
+      } else {
+        var part1 = W * 2 - srcX;
+        ctx.drawImage(staticCanvas, srcX, 0, part1, H, 0, 0, part1, H);
+        ctx.drawImage(staticCanvas, 0, 0, W - part1, H, part1, 0, W - part1, H);
+      }
+    }
+
+    // 3초마다 커서 위치에서 펄스 발생 — 화면 Y로 gz 정확히 역산
+    // 펄스의 pgx는 'wgx 공간'(점의 현재 화면 좌표 공간)에 저장 → drift와 자연스럽게 동기화
+    if(mx>0 && t-lastPulseT>3.0){
+      var GY_OFFSET = 38;
+      var yHorizon = H - TERRAIN_BOTTOM;
+      var dy = my - yHorizon;
+      var bestGz;
+      if(Math.abs(dy) < 2){ bestGz = 0.98; }
+      else {
+        var z_est = (CAM_Y - GY_OFFSET) * FOV / dy;
+        bestGz = Math.max(0.01, Math.min(0.99, (z_est - CAM_Z - FOV) / FOV));
+      }
+      var sc0 = FOV / (bestGz * FOV + CAM_Z + FOV);
+      // (W/680) 제거된 proj에 맞춰 역산도 수정
+      var widthFactor = Math.max(W / REF_W, 0.85);
+      var pgx_screen = (mx - W * 0.5) / (sc0 * BASE_W * X_SCALE * widthFactor);
+      // 이 시점의 절대 wgx_init 좌표로 저장 → 시간이 흘러도 같은 점에 박혀있음
+      var pgx_world = pgx_screen + shift;
+      pulses.push({pgx:pgx_world, pgz:bestGz, r:0, maxR:2.8, born:t});
+      lastPulseT = t;
+    }
+
+    var ap=[];
+    for(var pi=0;pi<pulses.length;pi++){
+      var pulse=pulses[pi];
+      pulse.r=(t-pulse.born)*0.55;
+      if(pulse.r<pulse.maxR) ap.push(pulse);
+    }
+    pulses=ap;
+
+    // fillStyle 캐싱
+    var fillCache = frame.fillCache || (frame.fillCache = {});
+    var lastAQ = -1;
+
+    // 루프 밖 사전 계산 — 점마다 반복 불필요
+    var widthFactor = Math.max(W / REF_W, 0.85);
+    var xScale = BASE_W * X_SCALE * widthFactor;
+    var yBase = H - TERRAIN_BOTTOM;
+    var introActive = t < INTRO_TOTAL;
+    var inverseHover = mx > 0;
+    var halfW = W * 0.5;
+    var fovCamZFov = CAM_Z + FOV;
+
+    for(var row=ROWS-1;row>=0;row--)for(var col=0;col<COLS;col++){
+      var p=pts[row*COLS+col];
+
+      // 보이지 않는 점 빠른 skip
+      if(!introActive && !p.visible) continue;
+      // 정적 점은 캐시에서 그렸으므로 skip (단 인트로 중에는 동적 그리기)
+      if(!introActive && p.isStatic && staticReady) continue;
+
+      // 점의 현재 화면 가로 위치 (drift 적용 + wrap)
+      var wgx_raw = p.wgx_init - shift;
+      var wgx = ((wgx_raw + 1) % 2 + 2) % 2 - 1;
+
+      // 인트로 처리
+      var introOffsetY = 0, introAlpha = 1;
+      if(introActive){
+        var elapsed = t - p.introDelay;
+        if(elapsed < 0) continue;
+        var progress = elapsed < p.introDur ? elapsed / p.introDur : 1;
+        var ease;
+        if(progress < 0.75){ var inv = 1 - progress/0.75; ease = 1 - inv * inv; }
+        else { var ov = (progress-0.75)/0.25; ease = 1 + Math.sin(ov*Math.PI)*0.08*(1-ov); }
+        introOffsetY = -(1 - ease) * (H * 0.55);
+        introAlpha = progress * 2.5; if(introAlpha > 1) introAlpha = 1;
+      }
+
+      // 진동
+      var amp=p.ab+(Math.sin(t*p.as+p.ap)*.5+.5)*p.ar;
+      var vy=Math.sin(t*p.vs+p.vp)*amp;
+      if(p.isSp){
+        var env=Math.sin(t*p.ss+p.sp);
+        if(env>.75) vy+=(env-.75)/.25*p.sa*Math.sin(t*p.svs+p.vp);
+      }
+
+      // 펄스: 빠른 거리 컬링 (sqrt 호출 전에 사각형 박스 체크)
+      var pulsesLen = pulses.length;
+      if(pulsesLen > 0){
+        for(var pi=0;pi<pulsesLen;pi++){
+          var pulse=pulses[pi];
+          var dgx=p.wgx_init-pulse.pgx, dgz=p.gz-pulse.pgz;
+          // 가로 wrap 처리: 한 폭(=2) 이상 떨어진 거리는 반대편으로 짧게
+          if(dgx > 1) dgx -= 2;
+          else if(dgx < -1) dgx += 2;
+          var absDgx = dgx < 0 ? -dgx : dgx;
+          var absDgz = dgz < 0 ? -dgz : dgz;
+          var maxBox = pulse.r + 0.10;
+          if(absDgx > maxBox || absDgz > maxBox) continue;
+          var gdist=Math.sqrt(dgx*dgx+dgz*dgz);
+          var diff=Math.abs(gdist-pulse.r);
+          if(diff<0.10){
+            var df1 = 1-gdist/pulse.maxR;
+            if(df1 < 0) df1 = 0;
+            var df2 = df1 * df1; df2 = df2 * df2;
+            var pInf=(1-diff/0.10)*df2;
+            vy+=pInf*36.0*Math.sin(t*p.vs*2+p.vp);
+          }
+        }
+      }
+
+      // 인라인 proj
+      var z = p.gz * FOV + fovCamZFov;
+      if(z <= 0) continue;
+      var sc = FOV / z;
+      var px = halfW + wgx * sc * xScale;
+      var py = yBase - ((p.ty + vy) - CAM_Y) * sc + introOffsetY;
+      if(px < -20 || px > W + 20 || py < -10 || py > H + 10) continue;
+
+      // 미리 계산된 hf, frontFade, aBase 사용
+      var sizeFactor = Math.max(1.0, W / REF_W);
+      var r = Math.max(.7, sc) * (0.88 + p.hf * .2) * sizeFactor;
+      if(r > 2.0 * sizeFactor) r = 2.0 * sizeFactor;
+      var a = p.aFinal * introAlpha;
+      if(a < 0.01) continue;
+
+      // 호버 효과
+      if(inverseHover){
+        var ddx=(px-mx)/40, ddy=(py-my)/20;
+        var dd=Math.sqrt(ddx*ddx+ddy*ddy);
+        if(dd<1){
+          var inv=1-dd;
+          var ease2=inv*inv*(3-2*inv);
+          r += ease2 * 1.0; if(r > 2.6) r = 2.6;
+          a += ease2 * .35; if(a > .95) a = .95;
+        }
+      }
+
+      ctx.beginPath(); ctx.arc(px,py,r,0,6.283);
+      // 알파를 0.01 단위로 양자화하여 같은 값이면 fillStyle 변경 안 함
+      var aQ = (a * 100) | 0;
+      if(aQ !== lastAQ){
+        ctx.fillStyle = fillCache[aQ] || (fillCache[aQ] = 'rgba(240,237,232,' + (aQ/100) + ')');
+        lastAQ = aQ;
+      }
+      ctx.fill();
+    }
+
+    // 펄스 링 — 화면 양 끝 wrap을 위해 -2, 0, +2 세 위치에 그림
+    for(var pi=0;pi<pulses.length;pi++){
+      var pulse=pulses[pi];
+      var fade=Math.pow(1-pulse.r/pulse.maxR,1.5);
+      if(fade<0.01) continue;
+      var pulse_screen_gx_raw = pulse.pgx - shift;
+      var pulse_screen_gx = ((pulse_screen_gx_raw + 1) % 2 + 2) % 2 - 1;
+      ctx.strokeStyle='rgba(240,237,232,'+(fade*.15)+')';
+      ctx.lineWidth=0.8;
+      var segs=32;
+      // 펄스 중심을 -2, 0, +2 시프트해서 세 번 그림 (화면 안 들어오는 것만 보임)
+      for(var shiftIdx=0; shiftIdx<3; shiftIdx++){
+        var centerGx = pulse_screen_gx + (shiftIdx - 1) * 2;
+        // 빠른 컬링: 링이 화면 가로 범위(-1.2 ~ +1.2)에 절대 못 들어오면 skip
+        if(centerGx + pulse.r < -1.2 || centerGx - pulse.r > 1.2) continue;
+        ctx.beginPath();
+        var first=true;
+        for(var si=0;si<=segs;si++){
+          var ang=si/segs*Math.PI*2;
+          var rgx=centerGx+Math.cos(ang)*pulse.r;
+          var rgz=pulse.pgz+Math.sin(ang)*pulse.r*0.55;
+          var rpr=proj(rgx,0,Math.max(0.001,Math.min(1,rgz)));
+          if(!rpr) continue;
+          if(first){ctx.moveTo(rpr.x,rpr.y);first=false;}
+          else ctx.lineTo(rpr.x,rpr.y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    if(mx>0){
+      ctx.save();
+      ctx.translate(mx,my);
+      ctx.scale(1,0.5);
+      ctx.beginPath(); ctx.arc(0,0,40,0,6.283);
+      ctx.strokeStyle='rgba(240,237,232,.2)';
+      ctx.lineWidth=0.5; ctx.stroke();
+      ctx.restore();
+      ctx.beginPath(); ctx.arc(mx,my,2,0,6.283);
+      ctx.fillStyle='rgba(240,237,232,.6)'; ctx.fill();
+    }
+
+    requestAnimationFrame(frame);
+  }
+
+  // ── 정적 캐시: 뒤쪽 점들을 한 번 그려두고 재사용
+  // 가로 2폭(-2~+2) 영역에 그려두고, drift에 따라 화면에 잘라서 복사
+  var staticCanvas = document.createElement('canvas');
+  var staticCtx = staticCanvas.getContext('2d');
+  var staticReady = false;
+
+  function buildStaticCache(){
+    staticCanvas.width  = W * 2;  // 가로 2배 (drift wrap 대응)
+    staticCanvas.height = H;
+    staticCtx.clearRect(0,0,W*2,H);
+
+    // 점 그리기 (진동 없음, 펄스 없음, 인트로 이미 끝났다 가정)
+    var widthFactor = Math.max(W / REF_W, 0.85);
+    var xScale = BASE_W * X_SCALE * widthFactor;
+    var yBase = H - TERRAIN_BOTTOM;
+    var halfW = W * 0.5;
+    var fovCamZFov = CAM_Z + FOV;
+
+    // wgx 좌표 -2 ~ +2 를 staticCanvas 가로 0 ~ 2W에 매핑
+    // staticX = (wgx + 2) / 4 * (W*2) = (wgx + 2) * W * 0.5
+    var lastAQ = -1;
+    var fillCache = {};
+
+    for(var row=ROWS-1;row>=0;row--)for(var col=0;col<COLS;col++){
+      var p=pts[row*COLS+col];
+      if(!p.isStatic || !p.visible) continue;
+
+      // 점 두 번 그리기: wgx_init과 wgx_init+2 (wrap 대응)
+      for(var pass=0; pass<2; pass++){
+        var wgx = p.wgx_init + (pass === 0 ? 0 : 2); // 0 또는 +2 시프트
+        // wgx 범위는 -1~+1 또는 +1~+3 → staticCanvas의 0~2W 영역으로 매핑
+        var staticX = (wgx + 2) * W * 0.5; // -2 → 0, +2 → 2W
+
+        var z = p.gz * FOV + fovCamZFov;
+        if(z <= 0) continue;
+        var sc = FOV / z;
+        // 일반 좌표계에서 px = halfW + wgx * sc * xScale
+        // staticX 기준으로는 staticX는 이미 절대 위치
+        // 단, sc, ty 영향은 동일
+        var py = yBase - (p.ty - CAM_Y) * sc;
+
+        if(staticX < -20 || staticX > W*2 + 20) continue;
+        if(py < -10 || py > H + 10) continue;
+
+        var sizeFactor = Math.max(1.0, W / REF_W);
+        var r = Math.max(.7, sc) * (0.88 + p.hf * .2) * sizeFactor;
+        if(r > 2.0 * sizeFactor) r = 2.0 * sizeFactor;
+        var a = p.aFinal;
+        if(a < 0.01) continue;
+
+        var aQ = (a * 100) | 0;
+        if(aQ !== lastAQ){
+          staticCtx.fillStyle = fillCache[aQ] || (fillCache[aQ] = 'rgba(240,237,232,' + (aQ/100) + ')');
+          lastAQ = aQ;
+        }
+        staticCtx.beginPath();
+        staticCtx.arc(staticX, py, r, 0, 6.283);
+        staticCtx.fill();
+      }
+    }
+    staticReady = true;
+  }
+
+  window.addEventListener('resize',function(){
+    resize();
+    staticReady = false;
+  });
+  resize(); build(); frame();
+})();
+
+/* ── DECODE + FADE ── */
+(function(){
+  var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
+  var TMS=500,INT=30,TF=Math.floor(TMS/INT);
+  function decode(el,cb){
+    var orig=el.textContent.trim(),len=orig.length,done=[],f=0,rev=0;
+    for(var i=0;i<len;i++)done.push(false);
+    var rs=Math.floor(TF*.25);
+    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    var nsIdx=[]; for(var i=0;i<len;i++) if(orig[i]!=' ') nsIdx.push(i);
+    var preCount=Math.floor(nsIdx.length/2);
+    for(var i=0;i<preCount;i++) done[nsIdx[i]]=true;
+    var remain=nsIdx.length-preCount;
+    var pf=Math.max(1,remain/(TF-rs));
+    function tick(){
+      var out=''; for(var i=0;i<len;i++){if(orig[i]==' '){out+=' ';continue;}if(done[i]){out+=orig[i];continue;}out+=CHARS[Math.floor(Math.random()*CHARS.length)];}
+      el.textContent=out;
+      if(f>=rs){var tr=Math.floor((f-rs+1)*pf)-rev;for(var j=0;j<len&&tr>0;j++){if(!done[j]&&orig[j]!=' '){done[j]=true;rev++;tr--;}}}
+      f++; var all=true; for(var k=0;k<len;k++){if(!done[k]&&orig[k]!=' '){all=false;break;}}
+      if(!all&&f<TF+5)setTimeout(tick,INT); else{el.textContent=orig;if(cb)cb();}
+    }tick();
+  }
+  var obs=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      var sec=e.target.closest('section')||e.target.closest('#cta');
+      var fes=sec?sec.querySelectorAll('.fade-in'):[];
+      decode(e.target,function(){fes.forEach(function(fe,i){setTimeout(function(){fe.classList.add('visible');},i*120);});});
+      obs.unobserve(e.target);
+    }
+  });},{threshold:.15});
+  document.querySelectorAll('.decode').forEach(function(el){obs.observe(el);});
+})();
+
+</script>
+<script>
+// ── 대문 제품 박스: 인트로(흰색 채우기 + decode) + 클릭 스크롤
+(function(){
+  var btns = document.querySelectorAll('.hp-btn');
+  var CHARS = '!<>-_\\/[]{}—=+*^?#________';
+  function decodeText(el, target){
+    var len = target.length, frame = 0, totalFrames = 14;
+    /* 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    var half = Math.floor(len/2), back = Math.max(1, len-half);
+    var iv = setInterval(function(){
+      frame++;
+      var out = '';
+      for(var i=0;i<len;i++){
+        if(i < half){ out += target[i]; continue; }
+        var revealAt = Math.floor(((i-half)/back) * totalFrames * 0.6);
+        if(frame >= revealAt + Math.floor(Math.random()*4)){
+          out += target[i];
+        } else {
+          out += CHARS[Math.floor(Math.random()*CHARS.length)];
+        }
+      }
+      el.textContent = out;
+      if(frame >= totalFrames){ el.textContent = target; clearInterval(iv); }
+    }, 35);
+  }
+
+  // 클릭 → 해당 카드로 스크롤
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var id = b.getAttribute('data-target');
+      var el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  // 시작: 좌→우 순서로 박스 채워지고, 끝나면 텍스트 decode
+  function startIntro(){
+    btns.forEach(function(b, i){
+      var tagEl = b.querySelector('.hp-tag');
+      var nameEl = b.querySelector('.hp-name');
+      var tagText = b.getAttribute('data-tag');
+      var nameText = b.getAttribute('data-name');
+      tagEl.textContent = '';
+      nameEl.textContent = '';
+
+      setTimeout(function(){
+        b.classList.add('hp-filled');
+      }, 1100 + i*180);
+
+      setTimeout(function(){
+        b.classList.add('hp-revealed');
+        decodeText(tagEl, tagText);
+        setTimeout(function(){ decodeText(nameEl, nameText); }, 120);
+      }, 1100 + i*180 + 480);
+    });
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', startIntro);
+  } else {
+    startIntro();
+  }
+})();
+</script>
+<script>
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in-view'); obs.unobserve(e.target); }
+    });
+  },{threshold:0.18});
+  document.querySelectorAll('.pcard').forEach(function(c){ obs.observe(c); });
+})();
+</script>
+<script>
+/* ── 섹션 인디케이터 (우측 고정, ba_air.html / BA_Solutions.html와 동일 로직) ── */
+(function(){
+  const box = document.getElementById('sec-label-box');
+  if (!box) return;
+  const indicator = document.getElementById('sec-indicator');
+  const heroEl = document.getElementById('hero');
+
+  const sections = [
+    { el: document.getElementById('hero'),      name: 'LAND' },
+    { el: document.getElementById('products'),  name: 'PRODUCTS' },
+    { el: document.querySelector('.aegis-sec'), name: 'AEGIS' },
+    { el: document.querySelector('footer'),     name: 'CONTACT' },
+  ].filter(s => s.el);
+
+  let currentName = '';
+  function renderName(name){ box.innerHTML = '<div class="sec-word">' + name + '</div>'; }
+
+  // 히어로 이름(AIR/LAND/SEA)은 라벨에 쓰지 않는다.
+  // 히어로로 올라올 때 숨는 것과 동시에 이름이 바뀌면, 슬라이드아웃 0.45초 동안
+  // 바뀐 이름이 스쳐 보이기 때문. 숨는 동안에는 직전 이름을 그대로 둔다.
+  // 시작 시 첫 비히어로 섹션 이름을 미리 그려 박스 크기를 확보해 둔다
+  // (라벨이 비어 있으면 박스 폭이 0이라 첫 진입 때 translateX(100%) 가 0이 되어 안 움직임).
+  const firstNamed = sections.find(s => s.el !== heroEl);
+  if (firstNamed) { currentName = firstNamed.name; renderName(currentName); }
+
+  function update(){
+    const centerY = window.innerHeight / 2;
+    let found = sections[0];
+    for (const s of sections) {
+      const r = s.el.getBoundingClientRect();
+      if (r.top <= centerY && r.bottom >= centerY) { found = s; break; }
+      if (r.top > centerY) break;
+      found = s;
+    }
+    // 히어로 구간에서는 숨김, PRODUCTS 이후로는 노출
+    const inHero = found.el === heroEl;
+    if (indicator) indicator.classList.toggle('is-visible', !inHero);
+    // 숨어 있는 동안(히어로)에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
+    if (!inHero && found.name !== currentName) { currentName = found.name; renderName(currentName); }
+  }
+
+  let lastY = -1;
+  (function loop(){
+    const y = window.scrollY || 0;
+    if (y !== lastY) { lastY = y; update(); }
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</body>
+</html>

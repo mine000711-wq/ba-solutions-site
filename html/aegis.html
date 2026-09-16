@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<!-- aegis.html — v60 (2026-09-16): 우측 섹션 인디케이터 제거 — <body data-no-sec-ind> (footer.js v11 가드) -->
+<!-- aegis.html — v59 (2026-09-15): DECIDE 터미널 빨강 7곳 → 3곳 (HIGH / P(hostile_intent) / EXECUTE). UAS_SWARM·HARD-KILL은 약한 분류명 색으로 -->
+<!-- aegis.html — v58 (2026-09-15): DECIDE 터미널 주황 #ffb300 → #daab4e (채도 100% → 약 65%, 빨강·파랑과 맞춤) -->
+<!-- aegis.html — v57 (2026-09-15): DECIDE 터미널 약한 색 4종 추가(TERM_WEAK_RE) — 식별자 #9790ad / 분류명 #7fa39c / 항목명 #7f8d9c / 수치 #b3a58c, 저채도·반투명. 강한 키워드 색이 우선 -->
+<!-- aegis.html — v56 (2026-09-15): DECIDE 터미널 빨강 #ff3b30 → #e0655c, 파랑 #4096ff → #729fda (채도 100% → 약 65%/58%) -->
+<!-- aegis.html — v55 (2026-09-15): DECIDE 터미널 줄 단위 출력 → 글자 타이핑(rAF 타임라인). 반복 줄(mounting/TGT-0/rule[/opt/P()은 빠르게, 리더 점·'<--' 뒤 결과값은 짧게 대기. 전체 3.87s로 기존 3.90s 이내 (TERM_TYPE) -->
+<!-- aegis.html — v54 (2026-09-15): DECIDE 터미널 키워드 색 — 위협 #ff3b30 / 주의·선택 #ffb300 / 아군·링크 #4096ff / 정상 #34c759. 줄 전체가 아닌 단어 단위(termColorize) -->
+<!-- aegis.html — v53 (2026-09-15): 3No sec-desc 글자 크기 20px 고정 → max(15px, calc(20 * var(--u))) — 1440px 이상에서 20px(최대), 좁아지면 비례 축소 (ba_air 기준) -->
+<!-- aegis.html — v52 (2026-09-15): 3No RELAY 색수차 수렴 속도 0.6s → 0.3s -->
+<!-- aegis.html — v51 (2026-09-15): 3No 세 번째 단어 DEPENDENCY → RELAY. decode 스크램블 대신 색수차(RGB 3채널 분리 → 가산혼합 수렴) 효과. 검토 프로토타입: Homepage/Prototype/06_3no_relay/ -->
+<!-- aegis.html — v50 (2026-09-14): 협력사 로고월 한 줄 최대 4칸 → 6칸 (max-width 1000px → 6칸+간격 폭 1280px, 좁으면 자동 줄바꿈) -->
+<!-- aegis.html — v49 (2026-09-14): 협력사 3곳(대진대학교·KRIT·경기도) 추가 — 흰색 단색 투명 PNG로 통일, KRIT는 워드마크 제거한 심볼만 사용. 로고월을 flex로 바꿔 개수와 무관하게 중앙 정렬 -->
+<!-- aegis.html — v47: reference-style AEGIS IS type reveal and concise SENSE / DECIDE / COMMAND copy -->
+<!-- aegis.html — v46 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
+<!-- aegis.html — v45 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: Homepage/반응형_단위가이드.md -->
+<!-- aegis.html — v44 (2026-09-08): COMMAND 시각물 교체 — aegis_command_map.html(등고선 지형) → aegis_command-raider.html(계층 방어 평면도). 기존 파일은 삭제하지 않고 병존 -->
+<!-- aegis.html — v43 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A형) -->
+<!-- aegis.html — v42 (2026-09-03): 미사용 CSS 제거 (6블록/11줄) — .nav-logo, .sec-alt, .sec-label, .dl-arrow, .dl:hover .dl-arrow, .fl -->
+<!-- aegis.html — v41 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
+<!-- aegis.html — v40 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
+<!-- aegis.html — v39 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
+<!-- aegis.html — v32 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #000000 + color-scheme dark -->
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>BA Solutions - AEGIS AI Platform</title>
+<style>
+
+/* DOMAIN 섹션 타이틀*/
+.domain-sec .sec-title {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+  letter-spacing: .04em;   /* v46: 공용 .sec-title 자간이 0이 되어 Michroma 제목만 기존 값 유지 */
+}
+
+/* DOMAIN 섹션 세부 타이틀
+.dl-name {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}*/
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --u:calc(min(100vw, 1440px) / 1440);   /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+  --bg:#000000;
+  --line:rgba(255,255,255,.08);
+  --accent:#fff;
+  --pad:max(20px, calc(60 * var(--u)))
+}
+body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(255,255,255,.08);}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.act{color:#fff;}
+.nav-about{background:transparent;border:0.5px solid rgba(255,255,255,.4);color:#fff;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
+.nav-about:hover{background:#fff;color:#000;}
+
+/* HERO */
+#hero{height:100vh;min-height:600px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
+.hero-fade{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 42%,rgba(0,0,0,.28) 80%,rgba(0,0,0,.6) 100%);pointer-events:none;}
+.hero-center{position:relative;z-index:3;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;}
+.hero-title{font-size:clamp(80px,14vw,160px); /* vw 유지 — 화면 폭 비율 디스플레이 (반응형_단위가이드.md) */font-weight:700;letter-spacing:0;line-height:1;}
+
+/* SECTIONS */
+.sec{padding: clamp(50px, 10vh, 300px) var(--pad);position:relative;}
+.sec-title{font-size:max(22px, calc(43.2 * var(--u)));font-weight:700;letter-spacing:0;line-height:1.2;margin-bottom:12px;}
+.sec-desc{font-size:20px;color:rgba(255,255,255,1);line-height:1.3;max-width:560px;font-weight:300;}
+
+/* FADE */
+.fade-in{opacity:0;transform:translateY(16px);transition:opacity 1s ease,transform 1s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+/* 도메인 타이틀 인터랙션 */
+#domainTitle.dt-pre{opacity:0;}
+.dom-slot,.dom-s{position:relative;display:inline-block;white-space:nowrap;}
+.dom-slot::after,.dom-s::after{content:'';position:absolute;inset:0;background:#fff;clip-path:inset(0 100% 0 0);pointer-events:none;}
+.dom-hov{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;white-space:nowrap;color:#000;opacity:0;}
+#domainTitle.dt-hover .dom-slot::after{animation:dom-fill 420ms cubic-bezier(.65,0,.35,1) both;}
+#domainTitle.dt-reveal .dom-hov{opacity:1;}
+#domainTitle.dt-reveal .dom-def{visibility:hidden;}
+#domainTitle.dt-singular .dom-s::after{animation:dom-s-wipe 560ms cubic-bezier(.65,0,.35,1) 420ms both;}
+#domainTitle.dt-singular .dom-s{animation:dom-s-hide 560ms linear 420ms both;}
+#domainTitle.dt-s-return .dom-s::after{animation:dom-s-return-wipe 560ms cubic-bezier(.65,0,.35,1) both;}
+#domainTitle.dt-s-return .dom-s{animation:dom-s-show 560ms linear both;}
+@keyframes dom-fill{to{clip-path:inset(0);}}
+@keyframes dom-s-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
+@keyframes dom-s-hide{0%,49.99%{color:inherit;}50%,100%{color:transparent;}}
+@keyframes dom-s-return-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
+@keyframes dom-s-show{0%,49.99%{color:transparent;}50%,100%{color:inherit;}}
+@media(prefers-reduced-motion:reduce){
+  #domainTitle.dt-hover .dom-slot::after{animation:none;clip-path:inset(0);}
+  #domainTitle.dt-singular .dom-s::after{animation:none;}
+  #domainTitle.dt-singular .dom-s{animation:none;color:transparent;}
+  #domainTitle.dt-s-return .dom-s::after{animation:none;}
+  #domainTitle.dt-s-return .dom-s{animation:none;color:inherit;}
+}
+/* Only the hovered card wipes its text; the title stays inverted inside the box. */
+.dl-name,.dl-description,.dl-products>span{position:relative;}
+.dl-products>span{align-self:flex-start;}
+.dl-name::after,.dl-products>span::after{
+  content:'';position:absolute;inset:0;background:#fff;
+  clip-path:inset(0 100% 0 0);pointer-events:none;
+}
+.dl-name::after{content:attr(data-text) / "";color:#000;}
+/* Clone the wipe background onto each rendered text line, excluding empty space. */
+.dl-description-text{
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;
+  background-image:linear-gradient(#fff,#fff);
+  background-repeat:no-repeat;background-size:0% 100%;background-position:left;
+}
+.dl:hover .dl-description-text{animation:dom-description-wipe 840ms cubic-bezier(.65,0,.35,1) both;}
+@keyframes dom-description-wipe{
+  0%{background-size:0% 100%;background-position:left;}
+  50%{background-size:100% 100%;background-position:left;}
+  50.01%{background-size:100% 100%;background-position:right;}
+  100%{background-size:0% 100%;background-position:right;}
+}
+.dl:hover .dl-name,.dl:hover .dl-description,.dl:hover .dl-products>span{
+  animation:dom-s-hide 840ms linear both;
+}
+.dl:hover .dl-name::after,.dl:hover .dl-products>span::after{
+  animation:dom-s-wipe 840ms cubic-bezier(.65,0,.35,1) both;
+}
+@media(prefers-reduced-motion:reduce){
+  .dl:hover .dl-name,.dl:hover .dl-description,.dl:hover .dl-products>span{animation:none;color:transparent;}
+  .dl:hover .dl-name::after,.dl:hover .dl-products>span::after,.dl:hover .dl-description-text{animation:none;}
+}
+.decode{opacity:0;transition:opacity 1s;}
+.decode.visible{opacity:1;}
+
+/* ── FLOW: scroll-driven sticky ── */
+#flow { background:var(--bg); padding:0; }
+.flow-sticky-wrap {
+  position:relative;
+  height:300vh; /* 3 단계 x 100vh */
+}
+.flow-sticky {
+  position:sticky;
+  top:0;
+  height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  border-top:none;
+  overflow:hidden;
+}
+/* 왼쪽: 숫자 */
+.flow-left {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  border-right:none;
+  position:relative;
+  overflow:hidden;
+}
+.flow-num {
+  font-size:max(180px, calc(280 * var(--u)));
+  font-weight:700;
+  letter-spacing:-.04em;
+  line-height:1;
+  color:rgba(255,255,255,.07);
+  position:absolute;
+  transition:transform .7s cubic-bezier(.16,1,.3,1), opacity .5s ease;
+  user-select:none;
+}
+.flow-num.active {
+  color:rgba(255,255,255,.12);
+  transform:translateY(0) !important;
+  opacity:1 !important;
+}
+.flow-num.above  { transform:translateY(-60px); opacity:0; }
+.flow-num.below  { transform:translateY(60px);  opacity:0; }
+/* SENSE 영상 */
+.flow-vid {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:44% 50%; /* 카메라가 화면 중앙에 오도록 크롭 위치 조정 */
+  opacity:0;
+  transition:opacity .6s ease;
+  z-index:1;
+  pointer-events:none;
+}
+.flow-vid.show { opacity:1; }
+.flow-cmd{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;z-index:1;pointer-events:none;background:#000000;}
+.flow-cmd.show{opacity:1;}
+/* DECIDE 터미널 스트림 */
+.flow-term {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  opacity:0;
+  transition:opacity .6s ease;
+  z-index:1;
+  pointer-events:none;
+  overflow:hidden;
+}
+.flow-term.show { opacity:1; }
+.flow-term-log {
+  position:absolute;
+  top:0; bottom:0; left:0; right:0;
+  padding:32px 40px;
+  display:flex;
+  flex-direction:column-reverse;
+  justify-content:flex-start;
+  overflow:hidden;
+  font-family:Consolas,'Lucida Console','Courier New',monospace;
+}
+.flow-term-line {
+  font-size:13px;
+  line-height:1.65;
+  white-space:pre;
+  color:rgba(240,237,232,.34);
+}
+.flow-term-line.hd  { color:rgba(240,237,232,.88); letter-spacing:.03em; }
+.flow-term-line.dim { color:rgba(240,237,232,.6); }
+.flow-term-line.br  { color:rgba(240,237,232,.95); letter-spacing:.03em; }
+.flow-term-line.go  { color:#f0ede8; letter-spacing:.03em; }
+.flow-term-line.gap { height:7px; line-height:7px; }
+.flow-term-line .hi { color:#f0ede8; font-weight:700; }
+/* 키워드 색 — COMMAND 지도(aegis_command-raider) 팔레트 기반 + 초록. v56: 빨강·파랑 채도 낮춤 (지도 원색 #ff3b30 / #4096ff) */
+.flow-term-line .t-red   { color:#e0655c; }
+.flow-term-line .t-amber { color:#daab4e; }  /* v58: #ffb300 → 채도 낮춤 */
+.flow-term-line .t-blue  { color:#729fda; }
+.flow-term-line .t-green { color:#34c759; }
+/* 약한 색 — 저채도, 기본 회색(.34)보다 조금만 밝게. 시선을 강한 색에서 분산 */
+.flow-term-line .w-num { color:rgba(179,165,140,.75); }  /* 수치·단위  #b3a58c */
+.flow-term-line .w-key { color:rgba(127,141,156,.85); }  /* 항목명     #7f8d9c */
+.flow-term-line .w-id  { color:rgba(151,144,173,.85); }  /* 식별자     #9790ad */
+.flow-term-line .w-cls { color:rgba(127,163,156,.85); }  /* 분류명     #7fa39c */
+/* 타이핑 커서 — 입력 중엔 고정, 마지막 줄(EXECUTE) 완료 후 깜빡임 */
+.flow-term-line .t-cur { color:#f0ede8; }
+.flow-term-line.done .t-cur { animation:fc-cursor-blink .96s step-end infinite; }
+.flow-term-fade {
+  position:absolute; inset:0;
+  pointer-events:none;
+  background:linear-gradient(to bottom,var(--bg) 0%,rgba(0,0,0,0) 8%);
+}
+.flow-num { z-index:2; } /* 숫자가 영상/터미널 위 */
+/* 오른쪽: 레퍼런스 타이포그래피 — label / headline / half-width detail */
+.flow-right{padding:var(--pad);position:relative;height:100%;display:flex;align-items:center;}
+.flow-card{position:absolute;top:50%;left:var(--pad);right:var(--pad);transform:translateY(-50%);opacity:0;pointer-events:none;}
+.flow-card.active{opacity:1;pointer-events:auto;}
+.fc-eyebrow{position:relative;font-size:max(16px, calc(18 * var(--u)));font-weight:400;line-height:1.2;margin-bottom:12px;letter-spacing:0;}
+.fc-cursor{position:absolute;top:0;left:0;visibility:hidden;}
+.flow-card.is-typing .fc-cursor,.flow-card.copy-done .fc-cursor{visibility:visible;}
+.flow-card.cursor-blink .fc-cursor{visibility:visible;animation:fc-cursor-blink .48s step-end 3 forwards;}
+@keyframes fc-cursor-blink{0%{visibility:hidden;}50%,100%{visibility:visible;}}
+.fc-name{font-size:max(32px, calc(56 * var(--u)));font-weight:500;letter-spacing:0;line-height:1.02;color:#fff;margin:0;}
+.fc-title-line{display:block;}
+.fc-desc{font-size:max(13px, calc(14 * var(--u)));font-weight:400;color:rgba(255,255,255,.8);line-height:1.45;margin:24px 0 0;width:50%;overflow-wrap:break-word;}
+.flow-type-ready .fc-char{visibility:hidden;}
+.flow-type-ready .fc-desc{opacity:0;transition:opacity .25s ease;}
+.flow-type-ready.copy-done .fc-desc{opacity:1;}
+/* S.D.C ≤860px: 풀블리드 시각물 + 하단 텍스트 */
+@media(max-width:860px){
+  .flow-sticky{display:block;}
+  .flow-left{position:absolute;inset:0;z-index:1;}
+  .flow-right{position:absolute;inset:0;z-index:2;padding:0;height:100%;display:block;}
+  .flow-right::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(to top,rgba(0,0,0,.95) 0%,rgba(0,0,0,.72) 40%,rgba(0,0,0,0) 80%);}
+  .flow-card{top:auto;bottom:0;left:0;right:0;transform:none;padding:var(--pad);padding-bottom:calc(var(--pad) + 8px);z-index:1;}
+  .fc-name{font-size:clamp(32px, 6.5vw, 56px);}
+  .fc-eyebrow{position:relative;font-size:16px;}
+  .fc-desc{font-size:13px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .flow-type-ready .fc-desc{transition:none;}
+  .flow-card.cursor-blink .fc-cursor{animation:none;}
+}
+
+/* ── 3NO ── */
+#three-no{background:var(--bg);text-align:center;padding:0;min-height:210vh;min-height:210svh;}
+.three-no-stage{position:sticky;top:0;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px var(--pad);}
+#three-no .sec-title{
+  font-size:clamp(30px, 8vw, 80px) ; /* vw 유지 — 화면 폭 비율 디스플레이 (반응형_단위가이드.md) */
+  letter-spacing:0;
+  line-height:1.15;
+  text-align: center;
+}
+#three-no .sec-title .nw {
+  display: inline-block;
+  white-space: nowrap;
+}
+#three-no .sec-title .inv{visibility:hidden;}
+#three-no .sec-desc{font-size:max(13px, calc(20 * var(--u)));margin-top:24px;max-width:560px;margin-left:auto;margin-right:auto;}
+
+/* 3NO: reserve final widths while each word reveals. */
+.no-token{position:relative;display:inline-block;}
+#three-no.motion-ready .no-ink{visibility:hidden;}
+.no-token::after{content:'';position:absolute;inset:0;background:#fff;clip-path:inset(0 100% 0 0);pointer-events:none;}
+#three-no.no-start .no-token::after{animation:dom-s-return-wipe 480ms cubic-bezier(.65,0,.35,1) var(--no-delay,0ms) both;}
+#three-no.no-start .no-ink{animation:three-no-ink 480ms step-end var(--no-delay,0ms) both;}
+@keyframes three-no-ink{0%,49.99%{visibility:hidden;}50%,100%{visibility:visible;}}
+.cloud-word{display:inline-block;}
+#three-no.motion-ready .cloud-word{filter:blur(10px);opacity:.35;}
+#three-no.cloud-clear .cloud-word{filter:blur(0);opacity:1;transition:filter 1s ease,opacity 1s ease;}
+.latency-word{position:relative;display:inline-block;}
+.latency-space{visibility:hidden;}
+.latency-live{position:absolute;left:0;top:0;white-space:nowrap;}
+.latency-cursor{animation:latency-blink .48s step-end infinite;}
+@keyframes latency-blink{0%,100%{opacity:0;}50%{opacity:1;}}
+
+/* RELAY — 색수차. R·G·B 세 채널이 한 축 위에 어긋나 있다가 포개지며 가산혼합으로 순백이 된다.
+   mix-blend-mode:screen 이므로 이 섹션 배경이 검정(--bg:#000000)일 때만 성립함. */
+.relay-word{position:relative;display:inline-block;}
+.rw-space{visibility:hidden;}                                   /* 폭 예약 — .latency-space 와 같은 패턴 */
+.rw-stack{position:absolute;left:0;top:0;white-space:nowrap;isolation:isolate;}
+.rw-ch{position:absolute;left:0;top:0;mix-blend-mode:screen;}
+.rw-r{color:#ff0000;}
+.rw-g{color:#00ff00;}
+.rw-b{color:#0000ff;}
+#three-no.motion-ready .rw-r{transform:translateX(-.08em);}     /* 파장이 긴 적색이 덜 꺾임 */
+#three-no.motion-ready .rw-b{transform:translateX(.08em);}      /* 짧은 청색이 가장 많이 꺾임 */
+#three-no.relay-focus .rw-r,
+#three-no.relay-focus .rw-b{transform:translateX(0);transition:transform .3s ease;}
+@media(prefers-reduced-motion:reduce){
+  #three-no{min-height:120vh;min-height:120svh;}
+  .three-no-stage{position:relative;}
+  #three-no.motion-ready .no-ink{visibility:visible;animation:none;}
+  #three-no.no-start .no-token::after{animation:none;}
+  #three-no.motion-ready .cloud-word{filter:none;opacity:1;transition:none;}
+  .latency-cursor{display:none;}
+  #three-no .rw-space{visibility:visible;}
+  #three-no .rw-stack{display:none;}
+}
+
+/* ── 협력사 로고 그리드 ── */
+#partners{background:var(--bg);padding-top:max(120px, calc(220 * var(--u)));}
+.partner-intro{max-width:620px;margin:20px 0 0;text-align:left;font-size:15px;color:#f0ede8;line-height:1.2;}
+.logo-wall{
+  --lw-w:190px;   /* 로고 칸 너비 */
+  --lw-gap:28px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:var(--lw-gap);
+  margin:56px auto 0;
+  /* 한 줄 최대 6칸 — 폭이 모자라면 5·4·3…칸으로 자동 줄바꿈 */
+  max-width:calc(var(--lw-w) * 6 + var(--lw-gap) * 5);
+}
+.lw-item{flex:0 0 var(--lw-w);min-width:0;}   /* min-width:0 — 가로로 긴 로고가 칸을 190px 넘게 밀어내지 않게 */
+.lw-item{
+  background:transparent;
+  min-height:150px;
+  padding:28px 20px;   /* 24→20: 로고 max-width 150px이 190px 칸 안에 딱 맞도록 */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  transition:background .3s;
+  position:relative;
+}
+.lw-item:hover{background:transparent;}
+@media(max-width:760px){.logo-wall{--lw-w:140px;}}
+.lw-logo{
+  height:44px;width:auto;max-width:min(150px, 100%);object-fit:contain;
+  /* 로고별 광학 보정: 원형 씰은 크게, 가로로 긴 워드마크는 작게 */
+  opacity:1;
+  filter:blur(0);
+  transition:opacity .35s, filter .35s;
+}
+.lw-logo.is-seal{height:64px;}   /* 대진대학교 — 원형 씰 */
+.lw-logo.is-mark{height:38px;}   /* KRIT — 심볼 단독 */
+.lw-logo.is-wide{height:30px;}   /* 경기도 — 심볼+워드마크 가로형 */
+
+/* 호버 시 로고를 없애지 않고 초점이 나간 듯 흐리게 — 회사명 뒤에 연하게 깔림 */
+.lw-item:hover .lw-logo{opacity:.35;filter:blur(3px);}
+.lw-name{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  text-align:center;font-size:15px;letter-spacing:0;color:rgba(240,237,232,.9); font-weight: 600; text-align: left;
+  opacity:0;transition:opacity .35s;pointer-events:none;
+}
+.lw-item:hover .lw-name{opacity:1;}
+.lw-item.placeholder{
+  background:transparent;
+}
+.lw-item.placeholder .lw-ph{font-size:9px;letter-spacing:0;color:rgba(255,255,255,.14);}
+
+/* ── DOMAINS: 비디오 배경 호버 ── */
+#domains-cta {
+  position:relative;
+  overflow:hidden;
+  background:#000;
+  padding:0;
+}
+/* 공유 비디오 레이어 — 섹션 전체 배경 */
+#domain-video-bg {
+  position:absolute; inset:0;
+  pointer-events:none; z-index:0;
+}
+#domain-video-bg video {
+  position:absolute;
+  inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+#domain-video-bg::after {
+  content:'';
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.55); /* 영상 위 어두운 오버레이 — 글자 가독성 */
+  pointer-events:none;
+}
+/* 제목은 비디오 위에 패딩 섹션처럼 */
+.domains-head {
+  position:relative; z-index:2;
+  padding:max(160px, calc(260 * var(--u))) var(--pad) 0;   /* 위 섹션(Flow)과의 간격 확대 */
+}
+/* 카드 그리드 */
+.domain-links {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:rgba(255,255,255,.06);
+  margin-top:max(32px, calc(56 * var(--u)));
+  position:relative; z-index:2;
+  transition:background .6s ease;
+}
+.dl {
+  --domain-title-height:max(32px, calc(64 * var(--u)));
+  background:rgba(240,237,232,.1);   /* 호버 전 카드 배경 — 밝은 회색 */
+  padding:max(14px, calc(20 * var(--u))) max(20px, calc(40 * var(--u))) max(20px, calc(40 * var(--u))) max(20px, calc(40 * var(--u)));
+  text-decoration:none;
+  color:inherit;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-rows:auto 1fr;   /* 카드 높이 확대 — 제품 목록은 카드 하단에 붙임 */
+  min-height:max(310px, calc(480 * var(--u)));
+  align-items:start;
+  gap:max(12px, calc(20 * var(--u)));
+  position:relative;
+  transition:background .6s ease,opacity .6s ease;
+}
+/* Fade the other cards while keeping their hover targets available. */
+.domain-links:has(.dl:hover){background:transparent;}
+.domain-links:has(.dl:hover) .dl:not(:hover){opacity:0;}
+.dl:hover{opacity:1;transition:background .6s ease,opacity 0s;}
+@media(prefers-reduced-motion:reduce){
+  .domain-links,.domain-links .dl{transition:none;}
+}
+.dl::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0;
+  width:0; height:0.5px;
+  background:#fff;
+  transition:width .5s ease;
+}
+.dl:hover::after { width:100%; }
+.dl:hover { background:transparent; }
+.dl-description,
+.dl-products {
+  color:#f0ede8;
+  font-size:max(8px, calc(13 * var(--u)));
+  line-height:1.15;
+  overflow-wrap:break-word;
+}
+.dl-description {
+  justify-self:end;
+  min-width:0;
+  max-width:260px;
+  height:var(--domain-title-height);
+  text-align:right;
+}
+.dl-products {
+  grid-column:1 / -1;
+  align-self:end;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  text-align:left;
+}
+.domain-links .dl-name { flex-shrink:0; }
+@media(max-width:620px){ .domain-links{ grid-template-columns:1fr; } .dl{ min-height:230px; } }
+.dl-name {
+  font-size:var(--domain-title-height);
+  font-weight:500;
+  line-height:1;
+}
+
+
+/* FOOTER */
+footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
+.foot-addr{font-size:11px;color:rgba(255,255,255,.35);line-height:2;letter-spacing:.04em;}
+.foot-copy{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em;margin-top:24px;line-height:1.8;}
+.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s;}
+.flinks a:hover{color:#fff;}
+</style>
+</head>
+<body data-no-sec-ind>
+
+<!-- NAV -->
+<script src="nav.js"></script>
+
+<!-- HERO -->
+<div id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-fade"></div>
+  <div class="hero-center">
+    <h1 class="hero-title">AEGIS</h1>
+  </div>
+</div>
+
+<!-- 3NO -->
+<section class="sec" id="three-no" data-sec-label="EDGE">
+  <div class="three-no-stage">
+  <h2 class="sec-title" id="threeNoTitle" aria-label="NO CLOUD. NO LATENCY. NO RELAY.">
+    <span class="nw" aria-hidden="true"><span class="no-token"><span class="no-ink">NO</span></span> <span class="cloud-word">CLOUD.</span></span>
+    <span class="nw" aria-hidden="true"><span class="no-token"><span class="no-ink">NO</span></span> <span class="latency-word">LATENCY.</span></span>
+    <span class="nw" aria-hidden="true"><span class="no-token"><span class="no-ink">NO</span></span> <span class="relay-word"><span class="rw-space">RELAY.</span><span class="rw-stack"><span class="rw-ch rw-r">RELAY.</span><span class="rw-ch rw-g">RELAY.</span><span class="rw-ch rw-b">RELAY.</span></span></span></span>
+  </h2>
+  <p class="sec-desc fade-in">At the flashpoint, the slightest hesitation puts security to risk.</p>
+  </div>
+</section>
+
+<!-- FLOW: scroll-driven -->
+<section id="flow">
+  <div class="flow-sticky-wrap">
+    <div class="flow-sticky">
+
+      <!-- 왼쪽: 숫자 / 영상 -->
+      <div class="flow-left">
+        <video class="flow-vid" data-step="0" muted playsinline preload="auto">
+          <source src="../video/aegis_sense_v2.mp4" type="video/mp4">
+        </video>
+        <div class="flow-term" data-step="1" id="decideTerm" aria-hidden="true">
+          <div class="flow-term-log" id="decideLog"></div>
+          <div class="flow-term-fade"></div>
+        </div>
+        <iframe id="cmdMap" class="flow-cmd" src="aegis_command-raider.html" title="AEGIS Command" loading="lazy" aria-hidden="true"></iframe>
+        <div class="flow-num below" id="fn1">1</div>
+        <div class="flow-num below" id="fn2">2</div>
+        <div class="flow-num below" id="fn3">3</div>
+      </div>
+
+      <!-- 오른쪽: 카드 -->
+      <div class="flow-right">
+        <!-- SENSE -->
+        <div class="flow-card below" id="fc1" data-function="SENSE" aria-hidden="true">
+          <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
+          <h2 class="fc-name" aria-label="SENSE: Seeing Threats Clearly"><span class="fc-title-line" aria-hidden="true">Seeing Threats</span><span class="fc-title-line" aria-hidden="true">Clearly</span></h2>
+          <p class="fc-desc">Radar, EO/IR, and RF feeds unite to classify and track each contact.</p>
+        </div>
+        <!-- DECIDE -->
+        <div class="flow-card below" id="fc2" data-function="DECIDE" aria-hidden="true">
+          <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
+          <h2 class="fc-name" aria-label="DECIDE: Choosing the Right Response"><span class="fc-title-line" aria-hidden="true">Choosing the</span><span class="fc-title-line" aria-hidden="true">Right Response</span></h2>
+          <p class="fc-desc">On-device intelligence evaluates threats and selects a response within mission-defined rules.</p>
+        </div>
+        <!-- COMMAND -->
+        <div class="flow-card below" id="fc3" data-function="COMMAND" aria-hidden="true">
+          <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
+          <h2 class="fc-name" aria-label="COMMAND: Bringing Every Platform Together"><span class="fc-title-line" aria-hidden="true">Bringing Every</span><span class="fc-title-line" aria-hidden="true">Platform Together</span></h2>
+          <p class="fc-desc">Drones, vehicles, and fixed-site systems receive coordinated tasking under operator supervision.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOMAINS -->
+<section class="domain-sec" id="domains-cta" style="padding:0;">
+
+  <!-- 도메인 호버 영상 배경 -->
+  <div id="domain-video-bg">
+    <video id="dv-land" src="../video/land-loop.mp4" muted loop playsinline preload="metadata"></video>
+    <video id="dv-sea"  src="../video/sea-loop.mp4"  muted loop playsinline preload="metadata"></video>
+    <video id="dv-air"  src="../video/air-loop.mp4"  muted loop playsinline preload="metadata"></video>
+  </div>
+
+  <!-- 비디오 배경 레이어 -->
+  <!-- TODO: 실제 영상 삽입 시 각 <source src="..."> 경로를 교체할 것
+       - video/land-loop.mp4 : 차량/지상 운용 영상 (15초 내외 루프)
+       - video/sea-loop.mp4  : 호버크래프트/해상 영상
+       - video/air-loop.mp4  : 드론 비행/요격 영상
+       영상 스펙 권장: 1920x1080, H.264, 무음, 루프, 15초 이내 -->
+  <!-- 제목 -->
+  <div class="domains-head">
+    <h2 class="sec-title dt-pre" id="domainTitle"><span class="dt-p">AEGIS ACROSS </span><span class="dom-slot"><span class="dom-def">ALL THREE</span><span class="dom-hov"></span></span><span class="dt-p"> DOMAIN</span><span class="dom-s">S</span></h2>
+  </div>
+
+  <!-- 카드 -->
+  <div class="domain-links fade-in">
+    <a class="dl" href="ba_air.html" data-domain="air">
+      <span class="dl-name" data-text="Air">Air</span>
+      <span class="dl-description"><span class="dl-description-text">Stop hostile drones with interceptor drones and net launchers.</span></span>
+      <span class="dl-products">
+        <span>AEGIS Interceptor</span>
+        <span>AEGIS Spider</span>
+      </span>
+    </a>
+    <a class="dl" href="ba_land.html" data-domain="land">
+      <span class="dl-name" data-text="Land">Land</span>
+      <span class="dl-description"><span class="dl-description-text">Protect people and sites from hostile drones with counter-drone systems.</span></span>
+      <span class="dl-products">
+        <span>AEGIS C-UAS</span>
+        <span>AEGIS-V</span>
+        <span>AEGIS-F</span>
+        <span>AEGIS-B</span>
+      </span>
+    </a>
+    <a class="dl" href="ba_sea.html" data-domain="sea">
+      <span class="dl-name" data-text="Sea">Sea</span>
+      <span class="dl-description"><span class="dl-description-text">Patrol waters and respond to threats with autonomous hovercraft.</span></span>
+      <span class="dl-products">
+        <span>Autonomous Hovercraft</span>
+        <span>Autonomous Jetboat</span>
+        <span>Autonomous Airboat</span>
+      </span>
+    </a>
+  </div>
+
+</section>
+
+<!-- 협력사 로고 그리드 -->
+<section class="sec" id="partners" data-sec-label="PARTNERS">
+  <h2 class="sec-title decode">Technology Partners</h2>
+  <p class="partner-intro">AEGIS is built on a network of specialized technology partners powering classification, edge inference, and autonomous decision logic across every BA Solutions platform.</p>
+
+  <!-- 협력사 추가 방법: .lw-item 블록을 하나 복사해 로고 경로/tag/role만 바꾸면 됩니다.
+       빈 자리(placeholder)는 삭제하거나 실제 협력사로 교체하세요. -->
+  <div class="logo-wall fade-in">
+
+    <div class="lw-item">
+      <img class="lw-logo" src="../images/dde_logo.jpg" alt="Data Design Engineering">
+      <span class="lw-name">DATA<br>DESIGN<br> ENGINEERING</span>
+    </div>
+
+    <div class="lw-item">
+      <img class="lw-logo" src="../images/azak_logo.png" alt="AZAK">
+      <span class="lw-name">AZAK</span>
+    </div>
+
+    <div class="lw-item">
+      <img class="lw-logo is-seal" src="../images/djuniv_white.png" alt="Daejin University">
+      <span class="lw-name">DAEJIN<br>UNIVERSITY</span>
+    </div>
+
+    <div class="lw-item">
+      <img class="lw-logo is-mark" src="../images/krit_white.png" alt="KRIT — Korea Research Institute for Defense Technology Planning and Advancement">
+      <span class="lw-name">KRIT</span>
+    </div>
+
+    <div class="lw-item">
+      <img class="lw-logo is-wide" src="../images/ggd_white.png" alt="Gyeonggi Province">
+      <span class="lw-name">GYEONGGI<br>PROVINCE</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<script src="footer.js"></script>
+
+<script>
+/* ── HERO CANVAS - LIVING PULSE ── */
+(function(){
+  var cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
+  var W=0,H=0,DPR=Math.min(2,window.devicePixelRatio||1),cx,cy,N,gap;
+  function resize(){W=window.innerWidth;H=window.innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);cx=W/2;cy=H/2;
+    gap=Math.max(8,Math.min(12,H/78));N=Math.floor(H/gap)+2;}
+  window.addEventListener('resize',resize);
+  function heartbeat(tt){var P=3.5,ph=tt%P;var a=Math.exp(-Math.pow(ph/0.045,2));var b=0.65*Math.exp(-Math.pow((ph-0.17)/0.05,2));return a+b;}
+  var t=0;
+  function draw(){
+    t+=0.016;ctx.clearRect(0,0,W,H);
+    var breath=0.6+0.4*Math.sin(t*0.5);
+    var hbEnv=heartbeat(t);
+    var globalDrift=Math.sin(t*0.5)*6;
+    for(var i=0;i<N;i++){
+      var yb=i*gap - (H%gap)/2 + globalDrift;
+      var dc=Math.abs(yb-cy)/(H*0.5);
+      var focus=Math.exp(-dc*dc*0.85);
+      var amp=(1.2 + focus*6.0) * breath * (1 + hbEnv*1.4*focus);
+      var al=(0.06 + focus*0.20) * (0.8 + hbEnv*0.5*focus);
+      ctx.strokeStyle='rgba(240,237,232,'+Math.min(0.5,al)+')';
+      ctx.lineWidth=0.7;
+      ctx.beginPath();
+      var step=Math.max(4,W/300);
+      for(var x=0;x<=W;x+=step){
+        var nx=x/W;
+        var voice=Math.sin(nx*22 - t*2.4 + i*0.5)*0.5 + Math.sin(nx*47 + t*1.7 - i*0.3)*0.28;
+        var wave=Math.sin(nx*6.3 - t*1.1 + i*0.15);
+        var y=yb + (wave*0.7 + voice)*amp + hbEnv*Math.sin(nx*9 - t*6)*focus*4;
+        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    requestAnimationFrame(draw);
+  }
+  resize();requestAnimationFrame(draw);
+})();
+
+/* ── FLOW SCROLL TRIGGER ── */
+(function(){
+  const wrap  = document.getElementById('flow');
+  const nums  = [document.getElementById('fn1'), document.getElementById('fn2'), document.getElementById('fn3')];
+  const cards = [document.getElementById('fc1'), document.getElementById('fc2'), document.getElementById('fc3')];
+
+  // Reserve final glyph widths and line breaks before revealing each character.
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let copyFrame = 0, copyInView = false, currentCopyStep = 0;
+  const copyGlyphs = cards.map(card => {
+    const split = el => {
+      const fragment = document.createDocumentFragment();
+      const chars = Array.from(el.textContent, char => {
+        const span = document.createElement('span');
+        span.className = 'fc-char'; span.textContent = char;
+        fragment.appendChild(span); return span;
+      });
+      el.replaceChildren(fragment); return chars;
+    };
+    const label = split(card.querySelector('.fc-type-label'));
+    const title = Array.from(card.querySelectorAll('.fc-title-line')).flatMap(split);
+    card.classList.add('flow-type-ready');
+    return {label, title};
+  });
+  function resetCopy(){
+    cancelAnimationFrame(copyFrame);
+    cards.forEach((card, i) => {
+      card.classList.remove('is-typing', 'copy-done', 'cursor-blink');
+      [...copyGlyphs[i].label, ...copyGlyphs[i].title].forEach(el => el.style.visibility = '');
+    });
+  }
+  function playCopy(i){
+    resetCopy();
+    const card = cards[i], glyphs = copyGlyphs[i];
+    const reveal = (chars, progress) => {
+      const count = Math.floor(chars.length * Math.max(0, Math.min(1, progress)));
+      chars.forEach((el, index) => el.style.visibility = index < count ? 'visible' : 'hidden');
+    };
+    const finish = () => {
+      reveal(glyphs.label, 1); reveal(glyphs.title, 1);
+      const lastChar = glyphs.label[glyphs.label.length - 1];
+      card.querySelector('.fc-cursor').style.left = (lastChar ? lastChar.offsetLeft + lastChar.offsetWidth : 0) + 'px';
+      card.classList.remove('is-typing'); card.classList.add('copy-done');
+      if(!reducedMotion.matches) card.classList.add('cursor-blink');
+    };
+    if(reducedMotion.matches){finish();return;}
+    card.classList.add('is-typing');
+    const start = performance.now();
+    function frame(now){
+      if(reducedMotion.matches){finish();return;}
+      const elapsed = now - start;
+      reveal(glyphs.label, elapsed / 220);
+      const labelCount = Math.min(glyphs.label.length, Math.floor(glyphs.label.length * elapsed / 220));
+      const lastLabelChar = glyphs.label[labelCount - 1];
+      card.querySelector('.fc-cursor').style.left = (lastLabelChar ? lastLabelChar.offsetLeft + lastLabelChar.offsetWidth : 0) + 'px';
+      reveal(glyphs.title, (elapsed - 120) / 680);
+      if(elapsed < 800) copyFrame = requestAnimationFrame(frame);
+      else finish();
+    }
+    copyFrame = requestAnimationFrame(frame);
+  }
+  // 왼쪽 영상 영역이 화면에 전부 들어왔을 때만 타이핑 재생 (IO 비율 대신 픽셀 계산 — 모바일 100vh > innerHeight 대비)
+  const copyTarget = document.querySelector('.flow-left');
+  function checkCopyView(){
+    const r = copyTarget.getBoundingClientRect(), vh = window.innerHeight;
+    const visible = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    const full = r.height > 0 && visible >= Math.min(r.height, vh) - 1;
+    if(full === copyInView) return;
+    copyInView = full;
+    if(full) playCopy(currentCopyStep);
+    else resetCopy();
+  }
+
+  const vids  = Array.from(document.querySelectorAll('.flow-vid'));
+
+  /* ── DECIDE 터미널 스트림 ── */
+  const decideTerm = document.getElementById('decideTerm');
+  const decideLog  = document.getElementById('decideLog');
+  const TERM_LINES = [
+    [0,"AEGIS DECISION ENGINE v4.2.1 — INITIALIZING"],
+    [1,"loading kernel modules ............... OK"],
+    [1,"mounting threat_db.bin ............... OK"],
+    [1,"mounting terrain_map.bin ............. OK"],
+    [1,"mounting roe_ruleset.cfg ............. OK"],
+    [1,"calibrating clocks [PTP sync] ........ 0.3us drift"],
+    [1,"sensor_fusion: RADAR + EO/IR + RF + ESM .. ACTIVE"],
+    [1,"link16 datalink .................. CONNECTED"],
+    [-1,""],
+    [0,"ENV SNAPSHOT [SECTOR 7-DELTA]"],
+    [1,"terrain: ridge_E +142m | valley_N -38m"],
+    [1,"LOS map: 87% clear / 13% masked"],
+    [1,"wind: 6kt NW | vis: 9.2km | cloud: 4000ft"],
+    [1,"EMCON state: EMISSION_PERMITTED"],
+    [1,"GPS integrity: NOMINAL (RAIM ok)"],
+    [-1,""],
+    [0,"SCANNING AIRSPACE"],
+    [1,"raw tracks: 14  | after clutter filter: 6"],
+    [2,"TGT-01  brg:043 alt:85m  vel:22m/s  FIXED_WING  prio:LOW"],
+    [2,"TGT-02  brg:091 alt:210m vel:14m/s  ROTARY      prio:LOW"],
+    [2,"TGT-03  brg:127 alt:38m  vel:51m/s  FIXED_WING  prio:MED"],
+    [2,"TGT-04  brg:318 alt:120m vel:68m/s  UAS_SWARM   prio:!!!HIGH"],
+    [2,"TGT-05  brg:200 alt:400m vel:9m/s   COMM_RELAY  prio:LOW"],
+    [2,"TGT-06  brg:352 alt:55m  vel:31m/s  UNKNOWN     prio:MED"],
+    [-1,""],
+    [0,"THREAT PRIORITIZATION"],
+    [1,"scoring 6 contacts across 9 weighted axes"],
+    [2,"axis: velocity, closure, RCS, intent, swarm_density..."],
+    [1,"TGT-04 score: 0.91  <-- max"],
+    [1,"locking primary: TGT-04"],
+    [-1,""],
+    [0,"TGT-04 ANALYSIS [UAS_SWARM]"],
+    [1,"swarm members: 12  | formation: wedge"],
+    [1,"inter-element sep: 12m  | cohesion: 0.88"],
+    [1,"trajectory.predict() ......"],
+    [2,"heading 318 -> 141 (direct approach)"],
+    [2,"intercept window: T+0.4s ~ T+1.2s"],
+    [2,"P(hostile_intent): 0.97"],
+    [2,"P(collision_friendly): 0.00"],
+    [2,"closest_approach_to_asset: 210m @ T+1.6s"],
+    [-1,""],
+    [0,"ROE RULESET EVALUATION"],
+    [1,"rule[01] hostile_intent  > 0.70 ..... PASS (0.97)"],
+    [1,"rule[02] collateral <= 0.15 ......... PASS (0.02)"],
+    [1,"rule[03] engage_authority L3 ........ PASS"],
+    [1,"rule[04] weapon_free_zone ........... PASS"],
+    [1,"rule[05] dual_use_check ............. PASS"],
+    [1,"rule[06] PID_positive_id ............ PASS"],
+    [1,"rule[07] minimum_safe_distance ...... PASS"],
+    [1,"ROE STATUS: ......................... CLEARED"],
+    [-1,""],
+    [0,"EFFECTOR SELECTION"],
+    [1,"available: 3 effectors online"],
+    [2,"opt A  SOFT-KILL  RF-JAM     P:0.61  t:1.8s  cost:LOW"],
+    [2,"opt B  HARD-KILL  KE-SHOT    P:0.94  t:0.4s  cost:MED"],
+    [2,"opt C  HARD-KILL  NET-GUN    P:0.78  t:0.9s  cost:MED"],
+    [1,"utility = P(success) x speed x (1/cost)"],
+    [2,"opt A utility: 0.42"],
+    [2,"opt B utility: 0.88  <-- max"],
+    [2,"opt C utility: 0.59"],
+    [1,"SELECTED: opt B [KE-SHOT]"],
+    [-1,""],
+    [0,"FIRING SOLUTION"],
+    [1,"slewing effector to brg:318 el:+11 .... DONE"],
+    [1,"lead computed | ballistic table loaded"],
+    [1,"track quality: 0.99  | lock: STABLE"],
+    [1,"safety interlocks: ALL GREEN"],
+    [1,"T-minus: 0.4s"],
+    [1,"............................................"],
+    [0,"EXECUTE."]
+  ];
+  const TERM_PAD = ["> ", "    ", "        "];
+  function termEsc(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  // 키워드 색칠 — 원문 기준으로 [글자, 클래스] 조각을 만들고, 타이핑 중 보이는 글자 수만큼 잘라 그림
+  const TERM_COLORS = [
+    // 빨강은 판단 흐름의 세 지점에만 — 위협 등급(HIGH) → 적대 의도 확정 → 실행
+    ["!!!HIGH","t-red hi","HIGH"],
+    ["P(hostile_intent): 0.97","t-red"],
+    ["EXECUTE.","t-red"],
+    ["prio:MED","t-amber"],
+    ["UNKNOWN","t-amber"],
+    ["<-- max","t-amber"],
+    ["locking primary: TGT-04","t-amber"],
+    ["intercept window: T+0.4s ~ T+1.2s","t-amber"],
+    ["T-minus: 0.4s","t-amber"],
+    ["SELECTED: opt B [KE-SHOT]","t-amber"],
+    ["CONNECTED","t-blue"],
+    ["P(collision_friendly): 0.00","t-blue"],
+    ["SOFT-KILL","t-blue"],
+    ["ALL GREEN","t-green"],
+    ["CLEARED","t-green"],
+    ["PASS","t-green"],
+    ["ACTIVE","t-green"],
+    ["NOMINAL","t-green"],
+    ["STABLE","t-green"],
+    ["DONE","t-green"],
+    ["OK","t-green"]
+  ];
+  const TERM_COLOR_MAP = {};
+  const TERM_COLOR_RE = new RegExp(TERM_COLORS.map(function(c){
+    TERM_COLOR_MAP[c[0]] = c;
+    return c[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  }).join('|'),'g');
+  // 약한 색 — 뜻이 아닌 종류로 자동 분류해 모든 줄에 고르게 퍼지게 함. 강한 키워드가 먼저 잡고, 남은 글자에만 적용.
+  // 괄호 순서 = 우선순위: 식별자 → 분류명 → 항목명(xxx:) → 수치
+  const TERM_WEAK_RE = new RegExp([
+    "(TGT-\\d+|rule\\[\\d+\\]|opt [A-C]\\b|\\w+\\.(?:bin|cfg)|[\\w.]+\\(\\)|link16|SECTOR 7-DELTA|v\\d+(?:\\.\\d+)+)",
+    "\\b(FIXED_WING|ROTARY|COMM_RELAY|UAS_SWARM|HARD-KILL|RADAR|EO/IR|ESM|RF-JAM|RF|KE-SHOT|NET-GUN|PTP|RAIM|EMISSION_PERMITTED)\\b",
+    // 여러 단어 항목명(최대 3단어)은 줄 첫머리나 '| ' 뒤에서만, 한 단어는 어디서나
+    "((?<=^|\\| )[A-Za-z_][\\w-]*(?: [A-Za-z_][\\w-]*){0,2}:|(?<![\\w-])[A-Za-z_][\\w-]*:)",
+    "((?<![\\w.])(?:T[+-]|[+-])?\\d+(?:\\.\\d+)*(?:m/s|us|km|kt|ft|m|s|%)?(?!\\w))"
+  ].join('|'),'g');
+  const TERM_WEAK_CLS = ['','w-id','w-cls','w-key','w-num'];
+  function termSplit(s,re,pick,segs,fallback){
+    let last=0, m;
+    re.lastIndex=0;
+    while((m=re.exec(s))){
+      if(m.index>last)fallback(s.slice(last,m.index),segs);
+      segs.push(pick(m));
+      last=m.index+m[0].length;
+    }
+    if(last<s.length)fallback(s.slice(last),segs);
+  }
+  function termSegments(s){
+    const segs=[];
+    termSplit(s,TERM_COLOR_RE,function(m){
+      const c=TERM_COLOR_MAP[m[0]];
+      return [c[2]||m[0],c[1]];
+    },segs,function(plain,out){
+      termSplit(plain,TERM_WEAK_RE,function(w){
+        let g=1; while(!w[g])g++;
+        return [w[0],TERM_WEAK_CLS[g]];
+      },out,function(rest,o){o.push([rest,'']);});
+    });
+    return segs;
+  }
+  function termRender(segs,n){
+    let html='';
+    for(let k=0;k<segs.length&&n>0;k++){
+      const part=termEsc(segs[k][0].slice(0,n));
+      n-=segs[k][0].length;
+      html+=segs[k][1]?"<span class='"+segs[k][1]+"'>"+part+"</span>":part;
+    }
+    return html;
+  }
+
+  // 타이핑 타임라인 — 글자마다 표시 시각(ms)을 미리 계산.
+  // 같은 모양이 반복되는 줄(2번째부터)은 빠르게, '....' 리더·'<--' 뒤 결과값은 잠깐 멈췄다가 표시.
+  // 합계는 EXECUTE까지 약 3.87s — 기존 줄 단위 출력(3.90s)보다 늦지 않게 맞춘 값
+  const TERM_TYPE = {
+    ch:1.2,        // 일반 글자 ms
+    rep:0.35,      // 반복 줄 글자 ms
+    dot:0.2,       // 리더 점 ms
+    result:80,     // 결과값 전 대기
+    repResult:30,  // 반복 줄의 결과값 전 대기
+    hd:20,         // 제목 줄 뒤 대기
+    gap:20,        // 빈 줄
+    exec:90,       // EXECUTE 전 대기
+    execCh:20      // EXECUTE 글자 ms
+  };
+  const TERM_GROUPS = ["mounting ","TGT-0","rule[","opt ","P("];
+  function termGroup(s){
+    for(let k=0;k<TERM_GROUPS.length;k++)if(s.indexOf(TERM_GROUPS[k])===0)return TERM_GROUPS[k];
+    return null;
+  }
+  function termPlan(lvl,text,prev){
+    const at=[]; let t=0;
+    if(lvl===-1)return {at:at,dur:TERM_TYPE.gap};
+    const exec=text.indexOf("EXECUTE")===0;
+    const g=termGroup(text), rep=!!g&&prev!==null&&termGroup(prev)===g;
+    const ch=exec?TERM_TYPE.execCh:(rep?TERM_TYPE.rep:TERM_TYPE.ch);
+    const wait=rep?TERM_TYPE.repResult:TERM_TYPE.result;
+    if(exec)t+=TERM_TYPE.exec;
+    else if(/^(TGT-04 score|SELECTED:)/.test(text))t+=wait;
+    const m=text.match(/^(.*?)( ?\.{2,} ?| +<-- )(.*)$/);
+    const pre=m?m[1].length:text.length, lead=m?m[2].length:0;
+    for(let k=0;k<text.length;k++){
+      if(k<pre)t+=ch;
+      else if(k<pre+lead)t+=TERM_TYPE.dot;
+      else{ if(k===pre+lead)t+=wait; t+=ch; }
+      at.push(t);
+    }
+    if(m&&!m[3])t+=wait;
+    if(lvl===0)t+=TERM_TYPE.hd;
+    return {at:at,dur:t};
+  }
+  // 줄마다 시작 시각·글자 시각·색 조각을 한 번만 계산
+  const TERM_TIMELINE=(function(){
+    const out=[]; let t0=0, prev=null;
+    TERM_LINES.forEach(function(row){
+      const lvl=row[0], raw=row[1];
+      const text=raw.replace("!!!HIGH","HIGH");
+      const p=termPlan(lvl,text,prev);
+      out.push({lvl:lvl, raw:raw, start:t0, at:p.at,
+        pad:(lvl===0)?TERM_PAD[0]:(TERM_PAD[lvl]||''), segs:termSegments(raw)});
+      t0+=p.dur;
+      if(lvl!==-1)prev=text;
+    });
+    return out;
+  })();
+  function termClass(lvl,raw){
+    if(lvl===-1)return 'gap';
+    if(lvl===0)return (raw.indexOf("EXECUTE")>-1)?'go':'hd';
+    if(raw.indexOf("CLEARED")>-1||raw.indexOf("SELECTED:")>-1)return 'br';
+    if(raw.indexOf("-- max")>-1||raw.indexOf("PASS")>-1)return 'dim';
+    return '';
+  }
+  const TERM_CURSOR="<span class='t-cur'>_</span>";
+  let termTimer=null, termPlayed=false;
+  function termPlay(){
+    termStop();
+    decideLog.innerHTML='';
+    const t0=performance.now();
+    let i=0, cur=null, curShown=-1;
+    function frame(now){
+      const el=now-t0;
+      // 이번 프레임까지 시작된 줄을 모두 처리 (빠른 줄은 한 프레임에 여러 줄이 끝날 수 있음)
+      while(i<TERM_TIMELINE.length&&TERM_TIMELINE[i].start<=el){
+        const L=TERM_TIMELINE[i];
+        if(cur)cur.div.innerHTML=cur.L.lvl===-1?"&nbsp;":cur.L.pad+termRender(cur.L.segs,cur.L.at.length);
+        const div=document.createElement('div');
+        div.className='flow-term-line '+termClass(L.lvl,L.raw);
+        div.innerHTML="&nbsp;";
+        decideLog.insertBefore(div,decideLog.firstChild);
+        if(decideLog.children.length>44)decideLog.removeChild(decideLog.lastChild);
+        cur={div:div,L:L}; curShown=-1; i++;
+      }
+      if(cur&&cur.L.lvl!==-1){
+        const L=cur.L, t=el-L.start;
+        let n=0; while(n<L.at.length&&L.at[n]<=t)n++;
+        const done=i>=TERM_TIMELINE.length&&n>=L.at.length;
+        if(n!==curShown||done){
+          curShown=n;
+          cur.div.innerHTML=L.pad+termRender(L.segs,n)+TERM_CURSOR;
+        }
+        if(done){cur.div.classList.add('done');termPlayed=true;termTimer=null;return;}
+      }
+      termTimer=requestAnimationFrame(frame);
+    }
+    termTimer=requestAnimationFrame(frame);
+  }
+  function termStop(){
+    if(termTimer){cancelAnimationFrame(termTimer);termTimer=null;}
+  }
+
+  function setStep(i) {
+    currentCopyStep = i;
+    resetCopy();
+    if(copyInView) playCopy(i);
+    nums.forEach((n, j) => {
+      n.classList.remove('active','above','below');
+      if (j === i)      n.classList.add('active');
+      else if (j < i)   n.classList.add('above');
+      else              n.classList.add('below');
+      // 영상이 나오는 칸의 숫자는 완전히 숨김
+      n.style.display = (j === i) ? 'none' : '';
+    });
+    cards.forEach((c, j) => {
+      c.setAttribute('aria-hidden', String(j !== i));
+      c.classList.remove('active','above','below');
+      if (j === i)      c.classList.add('active');
+      else if (j < i)   c.classList.add('above');
+      else              c.classList.add('below');
+    });
+    // 영상 재생 제어 (data-step 기준)
+    vids.forEach((v) => {
+      const j = parseInt(v.dataset.step, 10);
+      if (j === i) {
+        v.classList.add('show');
+        v.currentTime = 0;
+        const p = v.play();
+        if (p) p.catch(()=>{});
+      } else {
+        v.classList.remove('show');
+        v.pause();
+      }
+    });
+    var _cm=document.getElementById('cmdMap');if(_cm){_cm.classList.toggle('show', i===2);if(i===2){try{_cm.contentWindow&&_cm.contentWindow.__aegisReset&&_cm.contentWindow.__aegisReset();}catch(e){}}}
+    // DECIDE(1) 터미널 제어
+    if (i === 1) {
+      decideTerm.classList.add('show');
+      if (!termPlayed) termPlay();
+    } else {
+      decideTerm.classList.remove('show');
+      termStop();
+      termPlayed = false;
+    }
+  }
+
+  let lastStep = -1;
+  function onScroll() {
+    const rect  = wrap.getBoundingClientRect();
+    const total = wrap.offsetHeight - window.innerHeight;
+    if (total <= 0) return;
+    const prog  = Math.max(0, Math.min(1, -rect.top / total));
+    const step  = Math.min(2, Math.floor(prog * 3));
+    if (step !== lastStep) { lastStep = step; setStep(step); }
+    checkCopyView();
+  }
+
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+  window.addEventListener('resize', onScroll, {passive:true});
+})();
+
+/* ── DOMAIN VIDEO HOVER (3D 극장으로 대체 → 비활성) ── */
+(function(){
+  if(!document.getElementById('dv-land')) return;
+  const videos = {
+    land: document.getElementById('dv-land'),
+    sea:  document.getElementById('dv-sea'),
+    air:  document.getElementById('dv-air'),
+  };
+
+  /* 초기 스타일 명시적으로 설정 */
+  Object.values(videos).forEach(v => {
+    v.style.opacity = '0';
+    v.style.transition = 'opacity 1.2s ease';   /* 영상 페이드 — CSS와 동일 값 유지 */
+    v.muted = true;
+  });
+
+  const cards = document.querySelectorAll('.dl[data-domain]');
+  let active = null;
+  let fadeTimer = null;
+  let pauseTimers = {};
+
+  function showVideo(key) {
+    /* 해당 영상의 예약된 pause 취소 */
+    if (pauseTimers[key]) { clearTimeout(pauseTimers[key]); pauseTimers[key] = null; }
+
+    /* 다른 영상 숨기기 */
+    Object.entries(videos).forEach(([k, v]) => {
+      if (k !== key) {
+        v.style.opacity = '0';
+        if (pauseTimers[k]) { clearTimeout(pauseTimers[k]); }
+        pauseTimers[k] = setTimeout(() => { try { v.pause(); } catch(e){} }, 1200);
+      }
+    });
+
+    active = key;
+    const vid = videos[key];
+    if (!vid) return;
+
+    vid.muted = true;
+    vid.currentTime = 0;
+    vid.play().catch(() => {});
+    vid.style.opacity = '1';
+  }
+
+  function hideAll() {
+    Object.entries(videos).forEach(([k, v]) => {
+      v.style.opacity = '0';
+      if (pauseTimers[k]) { clearTimeout(pauseTimers[k]); }
+      pauseTimers[k] = setTimeout(() => { try { v.pause(); } catch(e){} }, 1200);
+    });
+    active = null;
+  }
+
+  cards.forEach(card => {
+    card.addEventListener('mouseenter', () => { clearTimeout(fadeTimer); showVideo(card.dataset.domain); });
+    card.addEventListener('mouseleave', () => { clearTimeout(fadeTimer); fadeTimer = setTimeout(hideAll, 60); }); // 카드 벗어나면 해제
+  });
+})();
+
+/* ── 3NO: word entrance, then a deeper scroll reveals NO. ── */
+(function(){
+  const section=document.getElementById('three-no');
+  const title=document.getElementById('threeNoTitle');
+  const word=section.querySelector('.latency-word');
+  const desc=section.querySelector('.sec-desc');
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  // v51: 이 섹션의 .decode 요소가 사라져 decode 옵저버의 fade-in 폴백이 없음 → 직접 켠다.
+  if(reduced.matches){desc.classList.add('visible');return;}
+  section.classList.add('motion-ready');
+  const noStep=480; // .no-token 와이프 길이(CSS 480ms)와 맞춤
+  section.querySelectorAll('.no-token').forEach((token,i)=>token.style.setProperty('--no-delay',(i*noStep)+'ms'));
+  word.innerHTML='<span class="latency-space">LATENCY.</span><span class="latency-live"><span class="latency-letters"></span><span class="latency-cursor">_</span></span>';
+  const letters=word.querySelector('.latency-letters');
+  const cursor=word.querySelector('.latency-cursor');
+  let started=false, released=false, queued=false;
+  const timers=[];
+  const typingTimers=[];
+  function later(fn,ms){timers.push(setTimeout(fn,ms));}
+  function startTyping(){
+    if(started)return;
+    started=true;
+    section.classList.add('words-start');
+    letters.textContent='L';
+    const typingInterval=2470/3; // E의 마지막 입력 시점(2470ms)을 세 간격으로 균등 분배.
+    ['LA','LAT','LATE'].forEach((text,i)=>{
+      typingTimers.push(setTimeout(()=>letters.textContent=text,(i+1)*typingInterval));
+    });
+  }
+  function release(){
+    // 무대 고정 후 화면 높이의 30%를 더 스크롤해야 NO 시작 (섹션 210vh → 고정 구간 약 110vh).
+    if(released||section.getBoundingClientRect().top>-innerHeight*.3)return;
+    released=true;
+    startTyping();
+    section.classList.add('no-start');
+    // Each NO finishes its wipe before the next starts; sync each word to its own reveal.
+    later(()=>section.classList.add('cloud-clear'),noStep/2);
+    // CLOUD의 NO 동안 지연 입력을 유지하고, LATENCY의 NO 시작 시에만 전환.
+    later(()=>typingTimers.forEach(clearTimeout),noStep);
+    later(()=>{
+      const full='LATENCY.';
+      const entered=letters.textContent.length;
+      for(let length=entered+1;length<=full.length;length++){
+        later(()=>{
+          letters.textContent=full.slice(0,length);
+          if(length===full.length)cursor.style.display='none';
+        },(length-entered-1)*45);
+      }
+    },noStep*1.5);
+    // 설명은 세 번째 NO 와이프가 끝난 뒤 등장 (decode 옵저버는 motion-ready 동안 이 섹션 fade-in을 건너뜀).
+    // 세 번째 NO 잉크가 드러나는 시점에 색수차 수렴 시작(CLOUD 해제와 같은 구조).
+    later(()=>section.classList.add('relay-focus'),noStep*2.5);
+    later(()=>desc.classList.add('visible'),noStep*3);
+    window.removeEventListener('scroll',schedule);
+    window.removeEventListener('resize',schedule);
+  }
+  function check(){
+    queued=false;
+    const rect=title.getBoundingClientRect();
+    if(!started&&rect.top<innerHeight*.9&&rect.bottom>0){
+      startTyping();
+    }
+    release();
+  }
+  function schedule(){if(!queued){queued=true;requestAnimationFrame(check);}}
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule);
+  window.addEventListener('load',schedule,{once:true});
+  reduced.addEventListener('change',()=>{
+    if(!reduced.matches)return;
+    timers.forEach(clearTimeout);
+    typingTimers.forEach(clearTimeout);
+    released=true;
+    section.classList.remove('motion-ready','no-start');
+    word.textContent='LATENCY.';
+    desc.classList.add('visible');
+    window.removeEventListener('scroll',schedule);
+    window.removeEventListener('resize',schedule);
+  });
+  check();
+})();
+
+/* ── DECODE + FADE-IN ── */
+(function(){
+  /* ba_air.html 과 동일한 문자셋 — # & 포함 */
+  const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
+  const INTERVAL=30;
+  function decode(el, onDone, totalMs){
+    const TOTAL_MS=totalMs||500, TOTAL_FRAMES=Math.floor(TOTAL_MS/INTERVAL);
+    const orig=el.textContent.trim(), len=orig.length;
+    const done=Array(len).fill(false); let f=0, revealed=0;
+    const revealStart=Math.floor(TOTAL_FRAMES*.25);
+    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    const nsIdx=[]; for(let i=0;i<len;i++) if(orig[i]!==' ') nsIdx.push(i);
+    const preCount=Math.floor(nsIdx.length/2);
+    for(let i=0;i<preCount;i++) done[nsIdx[i]]=true;
+    const remain=nsIdx.length-preCount;
+    const perFrame=Math.max(1,remain/(TOTAL_FRAMES-revealStart));
+    function tick(){
+      let out='';
+      for(let i=0;i<len;i++){ if(orig[i]===' '){out+=' ';continue;} if(done[i]){out+=orig[i];continue;} out+=CHARS[Math.floor(Math.random()*CHARS.length)]; }
+      el.textContent=out;
+      if(f>=revealStart){ let tr=Math.floor((f-revealStart+1)*perFrame)-revealed; for(let j=0;j<len&&tr>0;j++){if(!done[j]&&orig[j]!==' '){done[j]=true;revealed++;tr--;}} }
+      f++;
+      const all=done.every((d,i)=>d||orig[i]===' ');
+      if(!all&&f<TOTAL_FRAMES+5) setTimeout(tick,INTERVAL);
+      else { el.textContent=orig; if(onDone)onDone(); }
+    }
+    tick();
+  }
+  function typeThenDecode(el, onDone){
+    // 시간 기반 단일 패스 + 최종 레이아웃 고정(미등장 글자는 최종 글자를 투명 처리해 폭/줄바꿈 예약)
+    el.classList.add('visible');
+    const spans=Array.prototype.slice.call(el.querySelectorAll('.nw'));
+    const wrap=spans.length>0;
+    const phrases=wrap?spans.map(function(s){return s.textContent.trim();}):[el.textContent.trim()];
+    const full=phrases.join(' '), len=full.length, scr=3, DUR=520;
+    function esc(c){return c==='<'?'&lt;':(c==='>'?'&gt;':(c==='&'?'&amp;':c));}
+    function finalHTML(){return phrases.map(function(ph){return '<span class="nw">'+ph.replace(/</g,'&lt;')+'</span>';}).join(' ');}
+    let start=null;
+    function frame(ts){
+      if(start===null) start=ts;
+      const p=Math.min(1,(ts-start)/DUR);
+      const rev=Math.floor(p*(len+scr));
+      var html='', gk=0;
+      for(var pi=0;pi<phrases.length;pi++){
+        var ph=phrases[pi];
+        html+='<span class="nw">';
+        for(var j=0;j<ph.length;j++,gk++){
+          var fc=ph.charAt(j);
+          if(fc===' '){ html+='<span> </span>'; continue; }
+          if(gk<rev-scr) html+='<span>'+esc(fc)+'</span>';                                     // 확정
+          else if(gk<rev) html+='<span>'+CHARS.charAt(Math.random()*CHARS.length|0)+'</span>'; // 스크램블(가시)
+          else html+='<span class="inv">'+esc(fc)+'</span>';                                   // 미등장(최종폭 예약·투명)
+        }
+        html+='</span>';
+        if(pi<phrases.length-1){ html+=' '; gk++; }   // 구절 사이 공백(전역 인덱스 소비)
+      }
+      el.innerHTML=html;
+      if(p<1) requestAnimationFrame(frame);
+      else { el.innerHTML=finalHTML(); if(onDone)onDone(); }
+    }
+    requestAnimationFrame(frame);
+  }
+  function triggerDecode(el){
+    if(el.dataset.decoded) return;              // 중복 방지
+    el.dataset.decoded='1';
+    obs.unobserve(el);
+    el.classList.add('visible');
+    const sec=el.closest('section')||el.closest('#cta');
+    // 3NO 모션 중에는 설명 fade-in을 3NO 스크립트가 NO 와이프 종료 후 직접 켬
+    const fadeEls=(sec&&!sec.classList.contains('motion-ready'))?sec.querySelectorAll('.fade-in'):[];
+    const run=(el.id==='heroDecode')?typeThenDecode:decode;
+    run(el,()=>{ fadeEls.forEach((fe,i)=>setTimeout(()=>fe.classList.add('visible'),i*120)); });  // ba_air 과 동일 간격
+  }
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{ if(entry.isIntersecting) triggerDecode(entry.target); });
+  },{threshold:0, rootMargin:'0px 0px -5% 0px'});
+  document.querySelectorAll('.decode').forEach(el=>obs.observe(el));
+  // 새로고침 시 스크롤 복원으로 이미 화면에 보이는 요소는 로드 후 강제 트리거
+  function decodeCheckInView(){
+    document.querySelectorAll('.decode').forEach(el=>{
+      if(el.dataset.decoded) return;
+      const r=el.getBoundingClientRect();
+      if(r.top < window.innerHeight && r.bottom > 0) triggerDecode(el);
+    });
+  }
+  window.addEventListener('load', ()=>setTimeout(decodeCheckInView, 80));
+  setTimeout(decodeCheckInView, 400);           // 스크롤 복원이 늦는 경우 대비
+})();
+</script>
+<script>
+/* ── DOMAINS 타이틀/카드 인터랙션 ── */
+(function(){
+  var title=document.getElementById('domainTitle'); if(!title) return;
+  var hov=title.querySelector('.dom-hov');
+  var links=document.querySelector('.domain-links');
+  var section=document.getElementById('domains-cta');
+  var cards=document.querySelectorAll('.dl[data-domain]');
+  var NAME={land:'LAND',sea:'SEA',air:'AIR'};
+  var CH='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var hovRAF=null, revealT=null;
+  var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  var transAY=420;   // 도메인 박스 채움 완료 후 디코드와 S 와이프 시작
+  function decodeHov(text){
+    if(hovRAF)cancelAnimationFrame(hovRAF);
+    var len=text.length, start=null;
+    function fr(ts){ if(start===null)start=ts; var p=Math.min(1,(ts-start)/380), rev=Math.floor(p*(len+2));
+      var out=''; for(var k=0;k<len;k++){ if(k<rev-2)out+=text.charAt(k); else if(k<rev)out+=CH.charAt(Math.random()*CH.length|0); else out+=''; }
+      hov.textContent=out; if(p<1)hovRAF=requestAnimationFrame(fr); else {hov.textContent=text; hovRAF=null;} }
+    hovRAF=requestAnimationFrame(fr);
+  }
+  function enter(key){
+    clearTimeout(revealT);
+    if(hovRAF){cancelAnimationFrame(hovRAF);hovRAF=null;}
+    title.classList.remove('dt-hover','dt-reveal','dt-s-return');
+    hov.textContent='';
+    void title.offsetWidth;                         // 카드 전환 시 와이프를 처음부터 재생
+    title.classList.add('dt-hover','dt-singular');    // S 효과는 카드 전환 중에도 유지
+    var text=NAME[key]||key.toUpperCase();
+    if(reducedMotion.matches){
+      title.classList.add('dt-reveal');
+      hov.textContent=text;
+      return;
+    }
+    revealT=setTimeout(function(){                    // 흰 박스 위에 검정 디코드 표시
+      title.classList.add('dt-reveal');
+      decodeHov(text);
+    }, transAY);
+  }
+  function leave(){
+    clearTimeout(revealT);
+    if(hovRAF){cancelAnimationFrame(hovRAF);hovRAF=null;}
+    title.classList.remove('dt-hover','dt-singular');
+    title.classList.remove('dt-reveal');
+    title.classList.add('dt-s-return');             // 박스가 S를 덮은 시점에 복원하고 오른쪽으로 걷어냄
+  }
+  var lt=null;
+  cards.forEach(function(c){
+    c.addEventListener('mouseenter',function(){ if(lt)clearTimeout(lt); enter(c.dataset.domain); });
+    c.addEventListener('mouseleave',function(){ if(lt)clearTimeout(lt); lt=setTimeout(leave,60); }); // 카드 벗어나면 해제(다른 카드 진입 시 취소)
+  });
+
+  // 스크롤 진입 시 타이틀 디코드(조각 스팬 구조 유지) + 카드 페이드인
+  var spans=Array.prototype.slice.call(title.querySelectorAll('.dt-p, .dom-def, .dom-s'));
+  var texts=spans.map(function(s){return s.textContent;});
+  var done=false;
+  function scrollDecode(){
+    if(done)return; done=true; title.classList.remove('dt-pre');
+    if(links)links.classList.add('visible');
+    var full=texts.join(''), len=full.length, start=null;
+    function fr(ts){ if(start===null)start=ts; var p=Math.min(1,(ts-start)/620), rev=Math.floor(p*(len+3)), gk=0;
+      for(var i=0;i<spans.length;i++){ var t=texts[i], seg='';
+        for(var j=0;j<t.length;j++,gk++){ var c=t.charAt(j); if(c===' '){seg+=c;continue;} if(gk<rev-3)seg+=c; else if(gk<rev)seg+=CH.charAt(Math.random()*CH.length|0); else seg+=''; }
+        spans[i].textContent=seg; }
+      if(p<1)requestAnimationFrame(fr); else { for(var m=0;m<spans.length;m++)spans[m].textContent=texts[m]; } }
+    requestAnimationFrame(fr);
+  }
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ scrollDecode(); io.disconnect(); } }); },{threshold:0, rootMargin:'0px 0px -5% 0px'});
+  io.observe(title);
+  setTimeout(function(){ var r=title.getBoundingClientRect(); if(!done && r.top<window.innerHeight && r.bottom>0) scrollDecode(); }, 400);
+})();
+</script>
+<script>
+// Fit the complete description into a box matching the domain title height.
+(function(){
+  var descriptions=document.querySelectorAll('.dl-description');
+  function fitDescriptions(){
+    descriptions.forEach(function(description){
+      description.style.fontSize='';
+      var size=parseFloat(getComputedStyle(description).fontSize);
+      while(size>1 && (description.scrollHeight>description.clientHeight || description.scrollWidth>description.clientWidth)){
+        size-=0.25;
+        description.style.fontSize=size+'px';
+      }
+      var products=description.parentElement.querySelector('.dl-products');
+      if(products)products.style.fontSize=getComputedStyle(description).fontSize;
+    });
+  }
+  var observer=new ResizeObserver(fitDescriptions);
+  descriptions.forEach(function(description){ observer.observe(description); });
+  document.fonts.ready.then(fitDescriptions);
+})();
+</script>
+</body>
+</html>

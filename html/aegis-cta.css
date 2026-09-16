@@ -1,0 +1,40 @@
+/* ===================================================================
+   BA SOLUTIONS — AEGIS 섹션 CTA 블록 공용 스타일
+
+   사용 페이지: ba_air.html / ba_land.html / ba_sea.html
+   각 페이지 <head> 에서 자체 <style> 보다 **먼저** 로드할 것.
+     <link rel="stylesheet" href="aegis-cta.css">
+   페이지가 이 규칙을 덮어써야 할 때 뒤에 오는 <style> 이 이기도록 하기 위함.
+
+   2026-09-14: .aegis-cta-head / .aegis-cta-btn 자간 0 (Helvetica 텍스트 자간 통일).
+   기준은 ba_air.html (2026-09-10 통일). 이 파일 하나만 고치면
+   세 페이지의 CTA 블록이 함께 바뀝니다.
+
+   여기에 두지 않는 것 — 페이지마다 값이 달라 각 파일에 남아 있음:
+     .sec.aegis-sec        배경(air=terrain / land·sea=#BCB489)·padding
+     .aegis-sec .sec-title 색상(air=#f0ede8 / land·sea=#000000)
+     .aegis-sec .sec-desc  색상
+     .aegis-terrain 계열   air 전용 배경 영상 레이어
+     :root 토큰            --bg / --line / --pad (아래 var() 가 참조)
+   =================================================================== */
+
+.aegis-cta-tag {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* ── AEGIS CTA (기본=어두움 / 호버시에만 흰색 반전, 풀블리드=창 끝까지, 초고중량 서체) ── */
+/* width:100vw + margin:calc(50% - 50vw) → 섹션 좌우 패딩을 무시하고 창 양끝까지 확장 */
+.aegis-cta-block{margin-top:48px;width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);position:relative;overflow:hidden;background:var(--bg);border-top:0.5px solid var(--line);border-bottom:none;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:56px var(--pad) 0px var(--pad);transition:background .4s ease,border-color .4s ease;}
+.aegis-cta-text{transform: translateY(-40px);position:relative;z-index:1;width:100%;}
+/* aegis-cta-tag 바로 아래 얇은 선: 텍스트 시작~오른쪽 끝까지 (기본 배경이 검정이라 호버(흰 배경) 시 보임) */
+.aegis-cta-rule{width:100%;height:2px;background:#f0ede8;margin:0 0 22px;}
+.aegis-cta-tag{transform: translateY(15px);display:block;font-size:20px;letter-spacing:.3em;color:#f0ede8;margin-bottom:20px;font-weight:400;transition:color .4s ease;}
+.aegis-cta-head{font-size:34px;line-height:1.05;color:#f0ede8;font-weight:500;letter-spacing:0;-webkit-text-stroke:1.4px #f0ede8;transition:color .4s ease,-webkit-text-stroke-color .4s ease;}
+.aegis-cta-btn{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;margin-top:28px;font-size:11px;letter-spacing:0;color:#f0ede8;font-weight:700;background:transparent;border:1px solid rgba(255,255,255,.4);padding:16px 30px;text-decoration:none;white-space:nowrap;transition:all .3s;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;}
+/* 호버: 박스 전체가 흰색으로 반전 */
+.aegis-cta-block:hover{background:#f0ede8;border-color:transparent;}
+.aegis-cta-block:hover .aegis-cta-tag{color:rgba(0,0,0,.5);}
+.aegis-cta-block:hover .aegis-cta-rule{background:rgba(0,0,0,.5);}
+.aegis-cta-block:hover .aegis-cta-head{color:#000;-webkit-text-stroke-color:#000;}
+.aegis-cta-block:hover .aegis-cta-btn{color:#000;border-color:rgba(0,0,0,.5);}
+@media(max-width:640px){.aegis-cta-head{font-size:22px;-webkit-text-stroke:1px #f0ede8;}.aegis-cta-block{padding:40px var(--pad) 28px var(--pad);}}

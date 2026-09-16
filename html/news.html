@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<!-- news.html — v13 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
+<!-- news.html — v12 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: Homepage/반응형_단위가이드.md -->
+<!-- news.html — v11 (2026-09-09): 미사용 코드 제거 — .page-eyebrow(2곳 중복) / .search-input -->
+<!-- news.html — v9 (2026-09-03): 미사용 CSS 제거 (3블록/3줄) — .nav-logo, .fl, #ba-nav .nav-logo -->
+<!-- news.html — v8 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
+<!-- news.html — v9 (2026-09-04): 토글 버튼 선택자 변경 (#ba-nav .nav-toggle → #ba-toggle, nav.js v11 대응) -->
+<!-- news.html — v8 (2026-09-04): 우측 드로어 전환에 맞춰 스크림/패널 배경 분리 (nav.js v10 대응) -->
+<!-- news.html — v7 (2026-09-04): 햄버거 메뉴·전체화면 오버레이 밝은 테마 오버라이드 추가 (nav.js v9 대응) -->
+<!-- news.html — v6 (2026-09-02): 메뉴바 하단 구분선 제거 + 배경 불투명 처리(#fff) -->
+<!--   구분선을 없애자 rgba(255,255,255,.95) 의 5% 투명도로 스크롤 콘텐츠가 -->
+<!--   메뉴바를 비쳐 보이는 현상이 드러나 배경을 불투명으로 바꿈 -->
+<!-- news.html — v5 (2026-09-02): 메뉴바 ABOUT US 테두리 박스 제거 — 다른 메뉴 항목과 같은 텍스트 링크로 통일 -->
+<!-- news.html — v4 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #ffffff + color-scheme light -->
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<title>BA Solutions - News and Insight</title>
+<style>
+
+/*page eyebrow 서체 */
+
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --u:calc(min(100vw, 1440px) / 1440);   /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+  --bg:#ffffff;
+  --bg2:#f2f2f2;
+  --ink:#111;
+  --ink2:#555;
+  --ink3:#999;
+  --line:#d4d0ca;
+  --dark:#111;
+  --dark2:#1a1a1a;
+  --pad:max(20px, calc(60 * var(--u)))
+}
+body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(6,6,8,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(240,237,232,.08);}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.75);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
+.nav-about{background:transparent;border:0.5px solid rgba(240,237,232,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
+.nav-about:hover{background:#fff;color:#000;}
+/* HEADER */
+#page-header{padding:220px var(--pad) 56px;border-bottom:none;}
+#page-header h1{font-size:max(36px, calc(68 * var(--u)));font-weight:700;letter-spacing:-.01em;line-height:1.05;color:var(--ink);}
+
+/* SEARCH */
+#search-bar{background:#f0f0f0;padding:18px var(--pad);display:flex;align-items:center;}
+.search-inner{display:flex;align-items:center;gap:14px;border:1px solid #111;flex:1;padding:14px 18px;}
+.search-icon{width:16px;height:16px;flex-shrink:0;}
+.search-icon svg{width:16px;height:16px;stroke:#111;fill:none;stroke-width:1.8;}
+#search-input{background:#f0f0f0;border:none;outline:none;font-size:10px;letter-spacing:.15em;color:#111;width:100%;font-family:'Michroma', 'Helvetica Neue', Helvetica, sans-serif;padding:0;}
+#search-input::placeholder{color:#888;letter-spacing:.2em;}
+
+/* NEWS LIST */
+#news-list{padding:0 var(--pad);}
+.news-item{display:grid;grid-template-columns:1fr auto;align-items:start;padding:36px 0;border-bottom:0.5px solid var(--line);gap:40px;transition:background .2s;cursor:default;}
+.news-item:hover{background:rgba(0,0,0,.02);}
+.news-item:hover .news-title{text-decoration:underline;text-underline-offset:3px;}
+.ni-tag{font-size:10px;letter-spacing:0;color:var(--ink3);display:block;margin-bottom:10px;}
+.news-title{font-size:max(16px, calc(22 * var(--u)));font-weight:600;line-height:1.3;color:var(--ink);margin-bottom:10px;letter-spacing:-.01em;}
+.news-date{font-size:11px;color:var(--ink3);letter-spacing:0;}
+.ni-right{display:flex;align-items:center;padding-top:6px;}
+.read-more-btn{font-size:9px;letter-spacing:0;color:var(--ink);border:0.5px solid rgba(0,0,0,.3);padding:8px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all .3s;white-space:nowrap;}
+.read-more-btn:hover{background:var(--ink);color:#f0ede8;}
+.read-more-btn .arr{font-size:11px;}
+
+/* FEATURED NEWS ITEM (with image) */
+.news-item.featured{grid-template-columns:480px 1fr auto;padding:48px 0;gap:48px;}
+.ni-image{width:480px;height:280px;overflow:hidden;background:var(--bg2);}
+.ni-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease;}
+.news-item.featured:hover .ni-image img{transform:scale(1.03);}
+.news-item.featured .ni-left{display:flex;flex-direction:column;justify-content:center;height:280px;}
+.news-item.featured .news-title{font-size:max(20px, calc(28 * var(--u)));margin-bottom:14px;}
+.news-item.featured .ni-right{align-items:center;height:280px;}
+.news-item.row{grid-template-columns:120px 1fr;gap:28px;align-items:center;padding:28px 0;}
+.ni-thumb{width:120px;height:80px;flex-shrink:0;overflow:hidden;background:var(--bg2);}
+.ni-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+
+/* 반응형: 860px 이하에서 대문 기사는 사진 위, 글 아래로 세로 스택 */
+@media (max-width:860px){
+  .news-item.featured{grid-template-columns:1fr;gap:22px;padding:36px 0;}
+  .news-item.featured .ni-image{width:100%;height:auto;aspect-ratio:16/9;}
+  .news-item.featured .ni-left{height:auto;justify-content:flex-start;}
+  .news-item.featured .ni-right{height:auto;align-items:flex-start;}
+}
+
+/* PAGINATION */
+#pagination{padding:48px var(--pad);display:flex;align-items:center;justify-content:center;gap:4px;border-top:none;}
+.pg{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0;color:var(--ink2);cursor:pointer;border:0.5px solid transparent;transition:all .3s;text-decoration:none;}
+.pg:hover{border-color:var(--line);color:var(--ink);}
+.pg.act{border-color:var(--ink);color:var(--ink);font-weight:700;}
+.pg-sep{font-size:11px;color:var(--ink3);padding:0 4px;}
+
+/* ── FOOTER ── */
+footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:72px 60px 56px;display:flex;justify-content:space-between;align-items:start;}
+.foot-addr{font-size:11px;color:rgba(240,237,232,.7);line-height:1.5;letter-spacing:.04em;}
+.foot-copy{font-size:10px;color:rgba(240,237,232,.5);letter-spacing:.04em;margin-top:24px;line-height:1.4;}
+.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(240,237,232,.8);text-decoration:none;transition:color .3s;}
+.flinks a:hover{color:#f0ede8;}
+/* FADE */
+.fade-in{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<script src="nav.js"></script>
+<!-- 뉴스 페이지 전용: 흰색 메뉴바 오버라이드 (다른 페이지 nav.js는 그대로 검정 유지) -->
+<style>
+#ba-nav{background:#fff;border-bottom:none;}
+#ba-nav .logo-wrap{color:#111;}
+#ba-nav .logo-wrap svg{color:#111;fill:currentColor;stroke:currentColor;}
+#ba-nav .nav-links a{color:rgba(0,0,0,.5);}
+#ba-nav .nav-links a:hover{color:#111;}
+#ba-nav .nav-about{border:none;background:transparent;color:rgba(0,0,0,.5);}
+#ba-nav .nav-about:hover{background:transparent;color:#111;}
+/* 햄버거·오버레이도 밝은 테마로 (nav.js v9) */
+#ba-toggle{color:#111;}
+#ba-menu{background:rgba(255,255,255,.45);}
+#ba-menu .panel{background:#fff;}
+#ba-menu a{color:rgba(0,0,0,.5);}
+#ba-menu a:hover,#ba-menu a:focus-visible{color:#111;}
+</style>
+
+<div id="page-header">
+  <h1>News and Updates</h1>
+</div>
+
+<div id="search-bar">
+  <div class="search-inner">
+    <div class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div>
+    <input id="search-input" type="text" placeholder="SEARCH NEWSROOM" autocomplete="off">
+  </div>
+</div>
+
+<div id="news-list">
+  <!-- JS로 렌더링 -->
+</div>
+
+<div id="pagination">
+  <a class="pg act" href="#">1</a>
+  <a class="pg" href="#">2</a>
+  <a class="pg" href="#">3</a>
+  <a class="pg" href="#">4</a>
+  <span class="pg-sep">/</span>
+  <a class="pg" href="#">></a>
+</div>
+
+<!-- FOOTER -->
+<script src="footer.js"></script>
+
+<script>
+const newsItems = [
+  {
+    tag: 'ANNOUNCEMENT',
+    title: 'ROK Army Drone Combat Challenge 2026',
+    date: '2026 / 07 / 29',
+    excerpt: 'We advance to the finals in the ROK Army Drone Combat Challenge.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2023/06/105038_105891_415.png',
+    href: 'news-drone-combat-challenge.html'
+  },
+  {
+    tag: 'DEPLOYMENT',
+    title: 'ROK Police SOU (Special Operation Unit) Drone Defense System',
+    date: '2025 / 11 / 10',
+    excerpt: 'Since 2024, we have been supplying our cutting-edge vehicle-mounted drone defense systems.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2025/11/SOU-logo.png'
+  },
+  {
+    tag: 'ANNOUNCEMENT',
+    title: 'Supply of RCIED vehicle jammers to U.N',
+    date: '2023 / 06 / 29',
+    excerpt: 'Successful completion of the 2nd project: advancing RCIED jammer supply.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2023/06/20220324_1526231.jpg'
+  },
+  {
+    tag: 'MEDIA',
+    title: 'Anti-drone technology for public safety purposes \u2013 KBS news',
+    date: '2020 / 08 / 16',
+    excerpt: 'In order to protect major facilities such as nuclear power plants from drone threats.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2017/04/A004S.png'
+  },
+  {
+    tag: 'PRODUCT',
+    title: 'New Product Announce [DTMF signal generator]',
+    date: '2020 / 03 / 19',
+    excerpt: 'Successful testing of our innovative vehicle-based platform system.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2020/03/DT0021.png'
+  },
+  {
+    tag: 'DEMO',
+    title: 'Incheon International Airport Drone Sniper Demo',
+    date: '2018 / 12 / 07',
+    excerpt: 'Drone sniper was demonstrated at Incheon International Airport.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2018/12/INCHEON01.jpg'
+  },
+  {
+    tag: 'PRODUCT',
+    title: 'Portable Drone Jammer (Drone Sniper) Intro',
+    date: '2018 / 07 / 26',
+    excerpt: 'Introducing our portable drone jammer, the Drone Sniper.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2014/08/B005s.jpg'
+  },
+  {
+    tag: 'DEMO',
+    title: 'Drone Sniper Demo in France',
+    date: '2018 / 07 / 26',
+    excerpt: 'A demonstration of our partners in France.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2018/07/DS0011.jpg'
+  },
+  {
+    tag: 'TEST',
+    title: 'Cooling performance test at 60 degrees Celsius high temperature',
+    date: '2017 / 05 / 02',
+    excerpt: 'Extreme high-temperature cooling performance test of our jammer system.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2014/08/C002.png'
+  },
+  {
+    tag: 'EXHIBITION',
+    title: 'IDEX 2017 Review',
+    date: '2017 / 04 / 14',
+    excerpt: 'We participated in IDEX 2017 held in Abu Dhabi.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2017/04/S_DSC01780.jpg'
+  },
+  {
+    tag: 'EXHIBITION',
+    title: 'AEGIS Jammers in Korea Defense Technology Exhibition 2014',
+    date: '2014 / 08 / 06',
+    excerpt: 'AEGIS Jammers of BA Solutions shown at the Korea Defense Technology Exhibition 2014.',
+    image: 'https://jamkor.co.kr/wp-content/uploads/2014/08/kdtf-banner_2-269x200.jpg'
+  },
+];
+
+const list = document.getElementById('news-list');
+newsItems.forEach((n, i) => {
+  const item = document.createElement('div');
+  const featured = i === 0;
+  item.className = 'news-item fade-in ' + (featured ? 'featured' : 'row');
+  const img = featured
+    ? `<div class="ni-image"><img src="${n.image}" alt="${n.title}" loading="lazy"></div>`
+    : `<div class="ni-thumb"><img src="${n.image}" alt="${n.title}" loading="lazy"></div>`;
+  item.innerHTML = `
+    ${img}
+    <div class="ni-left">
+      <span class="ni-tag">${n.tag}</span>
+      <div class="news-title">${n.title}</div>
+      <span class="news-date">${n.date}</span>
+    </div>`;
+  if (n.href) {
+    item.style.cursor = 'pointer';
+    item.addEventListener('click', () => { window.location.href = n.href; });
+  }
+  list.appendChild(item);
+});
+
+/* 검색 필터 */
+document.getElementById('search-input').addEventListener('input', function(){
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('.news-item').forEach(el => {
+    const title = el.querySelector('.news-title').textContent.toLowerCase();
+    el.style.display = title.includes(q) ? '' : 'none';
+  });
+});
+
+/* 스크롤 fade-in */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, {threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

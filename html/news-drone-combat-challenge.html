@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<!-- news-drone-combat-challenge.html — v3 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
+<!-- news-drone-combat-challenge.html — v2 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: Homepage/반응형_단위가이드.md -->
+<!-- news-drone-combat-challenge.html — v1 (2026-09-09): news-dde-hardkill.html 을 최신 뉴스(ROK Army Drone Combat Challenge 2026)로 내용 교체·파일명 변경, RELATED→PREVIOUS(최신 3건) -->
+<!-- news-dde-hardkill.html — v9 (2026-09-03): 미사용 CSS 제거 (4블록/4줄) — .nav-logo, .art-image-ph, .fl, #ba-nav .nav-logo -->
+<!-- news-dde-hardkill.html — v8 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
+<!-- news-dde-hardkill.html — v9 (2026-09-04): 토글 버튼 선택자 변경 (#ba-nav .nav-toggle → #ba-toggle, nav.js v11 대응) -->
+<!-- news-dde-hardkill.html — v8 (2026-09-04): 우측 드로어 전환에 맞춰 스크림/패널 배경 분리 (nav.js v10 대응) -->
+<!-- news-dde-hardkill.html — v7 (2026-09-04): 햄버거 메뉴·전체화면 오버레이 밝은 테마 오버라이드 추가 (nav.js v9 대응) -->
+<!-- news-dde-hardkill.html — v6 (2026-09-02): 메뉴바 하단 구분선 제거 + 배경 불투명 처리(#fff) -->
+<!--   구분선을 없애자 rgba(255,255,255,.95) 의 5% 투명도로 스크롤 콘텐츠가 -->
+<!--   메뉴바를 비쳐 보이는 현상이 드러나 배경을 불투명으로 바꿈 -->
+<!-- news-dde-hardkill.html — v5 (2026-09-02): 메뉴바 ABOUT US 테두리 박스 제거 — 다른 메뉴 항목과 같은 텍스트 링크로 통일 -->
+<!-- news-dde-hardkill.html — v4 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #ffffff + color-scheme light -->
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<title>BA Solutions - ROK Army Drone Combat Challenge 2026</title>
+<style>
+
+/* BACK TO NEWSROOM 폰트*/
+.back-link {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --u:calc(min(100vw, 1440px) / 1440);   /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+  --bg:#ffffff;
+  --bg2:#f2f2f2;
+  --ink:#111;
+  --ink2:#555;
+  --ink3:#999;
+  --line:#d4d0ca;
+  --dark:#111;
+  --dark2:#1a1a1a;
+  --pad:max(20px, calc(60 * var(--u)))
+}
+body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(6,6,8,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(240,237,232,.08);}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.75);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
+.nav-about{background:transparent;border:0.5px solid rgba(240,237,232,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
+.nav-about:hover{background:#fff;color:#000;}
+/* ARTICLE HEADER */
+#article-header{padding:120px var(--pad) 48px;}
+.back-link{display:inline-flex;align-items:center;gap:8px;font-size:max(8px, calc(12 * var(--u)));letter-spacing:.25em;color:var(--ink3);text-decoration:none;margin-bottom:36px;transition:color .3s;}
+.back-link:hover{color:var(--ink);}
+.art-tag{font-size:11px;letter-spacing:0;color:var(--ink3);display:block;margin-bottom:5px;}
+.art-rule{width:100%;height:1px;background:var(--ink3);margin:0 0 10px;margin-left: -1px;}
+#article-header h1{font-size:max(24px, calc(48 * var(--u)));font-weight:700;letter-spacing:-.01em;line-height:1.2;color:var(--ink);max-width:720px;margin-bottom:20px;}
+.art-date{font-size:13px;color:var(--ink3);letter-spacing:0;}
+
+/* HERO IMAGE */
+#art-image{width:100%;aspect-ratio:16/7;background:var(--bg2);border-top:none;border-bottom:none;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+/* TODO: 이미지 삽입 시 배경 제거하고 <img> 태그 추가 */
+
+/* ARTICLE BODY */
+#art-body{padding:60px var(--pad) 80px;border-bottom:0.5px solid var(--line);}
+.art-grid{display:grid;grid-template-columns:max(200px, calc(280 * var(--u))) 1fr;gap:80px;align-items:start;}
+.art-subtitle{font-size:15px;font-weight:600;line-height:1.5;color:var(--ink);letter-spacing:-.01em;}
+.art-content{display:flex;flex-direction:column;gap:20px;}
+.art-content p{font-size:15px;color:var(--ink);line-height:1.5;letter-spacing:0;text-indent: 0.5em;}
+.art-content p strong{color:var(--ink);font-weight:600;}
+
+/* 반응형: 좁은 화면에서는 1단으로 접어 이미지 → 부제 → 본문 순으로 스택 */
+@media (max-width:860px){
+  .art-grid{grid-template-columns:1fr;gap:28px;}
+  #art-body{padding-top:40px;}
+}
+
+/* RELATED */
+#related{padding:max(20px, calc(40 * var(--u))) var(--pad) max(40px, calc(43.2 * var(--u)));}
+#related h2{font-size:14px;letter-spacing:0;color:var(--ink3);margin-bottom:32px;font-weight:500;}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
+.related-item{background:var(--bg);padding:28px;text-decoration:none;color:inherit;transition:background .25s;display:block;}
+.related-item:hover{background:var(--bg2);}
+.ri-tag{font-size:11px;letter-spacing:0;color:var(--ink3);display:block;margin-bottom:10px;}
+.ri-title{font-size:16px;font-weight:600;line-height:1.4;color:var(--ink);margin-bottom:8px;}
+.ri-date{font-size:12px;color:var(--ink3);letter-spacing:0;}
+
+@media (max-width:860px){
+  #related{padding-bottom: 40px;}
+  #related h2{margin-bottom: 20px;}
+  .related-grid{grid-template-columns: 3fr;gap:1px;}
+  .related-item{padding: 10px 24px 10px 24px;}
+  .ri-tag{font-size:10px;margin-bottom:1px;}
+  .ri-title{margin-bottom:1px;}
+  .ri-date{font-size: 10px;}
+}
+
+/* ── FOOTER ── */
+footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
+.foot-addr{font-size:11px;color:rgba(240,237,232,.7);line-height:1.5;letter-spacing:.04em;}
+.foot-copy{font-size:10px;color:rgba(240,237,232,.5);letter-spacing:.04em;margin-top:24px;line-height:1.4;}
+.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(240,237,232,.8);text-decoration:none;transition:color .3s;}
+.flinks a:hover{color:#f0ede8;}
+.fade-in{opacity:0;transform:translateY(12px);transition:opacity .8s ease,transform .8s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<script src="nav.js"></script>
+<!-- 뉴스 기사 페이지 전용: 흰색 메뉴바 오버라이드 (공용 nav.js는 그대로 검정 유지) -->
+<style>
+#ba-nav{background:#fff;border-bottom:none;}
+#ba-nav .logo-wrap{color:#111;}
+#ba-nav .logo-wrap svg{color:#111;fill:currentColor;stroke:currentColor;}
+#ba-nav .nav-links a{color:rgba(0,0,0,.5);}
+#ba-nav .nav-links a:hover{color:#111;}
+#ba-nav .nav-about{border:none;background:transparent;color:rgba(0,0,0,.5);}
+#ba-nav .nav-about:hover{background:transparent;color:#111;}
+/* 햄버거·오버레이도 밝은 테마로 (nav.js v9) */
+#ba-toggle{color:#111;}
+#ba-menu{background:rgba(255,255,255,.45);}
+#ba-menu .panel{background:#fff;}
+#ba-menu a{color:rgba(0,0,0,.5);}
+#ba-menu a:hover,#ba-menu a:focus-visible{color:#111;}
+</style>
+
+<div id="article-header">
+  <a class="back-link" href="news.html">&#60; BACK TO NEWSROOM</a>
+  <span class="art-tag">ANNOUNCEMENT</span>
+  <div class="art-rule"></div>
+  <h1>ROK Army Drone Combat Challenge 2026</h1>
+  <span class="art-date">2026 / 07 / 29</span>
+</div>
+
+<div id="art-image">
+  <img src="https://jamkor.co.kr/wp-content/uploads/2023/06/105038_105891_415.png" alt="ROK Army Drone Combat Challenge 2026" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+</div>
+
+<div id="art-body" class="fade-in">
+  <div class="art-grid">
+    <div>
+      <p class="art-subtitle">BA Solutions advances to the finals of the Drone Combat and Defense Competition hosted by the South Korean Ministry of National Defense (MND).</p>
+    </div>
+    <div class="art-content">
+      <p>We are proud to announce that our team has successfully passed the preliminary round and advanced to the finals in the <strong>Drone Combat and Defense Competition hosted by the South Korean Ministry of National Defense (MND)</strong>.</p>
+      <p>Competing in the defense category, we introduced a highly proactive and innovative counter-strategy: neutralizing the threat by preventing the opposing forces from launching their drones in the first place. This advanced tactical approach drew significant interest and acclaim from both judges and defense experts.</p>
+      <p>Looking ahead to the main competition, we are fully committed to enhancing our defensive strategies and sharpening our core C-UAS technologies. Leveraging our proven track record with elite law enforcement, we are ready to compete for the championship at the MND-hosted finals. Thank you for your continued support.</p>
+    </div>
+  </div>
+</div>
+
+<div id="related">
+  <h2>PREVIOUS</h2>
+  <div class="related-grid">
+    <a class="related-item" href="#">
+      <span class="ri-tag">DEPLOYMENT</span>
+      <div class="ri-title">ROK Police SOU (Special Operation Unit) Drone Defense System</div>
+      <span class="ri-date">2025 / 11 / 10</span>
+    </a>
+    <a class="related-item" href="#">
+      <span class="ri-tag">ANNOUNCEMENT</span>
+      <div class="ri-title">Supply of RCIED vehicle jammers to U.N</div>
+      <span class="ri-date">2023 / 06 / 29</span>
+    </a>
+    <a class="related-item" href="#">
+      <span class="ri-tag">MEDIA</span>
+      <div class="ri-title">Anti-drone technology for public safety purposes – KBS news</div>
+      <span class="ri-date">2020 / 08 / 16</span>
+    </a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<script src="footer.js"></script>
+
+<script>
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+}, {threshold:.08});
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

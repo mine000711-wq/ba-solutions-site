@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+
+<style>
+
+/* sec title */
+.sec-title {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+/* v44: 기본 서체 Arial → Helvetica Neue (다른 페이지와 통일) + Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) */
+body { background:#000; color:#f0ede8; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; }
+html { scrollbar-width:none; }
+html::-webkit-scrollbar { display:none; }
+
+/* v43: vw clamp → --u 단위 (1440px 기준 1px) */
+/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+:root { --u:calc(min(100vw, 1440px) / 1440); --pad:max(20px, calc(40 * var(--u)));}
+
+/* ── 섹션 인디케이터 ── */
+#sec-indicator {
+  position:fixed; right:10px; top:50%;
+  transform:translateY(-50%);
+  /* 히어로 구간에서는 숨김. 박스는 제자리에 두고 내용(.sec-label-box)만
+     박스 폭 안에서 우→좌로 밀려 들어온다 — overflow:hidden 이 밖을 잘라냄. */
+  overflow:hidden;
+  z-index:999999; pointer-events:none;
+  /* v7: 메뉴바(nav.js)와 서체 통일. @font-face는 nav.js가 전역으로 선언하므로
+     여기서는 font-family만 지정하면 됨. nav.js 미로드 시 Helvetica로 폴백. */
+  font-family:"Michroma",'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+#sec-indicator .sec-label-box {
+  display:flex; flex-direction:row;
+  gap:2px;
+  transform:translateX(100%);
+  transition:transform .45s cubic-bezier(.2,.7,.2,1);
+}
+#sec-indicator.is-visible .sec-label-box { transform:translateX(0); }
+#sec-indicator .sec-word {
+  /* v6: 글자 스택 대신 세로쓰기 — 위 → 아래로 읽힘.
+     vertical-rl 기본 방향이 위→아래이므로 rotate(180deg) 없이 그대로 둠. */
+  writing-mode:vertical-rl; text-orientation:mixed;
+  background:#f0ede8;
+  /* v7: 아래 padding은 14px - 자간 낙수분(.3em*10px=3px) = 11px 로 보정 */
+  padding:14px 5px 11px;
+  /* Michroma는 400 단일 웨이트 — 600을 주면 가짜 볼드로 획이 뭉개짐 */
+  font-size:10px; font-weight:400; color:#0a0a0c;
+  letter-spacing:.3em; line-height:1;
+  white-space:nowrap;
+}
+
+/* ── NAVBAR ── */
+nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(240,237,232,.08);}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.75);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
+.nav-about{background:transparent;border:0.5px solid rgba(240,237,232,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;}
+.nav-about:hover{background:#fff;color:#000;}
+
+/* ── HERO ── */
+#hero {
+  width:100%; height:100vh; min-height:480px;
+  background:#000; position:relative; overflow:hidden;
+  /* v3: 좌우 40px 검은 여백 — 다른 섹션 타이틀/십자 시작선(40px)과 정렬.
+     border로 넣어야 내부 absolute(inset:0) 레이어가 함께 안쪽으로 들어옴. */
+}
+
+/* 도메인 구역 — Y자 클립패스, 절대 위치 */
+.domain {
+  position:absolute; inset:0;
+  transition:opacity .45s, filter .35s;
+  opacity:.75; cursor:pointer;
+}
+.domain.active { opacity:1; }
+/* 호버 중인 도메인이 있으면, 나머지 비활성 도메인의 이미지만 블러 (텍스트는 투명도만) */
+#hero:hover .domain:not(.active) .domain-thumb,
+#hero:hover .domain:not(.active) .domain-video,
+#hero:hover .domain:not(.active) .dbg,
+#hero:hover .domain:not(.active) .domain-overlay { filter:blur(4px); }
+#hero:hover .domain:not(.active) .dlabel { opacity:.35; }
+#hero:hover .domain.active .dlabel { opacity:1; }
+
+/* Y자 기본 클립 — 120도 균등 분할, 중심 (50%, 50%) */
+/* 경계선: AIR/SEA(-150°→좌상), AIR/LAND(-30°→우상), SEA/LAND(90°→하단중앙) */
+/* 클립패스 — JS가 px로 계산해서 설정 (resize 무관 각도 고정) */
+#domain-air, #domain-sea, #domain-land { clip-path:none; }
+
+/* 배경 fallback — 단색 다크 그레이 */
+.dbg { position:absolute; inset:0; z-index:0; background:#000; }
+
+/* 썸네일 — 항상 표시 */
+.domain-thumb {
+  position:absolute; inset:0; z-index:1;
+  width:100%; height:100%; object-fit:cover;
+  opacity:0; transition:opacity .6s;
+}
+.domain-thumb.loaded { opacity:1; }
+
+/* 비디오 — 호버 시 fade in, 루프 */
+.domain-video {
+  position:absolute; inset:0; z-index:2;
+  width:100%; height:100%; object-fit:cover;
+  opacity:0; transition:opacity .5s;
+}
+.domain-video.playing { opacity:1; }
+
+/* 어두운 오버레이 */
+.domain-overlay {
+  position:absolute; inset:0; z-index:3;
+  background:rgba(0,0,0,.12);
+  transition:background .4s;
+}
+.domain.active .domain-overlay { background:rgba(0,0,0,.0); }
+
+/* 호버 테두리 글로우 */
+.domain::after {
+  content:''; position:absolute; inset:0; z-index:4;
+  background:rgba(240,237,232,0);
+  transition:background .4s; pointer-events:none;
+}
+.domain.active::after { background:rgba(240,237,232,.03); }
+
+/* 구분선 SVG */
+#dividers {
+  position:absolute; inset:0; pointer-events:none; z-index:5;
+}
+
+/* 레이블 */
+/* v32: 세 도메인 레이블을 같은 좌표계로 통일 — 각각 --x / --y 두 값만 고치면 된다.
+   기준점이 레이블의 '중심'이라(translate -50%,-50%) 글자 크기를 키워도
+   앵커가 흔들리지 않고 중심을 유지한 채 좌우·상하로 고르게 커진다.
+   (이전에는 air=좌측 기준, sea=우측 기준, land=하단 기준으로 제각각이라
+    크기를 바꿀 때마다 세 개가 서로 다르게 움직였다.) */
+.dlabel {
+  position:absolute; z-index:10; pointer-events:none;
+  opacity:.55; transition:opacity .35s;
+  left:var(--x); top:var(--y);
+  /* v34: --ax = --x 를 레이블의 어느 지점으로 볼지 (0 = 왼쪽 끝 / -50% = 중앙 / -100% = 오른쪽 끝).
+     세로는 항상 레이블 중앙 기준(-50%). */
+  transform:translate(var(--ax,-50%), -50%);
+  white-space:nowrap;              /* 글자를 키워도 줄바꿈되지 않게 */
+}
+.domain.active .dlabel { opacity:1; }
+
+/* ↓↓ 위치 조정 ↓↓
+   --x 가 가리키는 지점이 정렬에 따라 다르다:
+     air  (좌측 정렬) → 레이블의 왼쪽 끝     : 40px = 페이지 좌우 여백선과 일치
+     sea  (우측 정렬) → 레이블의 오른쪽 끝   : calc(100% - 40px)
+     land (중앙 정렬) → 레이블의 중앙        : 50%
+   --y 는 셋 다 레이블의 세로 중심. 키우면 아래로. */
+#domain-air  .dlabel { --x:var(--pad);              --y:30%; --ax:0;     text-align:left;   }
+#domain-sea  .dlabel { --x:calc(100% - var(--pad)); --y:30%; --ax:-100%; text-align:right;  }
+#domain-land .dlabel { --x:50%;               --y:83%; --ax:-50%;  text-align:center; }
+
+/* v45: 좁은 폭 — 겹치는 POWER 를 한 글자로 정렬. breakpoint 없이 연속 보간.
+   ───────────────────────────────────────────────────────────
+   AIR 는 좌측 --pad, SEA 는 우측 --pad, LAND 는 중앙에 물려 있어서
+   폭이 좁아지면 세 POWER 의 시작점이 조금씩 어긋난 채 포개진다.
+   (390px 실측: AIR 20 / LAND 34 / SEA 47 → 겹친 W 가 두 겹으로 보였다)
+
+   .dlabel 은 shrink-to-fit 이라 기본 폭 = 제일 긴 줄(POWER)의 글자 폭이다.
+   여기에 min-width 를 주면 박스만 넓어지고, 2행을 가운데 정렬해 두었으므로
+   POWER 는 박스가 넓어진 만큼 안쪽(중앙쪽)으로 밀려 들어온다.
+     박스 폭 = 글자 폭        → POWER 가 박스를 꽉 채움 = 원래 위치 그대로
+     박스 폭 = 100vw - 2*pad  → 세 박스가 동일해져 POWER 좌표가 정확히 일치
+   그 사이는 자동으로 연속 — 스냅이 없다. 글꼴 폭을 몰라도 되므로
+   Helvetica Neue / Arial 어느 쪽이 잡혀도 합쳐지는 지점은 정확하다.
+
+   400px 의 근거 — 폭 W 에서 --pad 는 20px 고정(W<720)이므로
+     완전 일치 : 100vw - 40 <= 400   →  W <= 440px   (320/375/390/430 전 기종 포함)
+     보간 구간 : 440 < W < 약 483px  (POWER 글자 폭이 400px 에 닿는 지점)
+     영향 없음 : W >= 약 483px       → 기존 desktop 배치 그대로
+   1행(AIR/SEA/LAND)은 박스 가장자리에 붙어 있어 전 구간 위치 변화가 없다.
+   ─────────────────────────────────────────────────────────── */
+.dlabel { min-width:min(400px, calc(100vw - var(--pad) * 2)); }
+/* 2행 POWER 만 가운데 정렬 — 박스 폭이 글자 폭과 같은 구간에서는 아무 영향이 없다 */
+.dlabel .pname:last-child { text-align:center; }
+
+/* ── 히어로 레이블 조정 노브 ─────────────────────────────────
+   여기 두 값만 고치면 AIR / SEA / LAND 세 도메인이 전부 같이 바뀐다.
+
+   --ls  자간 (letter-spacing)
+         px 로 써도 되고 em 으로 써도 된다.
+           .18em → 글자 크기에 비례해 같이 늘어난다 (반응형에 유리)
+           20px  → 화면 크기와 무관하게 항상 20px 고정
+         값을 바꾸면 아래 margin-right 의 trim 도 자동으로 따라간다.
+
+   --lh  줄간격 (line-height) — AIR / POWER 두 줄 사이 간격
+         단위 없는 배수. 1 = 글자 크기와 같은 높이.
+           0.85 → 두 줄이 바짝 붙음 (로고 락업 느낌)
+           1.15 → 브라우저 기본값과 동일
+         레이블은 세로 '중심' 기준으로 앵커돼 있어서 (translateY -50%)
+         이 값을 바꿔도 블록이 위아래로 고르게 벌어질 뿐 위치는 안 흔들린다.
+   ─────────────────────────────────────────────────────────── */
+.pname {
+  --ls:0px;
+  --lh:0.85;
+
+  font-size:clamp(26px,22vw,120px); /* vw 유지 — 화면 폭 비율 디스플레이 (반응형_단위가이드.md) */
+  letter-spacing:var(--ls);
+  line-height:var(--lh);
+  /* v39: letter-spacing 은 마지막 글자 '뒤'에도 붙는다.
+     좌측 정렬인 AIR 는 그 여백이 안쪽이라 안 보이지만,
+     우측 정렬인 SEA 는 글자 끝과 박스 끝 사이에 자간 1칸이
+     유령처럼 남아 --pad 를 줘도 그만큼 더 떨어져 보였다.
+     같은 값만큼 당겨서 제거. (LAND 중앙 쏠림도 함께 해결) */
+  margin-right:calc(var(--ls) * -1);
+  /* v41: 첫 줄 광학 정렬 — 아래 --kick 참고. transform 이라 레이아웃·앵커에 영향 없음. */
+  transform:translateX(var(--kick,0px));
+  color:#f0ede8; font-weight:700; display:block;
+}
+
+/* ── 첫 줄 광학 정렬 (--kick) ────────────────────────────────
+   글자마다 폰트가 자체적으로 가진 좌우 여백(side bearing)이 다르다.
+   Arial 700 / font-size 120px 실측 (px):
+
+              좌측여백   우측여백(자간 20 제외)
+     AIR          2          1.66
+     SEA          3          2.66
+     LAND         8          4.66
+     POWER        8          1.66
+
+   → 박스(.dlabel)는 --pad 선에 정확히 맞아 있다. 문제는 글자다.
+     좌측 정렬인 AIR 는 A 의 좌측여백(2)이 POWER 의 P(8)보다 6px 작아서
+     AIR 만 6px 더 왼쪽으로 튀어나와 보인다.
+     우측 정렬인 SEA(2.66 vs 1.66)와 중앙 정렬인 LAND 는
+     차이가 1~1.5px 라 눈에 띄지 않으므로 보정하지 않는다.
+
+   .05em = 120px 기준 6px. em 이라 글자가 작아지면 보정도 같이 줄어든다.
+   0px 으로 두면 보정 없음(v40 이전 상태).
+   A 가 삼각형이라 살짝 튀어나오는 편이 낫다 싶으면 .03em 쯤으로 낮추면 된다.
+   ──────────────────────────────────────────────────────────── */
+#domain-air  .pname:first-child { --kick:.05em; }
+
+
+
+/* 중앙 로고 */
+#center-logo {
+  position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  z-index:20; pointer-events:none;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+}
+#logo-img {
+  width:max(90px, calc(140 * var(--u))); height:max(90px, calc(140 * var(--u)));
+  /* v10: 회전 없음. images/logo_b.png 를 파일 그대로 표시한다.
+     방향을 바꾸려면 CSS가 아니라 이미지 파일 자체를 수정할 것. */
+  object-fit:contain;
+}
+
+/* 하단 카피 */
+#hero-copy {
+  position:absolute; bottom:clamp(48px,7vh,80px);
+  left:50%; transform:translateX(-50%);
+  text-align:center; z-index:20;
+  pointer-events:none; white-space:nowrap;
+}
+#hero-copy .big { font-size:max(14px, calc(22 * var(--u))); letter-spacing:0; color:#f0ede8; font-weight:700; display:block; }
+
+/* decode 애니메이션 */
+.decode { opacity:0; transition:opacity .1s; }
+.decode.visible { opacity:1; }
+
+/* 스캔라인 */
+#scanline { position:absolute; width:100%; height:1px; background:rgba(240,237,232,.04); z-index:6; animation:scan 5s linear infinite; pointer-events:none; }
+@keyframes scan { 0%{top:0} 100%{top:100%} }
+
+/* 파티클 */
+.particle { position:absolute; width:1.5px; height:1.5px; background:rgba(240,237,232,.35); border-radius:50%; pointer-events:none; z-index:7; animation:fl linear infinite; }
+@keyframes fl { 0%{transform:translateY(0);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateY(-80px);opacity:0} }
+
+/* ── SECTION BASE ── */
+section { width:100%; padding:200px var(--pad); position:relative; }
+.sec-title { font-size:max(25px, calc(50 * var(--u))); letter-spacing:.1em; color:#f0ede8; font-weight:700; margin-bottom:48px; }
+
+/* ── PRODUCT GRID ── */
+#products { background:#000; padding:0; }   /* v8: 배경 #000, 상단 구분선 제거 */
+#products .sec-title { padding:100px var(--pad) 0; margin-bottom:80px; }
+.product-grid { display:flex; flex-direction:column; gap:1px; background:rgba(240,237,232,.08); }
+.product-card {
+  height:220px; position:relative; overflow:hidden;
+  display:block; cursor:pointer; text-decoration:none;
+  transition:height .45s cubic-bezier(.4,0,.2,1);
+}
+.product-card:hover { height:460px; }
+/* 배경 이미지 */
+.card-bg {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; opacity:0;
+  transition:opacity .5s, transform .6s ease, filter .4s;
+}
+.card-bg.loaded { opacity:1; }
+.product-card:hover .card-bg { transform:scale(1.04); filter:brightness(1.15); }
+/* 다크 그라디언트 오버레이 */
+.card-dark {
+  position:absolute; inset:0; z-index:1;
+  background:linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.28) 55%, rgba(0,0,0,.1) 100%);
+  transition:background .4s;
+}
+.product-card:hover .card-dark {
+  background:linear-gradient(to top, rgba(0,0,0,.68) 0%, rgba(0,0,0,.18) 55%, rgba(0,0,0,.04) 100%);
+}
+/* 격자 */
+.ph-grid {
+  position:absolute; inset:0; z-index:2; pointer-events:none;
+  background-image:linear-gradient(rgba(240,237,232,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(240,237,232,.025) 1px,transparent 1px);
+  background-size:28px 28px; opacity:0; transition:opacity .3s;
+}
+.product-card:hover .ph-grid { opacity:1; }
+/* 텍스트 영역 — 왼쪽 하단 */
+.card-body {
+  position:absolute; inset:0; z-index:3;
+  display:flex; flex-direction:column; justify-content:flex-end;
+  padding:28px 36px;
+}
+.card-name { font-size:35px; color:#f0ede8; font-weight:700; line-height:1.2; }
+.card-arrow {
+  margin-top:14px;
+  font-size:13px; font-weight: 500;color:rgba(240,237,232,.85);
+  border-bottom:0.5px solid rgba(240,237,232,.35); padding-bottom:2px;
+  width:fit-content; opacity:0; transform:translateY(6px);
+  transition:opacity .35s, transform .35s;
+}
+.product-card:hover .card-arrow { opacity:1; transform:translateY(0); }
+
+/* ── VISION ── */
+#vision {
+  background:#000;   /* v8: 배경 #000, 상단 구분선 제거 */
+  padding:0; position:relative; overflow:hidden;
+  display:flex; align-items:flex-end; cursor:pointer;
+}
+.vision-bg {
+  position:absolute; inset:0; z-index:0;
+}
+.vision-bg img {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; opacity:0; transition:opacity .8s, filter .5s, transform .6s;
+}
+.vision-bg .v-grid {
+  position:absolute; inset:0; z-index:1;
+  background-image:linear-gradient(rgba(240,237,232,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(240,237,232,.02) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+.vision-bg-overlay {
+  position:absolute; inset:0; z-index:2;
+  background:linear-gradient(to right, rgba(0,0,0,.35) 30%, rgba(0,0,0,0) 100%);
+  transition:background .5s;
+}
+.vision-content {
+  /* v11: z-index 3 → 60. 커튼(#vision-curtain, z-index:50)보다 위에 놓아서
+     커튼이 닫혀 있는 동안에도 카피가 보이게 함.
+     #vision은 stacking context를 만들지 않으므로(position:relative + z-index:auto)
+     이 값이 #vision-sticky 안에서 커튼과 직접 비교됨. */
+  position:relative; z-index:60;
+  /* v5: 좌우 padding 40px 유지 — #vision의 40px border(검은 여백) 위에 얹혀
+     카피 시작점이 페이지 기준 80px. 이미지 가장자리에서 40px 떨어진 안쪽 여백. */
+  padding:40px var(--pad); display:flex; flex-direction:column; gap:16px; max-width:600px;
+}
+.vision-quote {
+  font-size:max(28px, calc(48 * var(--u))); 
+  color:#f0ede8; font-weight:700; line-height:1.15;
+}
+.vision-tagline {
+  font-size:13px; color:rgba(240,237,232,.85); line-height:1.7; text-transform:uppercase;
+}
+
+/* ── 차고문 reveal 효과 ──
+   wrap은 비전 + 여분의 스크롤 공간(=100vh)을 가짐.
+   안에 sticky 컨테이너가 뷰포트에 100vh 만큼 고정됨.
+   그 안에 비전 + curtain. curtain은 비전 위를 덮고 있다가
+   스크롤 진행도에 따라 height가 줄어듦.
+*/
+#vision-reveal-wrap {
+  position:relative;
+  height:250vh; /* 비전 100vh + reveal 스크롤 거리 200vh */
+}
+#vision-sticky {
+  position:sticky; top:0;
+  height:100vh; overflow:hidden;
+}
+#vision-sticky #vision {
+  height:100vh; min-height:100vh;
+}
+#vision-curtain {
+  /* v4: left/right 40px — 커튼이 여백을 덮지 않아야 reveal 내내 검은 여백이 유지됨. */
+  position:absolute; left:0px; right:0px; top:0;
+  height:100%; background:#000;
+  z-index:50; pointer-events:none;
+  /* v17: 스크롤 진행도에 직접 연동하므로 transition 제거 —
+     남겨두면 커튼이 스크롤을 못 따라오고 뒤늦게 따라붙는다.
+     height 대신 transform:scaleY 로 접는다(원점 top). 매 프레임 레이아웃/리페인트 없이
+     합성(compositing)만 일어나서 스크롤 연동에 적합. */
+  transform-origin:top center;
+  transform:scaleY(1);
+  will-change:transform;
+}
+
+/* ── NEWS ── */
+#news { background:#000; }   /* v8: 배경 #000, 상단 구분선 제거 */
+.news-inner { display:flex; flex-direction:column; }
+
+/* 1번 뉴스 — 피처드 (크게, 오른쪽 이미지) */
+/* v31: 시선 위계 반전 — 대문 뉴스가 흰(#f0ede8) 박스, 하부 뉴스가 회색 박스.
+   대비가 큰 쪽이 먼저 읽히므로 대문이 밝고, 하부는 한 단계 눌러 뒤로 물러나게 한다. */
+.news-featured {
+  display:grid; grid-template-columns:1fr 1fr;   /* v43: 사진 칸 360px 고정 → 박스 절반. 대문 사진 비중 확대 */
+  background:#f0ede8;
+}
+.news-featured-body {
+  padding:36px var(--pad);   /* v38: 40px 고정 → --pad (좁은 화면에서 함께 줄어듦) */
+  display:flex; flex-direction:column; gap:14px;
+  cursor:pointer;
+}
+.news-featured-body:hover .news-title-featured { color:#0a0a0c; }
+.news-feat-date { font-size:11px; letter-spacing:0; color:rgba(10,10,12,.6); }
+.news-title-featured {
+  font-size:max(15px, calc(25 * var(--u))); color:rgba(10,10,12,.85);
+  line-height:1.55; font-weight:700; transition:color .3s;
+}
+.news-featured-img {
+  background:#000;
+  position:relative; overflow:hidden;
+  height:286px;   /* v44: 대문 뉴스 박스 높이 고정 (v35 의 286px 값) */
+  display:flex; align-items:center; justify-content:center;
+}
+/* v44: 칸 높이는 286px 고정.
+   v45: object-fit:cover — 칸을 항상 빈틈 없이 채우며 원본 비율 유지.
+        · 칸이 넓을 때(사진을 너비에 맞추면 286px 보다 높음) → 너비에 맞추고 위아래가 잘림
+        · 화면이 좁아져 너비에 맞춘 사진이 286px 보다 낮아지면 → 높이 286px 에 맞추고 좌우가 잘림
+          (보이는 사진 폭이 칸 폭만큼 줄어든다. v44 의 위아래 검은 띠 제거) */
+.news-featured-img img {
+  position:absolute; inset:0; z-index:2;   /* .ni-ph(z-index:1) 위 */
+  display:block; width:100%; height:100%; object-fit:cover;
+}
+.news-featured-img .ni-ph { position:absolute; }
+.news-featured-img .ni-grid {
+  position:absolute; inset:0;
+  background-image:linear-gradient(rgba(240,237,232,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(240,237,232,.02) 1px,transparent 1px);
+  background-size:20px 20px;
+}
+.ni-ph { text-align:center; z-index:1; }
+.ni-ph .ni-icon { font-size:36px; opacity:.07; display:block; }
+.ni-ph .ni-label { font-size:9px; letter-spacing:0; color:rgba(240,237,232,.14); margin-top:8px; display:block; }
+
+/* v21: 대문 뉴스 — 제목이 3줄이 되기 직전에 세로 스택(사진 위 / 글 아래)으로 전환.
+   2열(글|사진) 상태에서는 뷰포트 762px 이하부터 제목이 3줄이 되므로 780px을 기준으로 잡음.
+   세로로 쌓으면 제목이 쓸 수 있는 폭이 (vw − 80px)로 넓어져 640px까지 1줄, 그 아래도 2줄로 유지된다. */
+@media (max-width:780px){
+  .news-featured { grid-template-columns:1fr; }
+  /* 사진을 위로 — 소스 순서는 글이 먼저이므로 order로 끌어올림 */
+  .news-featured-img {
+    order:-1;
+    border-left:none;
+    height:auto;   /* v44: 세로 스택에선 사진이 286px 보다 낮아 고정 높이면 검은 띠만 생긴다 */
+  }
+  /* v45: 세로 스택에선 사진을 흐름에 두고 너비에 맞춘 원래 높이 그대로 (잘림 없음) */
+  .news-featured-img img { position:relative; height:auto; }
+  /* v38: v31 에서 대문이 흰 박스가 됐는데 여기 좌우 padding 이 0 이라
+     세로 스택에서 제목이 박스 가장자리에 그대로 닿았다. --pad 로 복구. */
+  .news-featured-body { padding:32px var(--pad) 36px; }
+}
+
+/* 2·3번 뉴스 — 타이틀만 */
+.news-sub-list { display:flex; flex-direction:column; }
+
+/* v33: 대문 뉴스만 흰 박스로 두고, 하부 뉴스는 검은 바탕으로 되돌린다.
+   밝은 블록이 하나뿐이라 시선이 대문에 먼저 닿고, 하부는 배경에 잠긴다.
+   배경이 검정이므로 이 안의 글자·선은 다시 밝은 계열. */
+.news-sub-block { background:#000; }
+.news-sub-item {
+  padding:20px 20px 6px 40px;
+  /* v28: 구분선을 좌우 20px 안쪽으로. border는 요소 전체 폭을 채우므로
+     대신 ::after 를 깔아 left/right 20px 만큼 띄운다(글자 시작선과 일치). */
+  position:relative;
+  /* v26: 날짜 → 제목 세로 배치. 대문 뉴스(날짜 → 제목 → READ MORE)와 같은 순서. */
+  display:flex; flex-direction:column; align-items:flex-start; gap:10px;
+  cursor:pointer; transition:opacity .2s;
+}
+.news-sub-item::after {
+  content:''; position:absolute; left:20px; right:20px; bottom:0;
+  height:0.5px; background:#f0ede8;   /* v33: 검은 바탕 위 구분선 → 밝은 계열 */
+}
+/* 박스 맨 아래 선은 흰 박스의 아래 모서리와 겹쳐 보이므로 제거 */
+.news-sub-item:last-child::after { display:none; }
+/* v29: 제목과 READ 를 같은 줄에. 행 폭이 항목 content-box(=좌우 padding 20px 안쪽)와
+   같으므로, 오른쪽 끝이 구분선(::after right:20px) 끝과 정확히 맞는다. */
+.news-sub-row {
+  width:100%; display:flex; align-items:baseline;
+  justify-content:space-between; gap:24px;
+}
+/* v37: 하부 뉴스의 READ 는 항목의 '오른쪽 아래 모서리'를 기준으로 절대배치한다.
+   두 값 모두 +로 주면 경계에서 안쪽으로 들어온다 — 음수를 쓸 일이 없다.
+     --read-x : 항목 오른쪽 끝에서 왼쪽으로. 20px = 아래 경계선(::after right:20px) 끝과 일치.
+     --read-y : 아래 경계선에서 위로.
+   (이전 방식은 flex 흐름 위에서 top/right 에 음수를 줘 밀어내는 식이라,
+    출발점이 제목 길이와 화면 폭에 따라 달라져 같은 값이 폭마다 다른 결과를 냈다.) */
+.news-sub-item { --read-x:20px; --read-y:14px; }
+.news-sub-item .arrow-link {
+  position:absolute;
+  right:var(--read-x);
+  bottom:var(--read-y);
+  align-self:auto;
+}
+/* READ 가 흐름에서 빠졌으므로 제목이 그 자리까지 밀고 들어오지 않도록 폭을 비워둔다 */
+.news-sub-row { padding-right:140px; }
+.news-sub-item:hover { opacity:1; }
+.news-sub-item:hover .news-title-sub { color:#f0ede8; }
+.news-title-sub {
+  /* v26: clamp() 인자 사이 쉼표 누락(4.1667vw 20px) → 선언 전체가 무효가 되어
+     제목이 기본 16px로 나오고 있었음. 쉼표 복구.
+     세로 배치라 flex:1(남는 높이 채우기)은 의미가 없어 제거. */
+  font-size:max(15px, calc(20 * var(--u))); font-weight:700; letter-spacing:0; color:rgba(240,237,232,.85);
+  line-height:2; transition:color .3s;
+  position: relative; top: -10px;
+}
+.news-sub-date { font-size:11px; letter-spacing:0; color:rgba(240,237,232,.65); white-space:nowrap; }
+
+/* v35: 하부 뉴스 ↔ SHOW MORE 사이 경계선.
+   길이는 메인↔하부 경계선(.news-featured 의 border-bottom)과 같은 '전체 폭'.
+   하부 뉴스 항목 사이 선(.news-sub-item::after, 좌우 20px 인셋)과는 별개다.
+   두께·색은 아래 두 값만 고치면 되고 다른 선에 영향을 주지 않는다. */
+.news-sub-divider {
+  height:1px;                         /* ← 두께 */
+  background:#f0ede8;   /* ← 색상 */
+}
+
+/* Show More */
+/* v36: SHOW MORE 를 우측으로. 앵커가 inline-block 이라 컨테이너의 text-align 으로 옮긴다.
+   오른쪽 padding 20px = 하부 뉴스 글자의 좌우 인셋과 같은 값이라,
+   위 경계선 끝에서 20px 안쪽으로 들어와 항목 사이 선(::after right:20px)과 끝이 맞는다. */
+.news-show-more { padding:28px 20px 0 0; text-align:right; }
+/* v29: ba_air.html 의 VIEW DETAILS(.pcard-link) 규격을 쓰는 공용 링크.
+   SHOW MORE / 대문 READ / 하부 READ 가 모두 이 한 규칙을 공유한다.
+   기본은 검은 배경용(밝은 계열), 흰 박스 안에서만 색을 반전시킨다. */
+.arrow-link {
+  display:inline-block;
+  font-size:max(10px, calc(12 * var(--u)));
+  letter-spacing:0;
+  color:rgba(240,237,232,.55);
+  text-decoration:none;
+  border-bottom:1px solid rgba(240,237,232,.3);
+  padding-bottom:3px;
+  transition:color .3s, border-color .3s;
+  white-space:nowrap;          /* 'READ ↘' 가 줄바꿈되지 않게 */
+  align-self:flex-start;       /* 세로 flex(대문 뉴스) 안에서 밑줄이 폭 전체로 늘어나지 않게 */
+}
+.arrow-link:hover,
+.news-featured-body:hover .arrow-link { color:#f0ede8; border-color:#f0ede8; }
+
+/* 밝은 박스 안(대문 + 하부) — READ 는 어두운 계열로 반전 */
+/* v33: 어두운 계열은 흰 박스인 대문 뉴스에만. 하부는 검은 바탕이므로 기본(밝은) 계열 유지. */
+.news-featured .arrow-link { color:rgba(10,10,12,.55); border-bottom-color:rgba(10,10,12,.3); }
+.news-featured .arrow-link:hover,
+.news-featured-body:hover .arrow-link { color:#0a0a0c; border-color:#0a0a0c; }
+/* 항목 전체에 호버해도 READ 가 같이 밝아지도록 */
+.news-sub-item:hover .arrow-link { color:#f0ede8; border-color:#f0ede8; }
+
+/* ── FOOTER ── */
+footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:72px 60px 56px;position:relative;display:flex;justify-content:space-between;align-items:start;}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.foot-addr{font-size:11px;color:rgba(240,237,232,.7);line-height:1.5;letter-spacing:.04em;}
+.foot-copy{font-size:10px;color:rgba(240,237,232,.5);letter-spacing:.04em;margin-top:24px;line-height:1.4;}
+.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(240,237,232,.8);text-decoration:none;transition:color .3s;}
+.flinks a:hover{color:#f0ede8;}
+
+#products, #news { position:relative; }
+</style>
+
+<!-- 섹션 인디케이터 -->
+<div id="sec-indicator"><div class="sec-label-box" id="sec-label-box"></div></div>
+
+<!-- NAVBAR -->
+<script src="html/nav.js"></script>
+
+<!-- HERO -->
+<div id="hero">
+  <div id="scanline"></div>
+
+  <!-- Y자 삼분할 도메인 -->
+  <div class="domain" id="domain-air" data-domain="air">
+    <div class="dbg"></div>
+    <img class="domain-thumb" src="images/thumb_air.jpg" alt=""
+         style="transform:scale(1.8) translate(-12%, -8%); transform-origin:center;"
+         onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+    <video class="domain-video" src="video/video_air.mp4"
+           style="transform:scale(1.8) translate(-12%, -8%); transform-origin:center;"
+           muted loop playsinline preload="none"></video>
+    <div class="domain-overlay"></div>
+    <div class="dlabel">
+      <span class="pname">AIR</span>
+      <span class="pname">POWER</span>
+    </div>
+  </div>
+
+  <div class="domain" id="domain-sea" data-domain="sea">
+    <div class="dbg"></div>
+    <img class="domain-thumb" src="images/thumb_sea.jpg" alt=""
+         style="transform:scale(1.8) translate(12%, -10%); transform-origin:center;"
+         onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+    <video class="domain-video" src="video/video_sea.mp4"
+           style="transform:scale(1.8) translate(12%, -10%); transform-origin:center;"
+           muted loop playsinline preload="none"></video>
+    <div class="domain-overlay"></div>
+    <div class="dlabel">
+      <span class="pname">SEA</span>
+      <span class="pname">POWER</span>
+    </div>
+  </div>
+
+  <div class="domain" id="domain-land" data-domain="land">
+    <div class="dbg"></div>
+    <img class="domain-thumb" src="images/thumb_land.jpg" alt=""
+         style="transform:scale(1.6) translate(0, 18%); transform-origin:center;"
+         onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+    <video class="domain-video" src="video/video_land.mp4"
+           style="transform:scale(1.6) translate(0, 18%); transform-origin:center;"
+           muted loop playsinline preload="none"></video>
+    <div class="domain-overlay"></div>
+    <div class="dlabel">
+      <span class="pname">LAND</span>
+      <span class="pname">POWER</span>
+    </div>
+  </div>
+
+  <!-- Y자 구분선 (JS가 px로 동적 생성) -->
+  <svg id="dividers" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;"></svg>
+
+  <!-- 중앙 로고 -->
+  <div id="center-logo">
+    <img id="logo-img" src="images/logo_b.png" alt="BA Solutions">
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products" style="padding:500px 0 300px;">
+  <h2 class="sec-title decode" style="padding:0 var(--pad); margin-bottom:80px;">WEAPONS SYSTEMS</h2>
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<!-- VISION (차고문 reveal 효과) -->
+<div id="vision-reveal-wrap">
+  <div id="vision-sticky">
+    <section id="vision">
+      <div class="vision-bg">
+        <div class="v-grid"></div>
+        <img src="images/vision_solutions_of_tomorrow.jpg" alt="Solutions of Tomorrow"
+             onload="this.style.opacity='1'" onerror="this.style.display='none'">
+        <div class="vision-bg-overlay"></div>
+      </div>
+      <div class="vision-content">
+        <h2 class="vision-quote decode">SOLUTIONS OF TOMORROW</h2>
+        <p class="vision-tagline">The future of defense, built today.</p>
+      </div>
+    </section>
+    <div id="vision-curtain"></div>
+  </div>
+</div>
+
+<!-- NEWS -->
+<section id="news" style="padding-top:230px; padding-bottom:230px;">
+  <h2 class="sec-title decode">NEWS AND UPDATES</h2>
+  <div class="news-inner" id="newsInner"></div>
+</section>
+
+<!-- FOOTER -->
+<script src="html/footer.js"></script>
+
+<script>
+/* ── HERO 인터랙션 ── */
+const hero    = document.getElementById('hero');
+const doms    = {
+  air:  document.getElementById('domain-air'),
+  sea:  document.getElementById('domain-sea'),
+  land: document.getElementById('domain-land'),
+};
+const domLinks = { air:'html/ba_air.html', sea:'html/ba_sea.html', land:'html/ba_land.html' };
+let curDom = null;
+
+/* Y자 내적 기반 구역 판별 */
+function getDom(x, y, w, h) {
+  const cx = w * .5, cy = h * .5;
+  const dx = x - cx, dy = y - cy;
+  const dirs = { air:[-0.866,-0.5], sea:[0.866,-0.5], land:[0,1] };
+  let best = null, bestDot = -Infinity;
+  Object.keys(dirs).forEach(k => {
+    const dot = dx*dirs[k][0] + dy*dirs[k][1];
+    if (dot > bestDot) { bestDot = dot; best = k; }
+  });
+  return best;
+}
+
+/* ── 클립패스 각도 고정 ──
+   화면 비율과 무관하게 항상 정확히 120°씩 분할.
+   중심 (W/2, H/2)에서 세 경계선 방향:
+     AIR/SEA  경계 = -150° (좌상)
+     AIR/LAND 경계 =  -30° (우상)
+     SEA/LAND 경계 =   90° (하단)
+*/
+function updateClipPaths() {
+  const W = hero.clientWidth, H = hero.clientHeight;   /* v3: border(좌우 여백) 제외한 내부 영역 기준 */
+  const cx = W * 0.5, cy = H * 0.5;
+
+  // 중심에서 angleDeg 방향으로 ray, 화면 경계와의 교점 [x,y] (px)
+  function ray(angleDeg) {
+    const a = angleDeg * Math.PI / 180;
+    const dx = Math.cos(a), dy = Math.sin(a);
+    const ts = [];
+    if (dx >  1e-9) ts.push((W - cx) / dx);
+    if (dx < -1e-9) ts.push((0  - cx) / dx);
+    if (dy >  1e-9) ts.push((H - cy) / dy);
+    if (dy < -1e-9) ts.push((0  - cy) / dy);
+    const t = Math.min(...ts.filter(v => v > 1e-4));
+    return [cx + dx * t, cy + dy * t];
+  }
+
+  const pAS = ray(-90);  // AIR/SEA  경계점 (상단 중앙)
+  const pAL = ray(150);  // AIR/LAND 경계점 (좌하)
+  const pSL = ray(30);   // SEA/LAND 경계점 (우하)
+
+  const fmt = pts => 'polygon(' + pts.map(p => `${p[0].toFixed(1)}px ${p[1].toFixed(1)}px`).join(', ') + ')';
+
+  // AIR (좌상 120°): 중심 → AS(상단) → 좌상코너 → 좌하코너 → AL
+  doms.air.style.clipPath  = fmt([[cx,cy], pAS, [0,0], [0,H], pAL]);
+  // SEA (우상 120°): 중심 → SL → 우하코너 → 우상코너 → AS
+  doms.sea.style.clipPath  = fmt([[cx,cy], pSL, [W,H], [W,0], pAS]);
+  // LAND (하단 120°): 중심 → AL → 좌하코너 → 우하코너 → SL
+  doms.land.style.clipPath = fmt([[cx,cy], pAL, [0,H], [W,H], pSL]);
+
+  // SVG 구분선도 갱신
+  const svg = document.getElementById('dividers');
+  if (svg) {
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML = '';
+    [pAS, pAL, pSL].forEach(p => {
+      const ln = document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1', cx); ln.setAttribute('y1', cy);
+      ln.setAttribute('x2', p[0]); ln.setAttribute('y2', p[1]);
+      ln.setAttribute('stroke','rgba(240,237,232,.22)');
+      ln.setAttribute('stroke-width','0.5');
+      svg.appendChild(ln);
+    });
+  }
+}
+
+updateClipPaths();
+window.addEventListener('resize', updateClipPaths);
+
+/* ── 비전 섹션 차고문 reveal 효과 ──
+   스크롤한 만큼 커튼이 접히고, 되감으면 그만큼 다시 내려온다.
+
+     OPEN_VH                     커튼이 다 열리기까지의 스크롤 거리
+     #vision-reveal-wrap height  섹션 전체 길이 (CSS)
+     다 열린 뒤 머무는 거리      = (height − 100vh) − OPEN_VH   ← 둘의 차이로 자동 결정
+*/
+(function(){
+  const wrap = document.getElementById('vision-reveal-wrap');
+  const curtain = document.getElementById('vision-curtain');
+  if (!wrap || !curtain) return;
+
+  const OPEN_VH = 70;   /* 키우면 더 천천히 열리고, 그만큼 머무는 거리가 줄어든다 */
+
+  let ticking = false;
+
+  function apply() {
+    ticking = false;
+    const openPx  = OPEN_VH / 100 * window.innerHeight;
+    const scrolled = -wrap.getBoundingClientRect().top;      /* 섹션 진입 후 스크롤한 px */
+    const t = Math.min(1, Math.max(0, scrolled / openPx));   /* 0 = 닫힘, 1 = 다 열림 */
+    curtain.style.transform = 'scaleY(' + (1 - t) + ')';
+  }
+
+  function onScroll() {   /* scroll은 프레임보다 자주 오므로 rAF로 한 프레임에 한 번만 */
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(apply);
+  }
+
+  apply();
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll);
+})();
+
+function setActive(d) {
+  if (d === curDom) return;
+  curDom = d;
+  Object.keys(doms).forEach(k => {
+    const isActive = k === d;
+    doms[k].classList.toggle('active', isActive);
+    /* 비디오 재생/정지 — loop는 HTML 속성으로 이미 설정 */
+    const vid = doms[k].querySelector('.domain-video');
+    if (vid) {
+      if (isActive) { vid.currentTime = 0; vid.play().catch(()=>{}); vid.classList.add('playing'); }
+      else          { vid.pause(); vid.classList.remove('playing'); }
+    }
+  });
+}
+
+function clearActive() {
+  curDom = null;
+  Object.values(doms).forEach(el => {
+    el.classList.remove('active');
+    const vid = el.querySelector('.domain-video');
+    if (vid) { vid.pause(); vid.classList.remove('playing'); }
+  });
+}
+
+hero.addEventListener('mousemove', e => {
+  const r = hero.getBoundingClientRect();
+  const d = getDom(e.clientX - r.left, e.clientY - r.top, r.width, r.height);
+  if (d !== curDom) setActive(d);
+});
+hero.addEventListener('mouseleave', clearActive);
+hero.addEventListener('click', () => { if (curDom) window.location.href = domLinks[curDom]; });
+
+function spawnP(){
+  const p=document.createElement('div'); p.className='particle';
+  p.style.cssText=`left:${Math.random()*100}%;bottom:0;animation-duration:${4+Math.random()*4}s;animation-delay:${Math.random()*2}s`;
+  hero.appendChild(p); setTimeout(()=>p.remove(),8000);
+}
+setInterval(spawnP,700);
+
+/* ── HERO decode: ONE SYSTEM. THREE DOMAINS. — 페이지 로드 시 실행 ── */
+(function(){
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  function decode(el, onDone) {
+    const orig = el.textContent.trim(), len = orig.length;
+    const done = Array(len).fill(false); let f = 0, revealed = 0;
+    const TOTAL_FRAMES = 18, revealStart = 4;
+    /* v24: 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    const nsIdx=[]; for(let i=0;i<len;i++) if(orig[i]!==' ') nsIdx.push(i);
+    const preCount=Math.floor(nsIdx.length/2);
+    for(let i=0;i<preCount;i++) done[nsIdx[i]]=true;
+    const remain=nsIdx.length-preCount;
+    const perFrame = Math.max(1, remain / (TOTAL_FRAMES - revealStart));
+    el.classList.add('visible');
+    function tick(){
+      let out = '';
+      for(let i=0;i<len;i++){ if(orig[i]===' '){out+=' ';continue;} if(done[i]){out+=orig[i];continue;} out+=CHARS[Math.floor(Math.random()*CHARS.length)]; }
+      el.textContent = out;
+      if(f>=revealStart){ let tr=Math.floor((f-revealStart+1)*perFrame)-revealed; for(let j=0;j<len&&tr>0;j++){if(!done[j]&&orig[j]!==' '){done[j]=true;revealed++;tr--;}} }
+      f++;
+      if(!done.every((d,i)=>d||orig[i]===' ')&&f<TOTAL_FRAMES+5) setTimeout(tick,40);
+      else { el.textContent=orig; if(onDone) onDone(); }
+    }
+    setTimeout(tick, 600);
+  }
+  const heroTitle = document.querySelector('#hero-copy .decode');
+  if(heroTitle) decode(heroTitle);
+})();
+
+/* ── SECTION decode: 스크롤 진입 시 실행 ── */
+(function(){
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const TOTAL_MS = 500, INTERVAL = 30, TOTAL_FRAMES = Math.floor(TOTAL_MS/INTERVAL);
+  function decode(el, onDone){
+    const orig = el.textContent.trim(), len = orig.length;
+    const done = Array(len).fill(false); let f=0, revealed=0;
+    const revealStart = Math.floor(TOTAL_FRAMES*.25);
+    /* v24: 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    const nsIdx=[]; for(let i=0;i<len;i++) if(orig[i]!==' ') nsIdx.push(i);
+    const preCount=Math.floor(nsIdx.length/2);
+    for(let i=0;i<preCount;i++) done[nsIdx[i]]=true;
+    const remain=nsIdx.length-preCount;
+    const perFrame = Math.max(1, remain/(TOTAL_FRAMES-revealStart));
+    function tick(){
+      let out='';
+      for(let i=0;i<len;i++){ if(orig[i]===' '){out+=' ';continue;} if(done[i]){out+=orig[i];continue;} out+=CHARS[Math.floor(Math.random()*CHARS.length)]; }
+      el.textContent=out;
+      if(f>=revealStart){ let tr=Math.floor((f-revealStart+1)*perFrame)-revealed; for(let j=0;j<len&&tr>0;j++){if(!done[j]&&orig[j]!==' '){done[j]=true;revealed++;tr--;}} }
+      f++;
+      if(!done.every((d,i)=>d||orig[i]===' ')&&f<TOTAL_FRAMES+5) setTimeout(tick,INTERVAL);
+      else { el.textContent=orig; if(onDone) onDone(); }
+    }
+    tick();
+  }
+  /* 섹션 제목만 decode (hero-copy 제외) */
+  const secObs = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const el=entry.target;
+      if(el.closest('#hero')) return; /* 대문은 별도 처리 */
+      el.classList.add('visible');
+      decode(el);
+      secObs.unobserve(el);
+    });
+  },{threshold:.2});
+  document.querySelectorAll('.decode:not(#hero-copy .decode)').forEach(el=>secObs.observe(el));
+})();
+
+/* ── PRODUCT GRID ── */
+const products = [
+  {domain:'LAND POWER', name:'AEGIS C-UAS System',     img:'images/product_land_cuas.jpg',        href:'html/product-aegis-cuas.html'},
+  {domain:'AIR POWER',  name:'AEGIS Interceptor',       img:'images/product_air_interceptor.jpg',  href:'html/product-aegis-interceptor.html'},
+  {domain:'LAND POWER', name:'AEGIS-B Backpack Jammer', img:'images/product_land_jammer_b.jpg',    href:'html/product-aegis-b-jammer.html'},
+  {domain:'SEA POWER',  name:'Autonomous Hovercraft',   img:'images/product_sea_hovercraft.jpg',   href:'html/product-hovercraft.html'},
+];
+const grid = document.getElementById('productGrid');
+products.forEach(p => {
+  const card = document.createElement('a');
+  card.className = 'product-card';
+  card.href = p.href;
+  card.innerHTML = `
+    <img class="card-bg" src="${p.img}" alt="${p.name}" onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+    <div class="card-dark"></div>
+    <div class="ph-grid"></div>
+    <div class="card-body">
+      <span class="card-name">${p.name}</span>
+      <span class="card-arrow">View Details</span>
+    </div>`;
+  grid.appendChild(card);
+});
+
+/* ── NEWS ── */
+const newsItems = [
+  /* v42: image 는 html/news.html 의 같은 뉴스 항목과 동일한 URL.
+     둘 중 하나만 바꾸면 대문과 뉴스페이지의 썸네일이 어긋나므로 같이 고칠 것. */
+  {date:'2026.07.29', title:'ROK Army Drone Combat Challenge 2026',
+   image:'https://jamkor.co.kr/wp-content/uploads/2023/06/105038_105891_415.png',
+   href:'html/news-drone-combat-challenge.html'},
+  {date:'2025.11.10', title:'ROK Police SOU (Special Operation Unit) Drone Defense System'},
+  {date:'2025.06.29', title:'Supply of RCIED vehicle jammers to U.N'},
+];
+const ni = document.getElementById('newsInner');
+const f = newsItems[0];
+ni.innerHTML = `
+<div class="news-featured">
+  <a class="news-featured-body" href="${f.href}" style="text-decoration:none;">
+    <span class="news-feat-date">${f.date}</span>
+    <p class="news-title-featured">${f.title}</p>
+    <span class="arrow-link">Read ↘</span>
+  </a>
+  <a class="news-featured-img" href="${f.href}" style="text-decoration:none;">
+    <div class="ni-grid"></div>
+    <img src="${f.image}" alt="${f.title}"
+         style="opacity:0;transition:opacity .5s;"
+         onload="this.style.opacity='1'" onerror="this.style.display='none'">
+    <div class="ni-ph">
+      <span class="ni-icon">📡</span>
+      <span class="ni-label">FEATURED IMAGE</span>
+    </div>
+  </a>
+</div>
+<div class="news-sub-list">
+  <!-- v28: 흰 박스는 뉴스 2건만 감싼다 -->
+  <div class="news-sub-block">
+    ${newsItems.slice(1,3).map(n=>`
+    <div class="news-sub-item">
+      <span class="news-sub-date">${n.date}</span>
+      <div class="news-sub-row">
+        <p class="news-title-sub">${n.title}</p>
+        <span class="arrow-link">Read ↘</span>
+      </div>
+    </div>`).join('')}
+  </div>
+  <!-- v35: 하부 뉴스 ↔ SHOW MORE 경계선 (전체 폭) -->
+  <div class="news-sub-divider"></div>
+  <!-- v28: SHOW MORE 는 박스 밖(검은 배경) -->
+  <div class="news-show-more">
+    <a href="html/news.html" class="arrow-link">Show More ↘</a>
+  </div>
+</div>`;
+
+/* ── 섹션 인디케이터 ── */
+(function(){
+  const box = document.getElementById('sec-label-box');
+  if (!box) return;
+
+  const sections = [
+    /* v6: 인디케이터 라벨은 한 단어로 고정 — 단어마다 컬럼이 생겨
+       3줄로 벌어지던 문제 해결. 섹션 타이틀(WEAPONS SYSTEMS 등)은 그대로 두고
+       인디케이터용 축약 라벨만 별도로 둠. */
+    { el: document.getElementById('hero'),               name: 'HOME' },
+    { el: document.getElementById('products'),            name: 'WEAPONS' },
+    { el: document.getElementById('vision-reveal-wrap'),  name: 'VISION' },
+    { el: document.getElementById('news'),                name: 'NEWS' },
+    { el: document.querySelector('footer'),               name: 'CONTACT' },
+  ].filter(s => s.el);
+
+  let currentName = '';
+  const indicator = document.getElementById('sec-indicator');
+  const heroEl = document.getElementById('hero');
+
+  // v6: 세로쓰기 한 줄 — 단어 수와 무관하게 항상 컬럼 1개
+  function renderName(name) {
+    box.innerHTML = '<div class="sec-word">' + name + '</div>';
+  }
+
+  // 히어로 이름(HOME)은 라벨에 쓰지 않는다 — 히어로로 올라올 때 숨는 것과 동시에
+  // 이름이 바뀌면 슬라이드아웃 0.45초 동안 바뀐 이름이 스쳐 보이기 때문.
+  // 시작 시 첫 비히어로 섹션 이름을 미리 그려 박스 폭을 확보해 둔다.
+  const firstNamed = sections.find(s => s.el !== heroEl);
+  if (firstNamed) { currentName = firstNamed.name; renderName(currentName); }
+
+  function update() {
+    const centerY = window.innerHeight / 2;
+    let found = sections[0];
+    for (const s of sections) {
+      const r = s.el.getBoundingClientRect();
+      if (r.top <= centerY && r.bottom >= centerY) { found = s; break; }
+      if (r.top > centerY) break;
+      found = s;
+    }
+    // 히어로 구간에서는 숨김, WEAPONS 이후로는 노출
+    const inHero = found.el === heroEl;
+    if (indicator) indicator.classList.toggle('is-visible', !inHero);
+    // 숨어 있는 동안에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
+    if (!inHero && found.name !== currentName) {
+      currentName = found.name;
+      renderName(currentName);
+    }
+  }
+
+  let lastY = -1;
+  (function loop() {
+    const y = window.scrollY || 0;
+    if (y !== lastY) { lastY = y; update(); }
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>

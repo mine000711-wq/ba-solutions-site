@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<!-- ba_sea.html — v15 (2026-09-15): 제품 VIEW DETAILS → ba_air Interceptor 의 View More 버튼(CSS·마크업 동일)으로 교체, 링크를 각 제품 상세 페이지로 -->
+<!-- ba_sea.html — v14 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
+<!-- ba_sea.html — v13 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: Homepage/반응형_단위가이드.md -->
+<!-- ba_sea.html — v12 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A+B형) -->
+<!-- ba_sea.html — v11 (2026-09-03): 미사용 CSS 제거 (7블록/7줄) — .nav-logo, .hero-tag, .hero-tag::before, .sec-alt, .fl, .pcard-img-lbl, .pcard-img-corner -->
+<!-- ba_sea.html — v10 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
+<!-- ba_sea.html — v9 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
+<!-- ba_sea.html — v8 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
+<!-- ba_sea.html — v8 (2026-09-03): CTA 규격·디자인 AIR 페이지와 완전 동일화(태그=AEGIS/Michroma, 버튼 좌측 세로 배치, 패딩/translateY 규격 반영) -->
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<title>BA Solutions — SEA POWER</title>
+<!-- AEGIS CTA 블록 공용 스타일 (ba_air/ba_land 와 공유). 페이지 자체 스타일보다 먼저 로드할 것 -->
+<link rel="stylesheet" href="aegis-cta.css">
+<style>
+/*PRODUCT LINEUP 섹션 타이틀*/
+.product-section .sec-title {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* 제품 카드 이름 3개 (Autonomous Hovercraft, Autonomous Jetboat, Autonomous Airboat) */
+.pcard-name {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+/* HOW AEGIS WORKS 섹션 — AIR 페이지와 동일한 배경/패딩 */
+.sec.aegis-sec {
+  padding: max(20px, calc(60 * var(--u))) var(--pad) 0;
+  border-top: none;
+  background: #BCB489;
+}
+
+/* HOW AEGIS WORKS 타이틀*/
+.aegis-sec .sec-title {
+  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
+  color: #000000;
+}
+.aegis-sec .sec-desc {
+  color: #f0ede8;
+}
+/* .aegis-cta-tag 의 Michroma 지정은 aegis-cta.css 로 이관됨 */
+
+*{margin:0;padding:0;box-sizing:border-box;}
+/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+:root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)));}
+
+/* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
+html{scrollbar-width:none;}
+html::-webkit-scrollbar{display:none;}
+body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+
+/* ── 섹션 인디케이터 (우측 고정, 메인페이지 BA_Solutions.html와 동일) ── */
+/* 히어로 구간에서는 숨고, PRODUCTS 섹션에 들어서면 .is-visible 이 붙어 나타난다.
+   박스(#sec-indicator)는 제자리에 고정하고, 내용(.sec-label-box)만 우→좌로 밀려 들어온다.
+   박스의 overflow:hidden 이 밖으로 나간 내용을 잘라내므로 이동 범위는 화면 끝이 아니라
+   박스 자기 폭 안(translateX 100% = 라벨 폭)이다. 페이드 아님 — transform 만 이동. */
+#sec-indicator{position:fixed;right:10px;top:50%;transform:translateY(-50%);overflow:hidden;z-index:999999;pointer-events:none;font-family:"Michroma",'Helvetica Neue',Helvetica,Arial,sans-serif;}
+#sec-indicator .sec-label-box{display:flex;flex-direction:row;gap:2px;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.7,.2,1);}
+#sec-indicator.is-visible .sec-label-box{transform:translateX(0);}
+#sec-indicator .sec-word{writing-mode:vertical-rl;text-orientation:mixed;background:#f0ede8;padding:14px 5px 11px;font-size:10px;font-weight:400;color:#0a0a0c;letter-spacing:.3em;line-height:1;white-space:nowrap;}
+
+nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:none;}
+.logo-wrap{display:flex;align-items:center;gap:8px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-decoration:none;transition:color .3s;}
+.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
+.nav-about{background:transparent;border:0.5px solid rgba(255,255,255,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
+.nav-about:hover{background:#f0ede8;color:#000;}
+
+#hero{height:100vh;min-height:600px;position:relative;overflow:hidden;background:#000000;}
+#wc{position:absolute;top:0;left:0;width:100%;height:100%;display:block;z-index:0;}
+.hero-fade{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,1) 0%,rgba(0,0,0,.7) 35%,rgba(0,0,0,0) 60%);pointer-events:none;z-index:1;}
+.hero-content{position:absolute;bottom:90px;left:var(--pad);z-index:2;}
+h1.ht{font-size:max(40px, calc(70 * var(--u)));font-weight:700;line-height:1.05;margin-bottom:18px;}
+h1.ht span{color:rgba(255,255,255,.25);}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.85);max-width:440px;line-height:1.5;margin-bottom:32px;font-weight:300;}
+
+.sec{padding:100px var(--pad);border-top:none;}
+.sec-title{font-size:max(25px, calc(43.2 * var(--u)));font-weight:700;letter-spacing:.04em;line-height:1.5;margin-bottom:clamp(5px, 3vh,14px);}
+.sec-desc{font-size:max(15px, calc(20 * var(--u)));color:rgba(255,255,255,.85);line-height:1.3;max-width:580px;font-weight:400;}
+
+.fade-in{opacity:0;transform:translateY(18px);transition:opacity 1.05s ease,transform 1.05s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+.decode{opacity:0;transition:opacity .1s;}
+.decode.visible{opacity:1;}
+
+/* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_air/ba_land 와 공유) ── */
+
+footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
+.foot-addr{font-size:11px;color:rgba(255,255,255,.35);line-height:2;letter-spacing:.04em;}
+.foot-copy{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em;margin-top:24px;line-height:1.8;}
+.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
+.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s;}
+.flinks a:hover{color:#f0ede8;}
+
+/* ── 대문 제품 박스 (가로 3개, 흰색 채우기 + decode) ── */
+/* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (ba_air 의 AEGIS Spider 버튼 기준).
+   컨테이너 폭 = 트랙 합: air 2×203+14=420 / sea 3×203+28=637 / land 4×203+42=854 */
+.hero-products{display:grid;grid-template-columns:repeat(3,minmax(203px,1fr));gap:14px;margin-top:8px;}
+.hp-btn{position:relative;height:48px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}
+.hp-fill{position:absolute;inset:0;background:#f0ede8;transform-origin:left center;transform:scaleX(0);transition:transform .55s cubic-bezier(.2,.7,.2,1);}
+.hp-btn.hp-filled{border-color:transparent;}
+.hp-btn.hp-filled .hp-fill{transform:scaleX(1);}
+.hp-label{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;height:100%;padding:0 16px;text-align:left;opacity:0;transition:opacity .25s;}
+.hp-btn.hp-revealed .hp-label{opacity:1;}
+.hp-tag{display:none;}
+.hp-name{font-size:13px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
+.hp-btn.hp-revealed:hover .hp-name{background-size:100% 1.5px;}
+.hp-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#000;opacity:0;transition:opacity .3s,right .3s;z-index:2;}
+.hp-btn.hp-revealed:hover .hp-arrow{opacity:.7;right:10px;}
+
+/* ── 큰 제품 카드 (이미지 + 텍스트 좌우 분할) ── */
+.product-section{padding:140px var(--pad);border-top:none;overflow:hidden;}
+.product-section .sec-title{margin-bottom:16px;}
+.product-list{display:flex;flex-direction:column;gap:0;margin-top:80px;}
+.pcard{display:grid;grid-template-columns:1.15fr 1fr;gap:80px;align-items:center;padding:80px 0;border-top:none;scroll-margin-top:30px;}
+.pcard:last-child{border-bottom:none;}
+.pcard.flip{grid-template-columns:1fr 1.15fr;}
+.pcard.flip .pcard-img{order:2;}
+.pcard.flip .pcard-text{order:1;}
+
+/* 이미지 비율: 16/7 (넓고 낮은 와이드) */
+.pcard-img{aspect-ratio:16/7;background:linear-gradient(135deg,rgba(255,255,255,.025) 0%,rgba(255,255,255,.005) 100%);border:0.5px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.pcard-img::before,.pcard-img::after{content:'';position:absolute;background:rgba(255,255,255,.1);}
+.pcard-img::before{top:14px;left:14px;width:30px;height:0.5px;}
+.pcard-img::after{top:14px;left:14px;width:0.5px;height:30px;}
+.pcard-text{padding:0 8px;}
+.pcard-num{display:none;}
+.pcard-num::after{content:'';flex:1;height:0.5px;background:rgba(255,255,255,.1);max-width:80px;}
+.pcard-tag{display:none;}
+.pcard-name{font-size:max(28px, calc(44 * var(--u)));font-weight:700;letter-spacing:.02em;line-height:1.05;margin-bottom:22px;}
+.pcard-desc{font-size:20px;color:rgba(255,255,255,.9);line-height:1.3;font-weight:400;}
+
+/* ── 영수증 효과: 중앙에서 바깥으로 밀려나오는 reveal ──
+   시작: 중앙에 숨겨진 상태 (clip으로 안 보임 + 중앙에 위치)
+   끝:   제자리로 이동하며 완전히 드러남
+
+   기본 카드 (이미지=왼쪽, 텍스트=오른쪽):
+     이미지: 오른쪽(중앙)에 있고 clip으로 가려짐 → 왼쪽 제자리로 이동하며 드러남
+     텍스트: 왼쪽(중앙)에 있고 clip으로 가려짐 → 오른쪽 제자리로 이동하며 드러남
+   flip 카드: 반대
+*/
+
+.pcard .pcard-img{
+  clip-path:inset(0 0 0 100%);
+  transform:translateX(80px);
+  transition:clip-path .6s cubic-bezier(.4,0,.15,1), transform .6s cubic-bezier(.4,0,.15,1);
+}
+.pcard .pcard-text{
+  clip-path:inset(0 100% 0 0);
+  transform:translateX(-80px);
+  transition:clip-path .6s cubic-bezier(.4,0,.15,1) .05s, transform .6s cubic-bezier(.4,0,.15,1) .05s;
+}
+.pcard.flip .pcard-img{
+  clip-path:inset(0 100% 0 0);
+  transform:translateX(-80px);
+}
+.pcard.flip .pcard-text{
+  clip-path:inset(0 0 0 100%);
+  transform:translateX(80px);
+}
+.pcard.in-view .pcard-img,
+.pcard.in-view .pcard-text{
+  clip-path:inset(0 0 0 0);
+  transform:translateX(0);
+}
+
+
+/* View More 링크 (전 제품 공통 — ba_air/ba_land/ba_sea 동일) — hover 시 박스가 아래에서 차오르고 글씨는 검정·굵게.
+   끊김 방지 구조: 박스+검정 글씨를 한 겹(.plf-cover)에 함께 그려두고 clip-path 하나만 움직인다.
+   · 이전 방식(scaleY + color/font-weight 전환)은 끝날 때 합성 레이어가 풀리며 박스 가장자리·글자 렌더링이
+     한 번 바뀌었고, font-weight 는 중간 굵기가 없는 폰트라 도중에 굵기가 툭 바뀌었다.
+   · 이제 바탕 글씨는 그대로 두고 덮개만 드러나므로, 박스와 검정 글씨가 같은 선으로 함께 차오른다.
+   채움 박스는 좌우 8px 까지만 확장: .pcard-text 의 clip-path 가 padding(8px) 밖을 잘라내기 때문
+   위치: 텍스트 영역 우측 끝 (block + fit-content + margin-left:auto) */
+.pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(10px, calc(15 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
+/* 덮개: 바탕 글씨와 같은 자리에 글자가 오도록 top/left 음수만큼 padding 으로 되돌린다.
+   상하 여백(.42em / .3em)은 대문자 윗선~기준선 중앙과 박스 중앙이 일치하는 값 (Helvetica Neue 기준, "View More ↘"는 하강부 없음)
+   덮개는 화살표를 따로 움직이려고 ::before 대신 실제 요소(.plf-cover)로 둔다 */
+.plf-cover{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:#f0ede8;color:#000;font-weight:var(--plf-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none;}
+.pcard-link-fill:hover .plf-cover{clip-path:inset(0 0 0 0);}
+/* 굵은 글자 폭을 미리 확보 — 덮개 글씨가 박스 밖으로 넘치지 않게 */
+.plf-txt{display:inline-grid;}
+.plf-txt::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--plf-weight);height:0;overflow:hidden;visibility:hidden;}
+/* 밑줄 → 화살표 — hover 시 밑줄(.plf-draw)이 ↘ 로 접힌다. 순서:
+   ① 밑줄이 ↘ 글자의 가로 범위(폭 .68em)로 줄어듦  ② 박스 위 화살표 높이로 올라와 "-"
+   ③ 45° 돌며 대각선 길이(.87em)로 늘어나 "\"  ④ 끝에서 두 선이 돋아나 ↘
+   hover 해제 시에는 역순. 속성마다 transition-delay 가 하나뿐이라, 줄어듦/상승은 바깥(.plf-draw),
+   회전/길이는 안쪽(.plf-shaft), 화살촉은 .plf-head 가 나눠 맡는다.
+   치수는 Helvetica Neue ↘ 글리프 실측(em): 잉크 x .03~.71, 대각선 중심 기준선 위 .415em, 화살촉 길이 .25em.
+   덮개(굵기 400)의 ↘ 는 x0 = 100% − .638em 에서 시작 — 덮개 글씨가 바탕(300)보다 .17em 넓어 링크 오른쪽 밖으로 나가 있음. 기준선은 콘텐츠 바닥 위 .13em.
+   진짜 ↘ 글자는 항상 숨기고 자리만 남긴다 — 박스 너비(링크 폭)를 그대로 유지하기 위해.
+   평소 밑줄은 "More" 끝까지만: 오른쪽에서 ↘ 칸(.808em) + 앞 공백(.327em) = 1.135em 을 뺀다 (바탕 굵기 300 실측).
+   두께: 밑줄 1.5px → 줄어드는 동안 화살표 1px 로 가늘어짐 */
+.plf-arr{visibility:hidden;}
+.plf-draw{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:#f0ede8;pointer-events:none;
+  transition:bottom .2s var(--plf-e) .3s,left .2s var(--plf-e) .48s,width .2s var(--plf-e) .48s,height .2s var(--plf-e) .48s,color .15s linear .08s;}
+.pcard-link-fill:hover .plf-draw{left:calc(100% - .61em);width:.68em;height:1px;bottom:calc(.745em + 1px);color:#000;
+  transition:left .22s var(--plf-e),width .22s var(--plf-e),height .22s var(--plf-e),bottom .22s var(--plf-e) .2s,color .12s linear;}
+.plf-shaft{position:absolute;top:0;bottom:0;left:0;right:0;background:currentColor;
+  transition:transform .2s var(--plf-e) .12s,left .2s var(--plf-e) .12s,right .2s var(--plf-e) .12s;}
+.pcard-link-fill:hover .plf-shaft{left:-.095em;right:-.095em;transform:rotate(45deg);
+  transition:transform .22s var(--plf-e) .42s,left .22s var(--plf-e) .42s,right .22s var(--plf-e) .42s;}
+.plf-head{position:absolute;top:0;right:0;width:.25em;height:100%;background:currentColor;transform-origin:100% 50%;transform:rotate(-45deg) scaleX(0);transition:transform .15s var(--plf-e);}
+.plf-head-b{transform:rotate(45deg) scaleX(0);}
+.pcard-link-fill:hover .plf-head{transform:rotate(-45deg) scaleX(1);transition:transform .18s var(--plf-e) .64s;}
+.pcard-link-fill:hover .plf-head-b{transform:rotate(45deg) scaleX(1);}
+@media (prefers-reduced-motion:reduce){.plf-draw,.plf-shaft,.plf-head,.pcard-link-fill:hover .plf-draw,.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:hover .plf-head{transition:none;}}
+
+@media (max-width:760px){
+  /* 760px 이하: 203px 최소값은 데스크톱 모듈이라 2열(2×203+14=420px)이 폰 화면에 안 들어감.
+   → 최소값을 풀고 화면 폭에 맞춘 유동 폭으로 전환 */
+  .hero-products{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100vw - var(--pad) * 2);}
+  .pcard,.pcard.flip{grid-template-columns:1fr;gap:36px;padding:60px 0;}
+  .pcard.flip .pcard-img{order:0;}
+  .pcard.flip .pcard-text{order:1;}
+}
+
+.sec{position:relative;}
+
+</style>
+</head>
+<body>
+
+<!-- 섹션 인디케이터 (우측 고정) -->
+<div id="sec-indicator"><div class="sec-label-box" id="sec-label-box"></div></div>
+
+<script src="nav.js"></script>
+
+<section id="hero">
+
+  <canvas id="wc"></canvas>
+  <div class="hero-fade"></div>
+  <div class="hero-content">
+    <h1 class="ht">Maritime.<br><span>Autonomous.</span></h1>
+    <p class="hero-sub">AI-driven autonomous platforms built for maritime interdiction, rapid response, and persistent coastal patrol.</p>
+    <div class="hero-products">
+      <button class="hp-btn" data-target="prod-hovercraft" data-tag="AMPHIBIOUS" data-name="Hovercraft">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">AMPHIBIOUS</span><span class="hp-name decode-hp">Hovercraft</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+      <button class="hp-btn" data-target="prod-jetboat" data-tag="HIGH-SPEED" data-name="Jetboat">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">HIGH-SPEED</span><span class="hp-name decode-hp">Jetboat</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+      <button class="hp-btn" data-target="prod-airboat" data-tag="SHALLOW WATER" data-name="Airboat">
+        <div class="hp-fill"></div>
+        <div class="hp-label"><span class="hp-tag decode-hp">SHALLOW WATER</span><span class="hp-name decode-hp">Airboat</span></div>
+        <span class="hp-arrow">↘</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="product-section sec" id="products">
+  <h2 class="sec-title decode">PRODUCT LINEUP</h2>
+  <p class="sec-desc fade-in">Three platforms. One AEGIS intelligence layer.</p>
+
+  <div class="product-list">
+
+    <article class="pcard" id="prod-hovercraft">
+      <a class="pcard-img" href="product-hovercraft.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/hovercraft.jpg" alt="Hovercraft" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">01</div>
+        <div class="pcard-tag">AMPHIBIOUS</div>
+        <h3 class="pcard-name">Autonomous<br>Hovercraft</h3>
+        <p class="pcard-desc">Amphibious platform that crosses water, beach, and marsh seamlessly.<br>AEGIS-driven autonomous patrol where conventional vessels cannot reach.</p>
+        <a class="pcard-link pcard-link-fill" href="product-hovercraft.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+    <article class="pcard flip" id="prod-jetboat">
+      <a class="pcard-img" href="product-jetboat.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/jetboat.jpg" alt="Jetboat" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">02</div>
+        <div class="pcard-tag">HIGH-SPEED</div>
+        <h3 class="pcard-name">Autonomous<br>Jetboat</h3>
+        <p class="pcard-desc">High-speed water-jet propulsion for rapid interdiction and response.<br>Minutes from detection to intercept, fully unmanned.</p>
+        <a class="pcard-link pcard-link-fill" href="product-jetboat.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+    <article class="pcard" id="prod-airboat">
+      <a class="pcard-img" href="product-airboat.html" style="cursor:pointer;text-decoration:none;">
+        <img src="../images/airboat.jpg" alt="Airboat" style="width:100%;height:100%;object-fit:cover;">
+      </a>
+      <div class="pcard-text">
+        <div class="pcard-num">03</div>
+        <div class="pcard-tag">SHALLOW WATER</div>
+        <h3 class="pcard-name">Autonomous<br>Airboat</h3>
+        <p class="pcard-desc">Air-driven shallow-water platform for tidal flats, swamps, and riverine environments.<br>No draft, no propeller, no obstacle.</p>
+        <a class="pcard-link pcard-link-fill" href="product-airboat.html"><span class="plf-txt" data-text="View More ↘"><span>View More <span class="plf-arr">↘</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section class="sec aegis-sec">
+  <h2 class="sec-title decode">HOW AEGIS WORKS</h2>
+  <p class="sec-desc fade-in">The intelligence behind every SEA POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</p>
+  <a href="aegis.html" style="text-decoration:none;display:block;">
+  <div class="aegis-cta-block" id="aegisCta">
+    <div class="aegis-cta-text">
+      <span class="aegis-cta-tag">AEGIS</span>
+      <div class="aegis-cta-rule"></div>
+      <div class="aegis-cta-head">SENSE, DECIDE, COMMAND</div>
+      <span class="aegis-cta-btn">EXPLORE AEGIS ↘</span>
+    </div>
+  </div>
+  </a>
+</section>
+
+<script src="footer.js"></script>
+
+<script>
+/* ── HERO WAVE CANVAS — DUNE×WAVE LINE FIELD ── */
+(function(){
+  const c=document.getElementById('wc'),ctx=c.getContext('2d');
+  let W,H;
+  const DPR=window.devicePixelRatio||1;
+
+  // 픽셀 단위 고정 파라미터 (창 크기와 무관)
+  const LINE_GAP_PX = 9;   // 라인 간 픽셀 간격 (고정)
+  let LINES = 95;          // 창 높이에 비례해 매 resize마다 갱신
+
+  function resize(){
+    W=window.innerWidth; H=window.innerHeight;
+    c.width=W*DPR; c.height=H*DPR;
+    c.style.width=W+'px'; c.style.height=H+'px';
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.scale(DPR,DPR);
+    // 라인 개수를 픽셀 간격 기준으로 재계산
+    LINES = Math.ceil(H / LINE_GAP_PX) + 4;
+  }
+  window.addEventListener('resize',resize); resize();
+
+  // ── 노이즈
+  const noiseSeed=[];
+  for(let i=0;i<2048;i++) noiseSeed.push(Math.random());
+  function smooth(t){ return t*t*(3-2*t); }
+  function noise2D(x,y){
+    const xi=Math.floor(x), yi=Math.floor(y);
+    const xf=x-xi, yf=y-yi;
+    const n=(a,b)=>noiseSeed[(Math.abs((a*73856093) ^ (b*19349663)) >>> 0) % noiseSeed.length];
+    const aa=n(xi,yi), ab=n(xi,yi+1), ba=n(xi+1,yi), bb=n(xi+1,yi+1);
+    const u=smooth(xf), v=smooth(yf);
+    return aa*(1-u)*(1-v) + ba*u*(1-v) + ab*(1-u)*v + bb*u*v;
+  }
+  function fbm(x,y,octaves){
+    let v=0, amp=1, freq=1, max=0;
+    for(let i=0;i<octaves;i++){
+      v += noise2D(x*freq,y*freq)*amp;
+      max += amp;
+      amp *= 0.5; freq *= 2;
+    }
+    return v/max;
+  }
+  function asymmetricRidge(x){
+    const tt = (x + 1) * 0.5;
+    if(tt < 0.7){ return Math.pow(tt/0.7, 1.3); }
+    else { return 1 - Math.pow((tt-0.7)/0.3, 1.6); }
+  }
+
+  const STEP_X = 3;
+  let t=0;
+
+  // 너울 레이어 — ky는 픽셀 단위(posY)에 곱해지므로 창 크기 무관
+  // 기존 ky 값들이 라인 인덱스 기반이었으므로, 픽셀 기준으로 환산하려면 ky/LINE_GAP_PX 정도 스케일
+  // (원래 LINES≈95, H≈900px 기준 LINE_GAP≈9.6 → 거의 동일하게 보이도록 유지)
+  const layers = [
+    { kx:0.0035, kyPx:0.06/9.6,  kt:0.50, phase:0.0, ampBase:28, ampWild:38, ridge:true },
+    { kx:0.0022, kyPx:0.09/9.6,  kt:0.32, phase:1.5, ampBase:18, ampWild:26, ridge:true },
+    { kx:0.0058, kyPx:0.04/9.6,  kt:0.68, phase:0.8, ampBase:14, ampWild:22, ridge:true },
+    { kx:0.0095, kyPx:0.08/9.6,  kt:0.92, phase:2.2, ampBase:6,  ampWild:11, ridge:false },
+    { kx:0.016,  kyPx:0.05/9.6,  kt:1.25, phase:0.4, ampBase:3,  ampWild:6,  ridge:false },
+    { kx:0.013,  kyPx:0.07/9.6,  kt:1.05, phase:3.1, ampBase:4,  ampWild:7,  ridge:false },
+  ];
+
+  // 7시 → 2시 대각선 너울
+  const DIAG_FREQ = 0.026;
+  const DIAG_SPEED = 1.6;
+  const DIAG_DIR_X = Math.cos(-Math.PI/3);
+  const DIAG_DIR_Y = Math.sin(-Math.PI/3);
+
+  // 노이즈 디테일도 픽셀 단위 ny 사용 (라인 인덱스 의존 제거)
+  const CHOPPY_NY_K = 0.28/9.6;  // 원래 i*0.28 → posY*(0.28/9.6)
+  const FOAM_NY_K = 0.5/9.6;
+
+  // wildness 기준점 — 화면 높이가 어떻든 같은 비율(상단=거칠고 하단=잔잔)
+  function frame(){
+    t += 0.0045;
+    ctx.fillStyle='#000000';
+    ctx.fillRect(0,0,W,H);
+
+    for(let i=0;i<LINES;i++){
+      const posY = LINE_GAP_PX*i;          // 픽셀 단위 baseY
+      const baseY = posY;
+      const rowRatio = posY/H;             // 0(위) ~ 1(아래) — 픽셀 비율 기반
+      const wildness = Math.max(0, 1 - rowRatio);
+
+      ctx.beginPath();
+      let started = false;
+      for(let x=0; x<=W; x+=STEP_X){
+        let y = baseY;
+
+        for(let L=0; L<layers.length; L++){
+          const ly = layers[L];
+          // ky는 픽셀 단위로 직접 적용
+          const phase = x*ly.kx + posY*ly.kyPx + t*ly.kt + ly.phase;
+          const w = Math.sin(phase);
+          let amp = ly.ampBase + wildness * ly.ampWild;
+          if(ly.ridge){
+            y += (asymmetricRidge(w) - 0.5) * amp;
+          } else {
+            y += w * amp;
+          }
+        }
+
+        const diagPhase = DIAG_FREQ*(DIAG_DIR_X*x + DIAG_DIR_Y*posY) - DIAG_SPEED*t;
+        y += Math.sin(diagPhase) * (3.5 + wildness*4);
+        const diagPhase2 = DIAG_FREQ*1.4*(DIAG_DIR_X*x + DIAG_DIR_Y*posY) - DIAG_SPEED*1.2*t + 1.7;
+        y += Math.sin(diagPhase2) * (2 + wildness*2.5);
+
+        const nx1 = x * 0.012;
+        const ny1 = posY * CHOPPY_NY_K + t * 1.1;
+        const choppy = (fbm(nx1, ny1, 3) - 0.5) * (5 + wildness*18);
+
+        const nx2 = x * 0.035;
+        const ny2 = posY * FOAM_NY_K + t * 1.6;
+        const foam = (fbm(nx2, ny2, 2) - 0.5) * wildness * wildness * 12;
+
+        y += choppy + foam;
+
+        if(!started){ ctx.moveTo(x,y); started=true; }
+        else ctx.lineTo(x,y);
+      }
+
+      const lineAlpha = 0.28 + wildness * 0.42;
+      ctx.strokeStyle = `rgba(220,225,230,${lineAlpha})`;
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+    }
+
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+<script>
+/* ── DECODE + FADE ── */
+(function(){
+  var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
+  var TMS=500,INT=30,TF=Math.floor(TMS/INT);
+  function decode(el,cb){
+    var orig=el.textContent.trim(),len=orig.length,done=[],f=0,rev=0;
+    for(var i=0;i<len;i++)done.push(false);
+    var rs=Math.floor(TF*.25);
+    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    var nsIdx=[]; for(var i=0;i<len;i++) if(orig[i]!=' ') nsIdx.push(i);
+    var preCount=Math.floor(nsIdx.length/2);
+    for(var i=0;i<preCount;i++) done[nsIdx[i]]=true;
+    var remain=nsIdx.length-preCount;
+    var pf=Math.max(1,remain/(TF-rs));
+    function tick(){
+      var out=''; for(var i=0;i<len;i++){if(orig[i]==' '){out+=' ';continue;}if(done[i]){out+=orig[i];continue;}out+=CHARS[Math.floor(Math.random()*CHARS.length)];}
+      el.textContent=out;
+      if(f>=rs){var tr=Math.floor((f-rs+1)*pf)-rev;for(var j=0;j<len&&tr>0;j++){if(!done[j]&&orig[j]!=' '){done[j]=true;rev++;tr--;}}}
+      f++; var all=true; for(var k=0;k<len;k++){if(!done[k]&&orig[k]!=' '){all=false;break;}}
+      if(!all&&f<TF+5)setTimeout(tick,INT); else{el.textContent=orig;if(cb)cb();}
+    }tick();
+  }
+  var obs=new IntersectionObserver(function(es){es.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      var sec=e.target.closest('section')||e.target.closest('#cta');
+      var fes=sec?sec.querySelectorAll('.fade-in'):[];
+      decode(e.target,function(){fes.forEach(function(fe,i){setTimeout(function(){fe.classList.add('visible');},i*120);});});
+      obs.unobserve(e.target);
+    }
+  });},{threshold:.15});
+  document.querySelectorAll('.decode').forEach(function(el){obs.observe(el);});
+})();
+</script>
+<script>
+// ── 대문 제품 박스: 인트로(흰색 채우기 + decode) + 클릭 스크롤
+(function(){
+  var btns = document.querySelectorAll('.hp-btn');
+  var CHARS = '!<>-_\\/[]{}—=+*^?#________';
+  function decodeText(el, target){
+    var len = target.length, frame = 0, totalFrames = 14;
+    /* 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+    var half = Math.floor(len/2), back = Math.max(1, len-half);
+    var iv = setInterval(function(){
+      frame++;
+      var out = '';
+      for(var i=0;i<len;i++){
+        if(i < half){ out += target[i]; continue; }
+        var revealAt = Math.floor(((i-half)/back) * totalFrames * 0.6);
+        if(frame >= revealAt + Math.floor(Math.random()*4)){
+          out += target[i];
+        } else {
+          out += CHARS[Math.floor(Math.random()*CHARS.length)];
+        }
+      }
+      el.textContent = out;
+      if(frame >= totalFrames){ el.textContent = target; clearInterval(iv); }
+    }, 35);
+  }
+
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var id = b.getAttribute('data-target');
+      var el = document.getElementById(id);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  function startIntro(){
+    btns.forEach(function(b, i){
+      var tagEl = b.querySelector('.hp-tag');
+      var nameEl = b.querySelector('.hp-name');
+      var tagText = b.getAttribute('data-tag');
+      var nameText = b.getAttribute('data-name');
+      tagEl.textContent = '';
+      nameEl.textContent = '';
+
+      setTimeout(function(){
+        b.classList.add('hp-filled');
+      }, 1100 + i*180);
+
+      setTimeout(function(){
+        b.classList.add('hp-revealed');
+        decodeText(tagEl, tagText);
+        setTimeout(function(){ decodeText(nameEl, nameText); }, 120);
+      }, 1100 + i*180 + 480);
+    });
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', startIntro);
+  } else {
+    startIntro();
+  }
+})();
+</script>
+<script>
+/* ── PCARD SLIDE-IN ── */
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in-view'); obs.unobserve(e.target); }
+    });
+  },{threshold:0.18});
+  document.querySelectorAll('.pcard').forEach(function(c){ obs.observe(c); });
+})();
+</script>
+<script>
+/* ── 섹션 인디케이터 (우측 고정, 메인페이지 BA_Solutions.html와 동일 로직) ── */
+(function(){
+  const box = document.getElementById('sec-label-box');
+  if (!box) return;
+  const indicator = document.getElementById('sec-indicator');
+  const heroEl = document.getElementById('hero');
+
+  const sections = [
+    { el: document.getElementById('hero'),            name: 'SEA' },
+    { el: document.getElementById('products'),         name: 'PRODUCTS' },
+    { el: document.querySelector('.aegis-sec'),        name: 'AEGIS' },
+    { el: document.querySelector('footer'),            name: 'CONTACT' },
+  ].filter(s => s.el);
+
+  let currentName = '';
+  function renderName(name){ box.innerHTML = '<div class="sec-word">' + name + '</div>'; }
+
+  // 히어로 이름(AIR/LAND/SEA)은 라벨에 쓰지 않는다.
+  // 히어로로 올라올 때 숨는 것과 동시에 이름이 바뀌면, 슬라이드아웃 0.45초 동안
+  // 바뀐 이름이 스쳐 보이기 때문. 숨는 동안에는 직전 이름을 그대로 둔다.
+  // 시작 시 첫 비히어로 섹션 이름을 미리 그려 박스 크기를 확보해 둔다
+  // (라벨이 비어 있으면 박스 폭이 0이라 첫 진입 때 translateX(100%) 가 0이 되어 안 움직임).
+  const firstNamed = sections.find(s => s.el !== heroEl);
+  if (firstNamed) { currentName = firstNamed.name; renderName(currentName); }
+
+  function update(){
+    const centerY = window.innerHeight / 2;
+    let found = sections[0];
+    for (const s of sections) {
+      const r = s.el.getBoundingClientRect();
+      if (r.top <= centerY && r.bottom >= centerY) { found = s; break; }
+      if (r.top > centerY) break;
+      found = s;
+    }
+    // 히어로 구간에서는 숨김, PRODUCTS 이후로는 노출
+    const inHero = found.el === heroEl;
+    if (indicator) indicator.classList.toggle('is-visible', !inHero);
+    // 숨어 있는 동안(히어로)에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
+    if (!inHero && found.name !== currentName) { currentName = found.name; renderName(currentName); }
+  }
+
+  let lastY = -1;
+  (function loop(){
+    const y = window.scrollY || 0;
+    if (y !== lastY) { lastY = y; update(); }
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</body>
+</html>
