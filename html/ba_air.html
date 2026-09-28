@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<!-- ba_air.html — v15 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
 <!-- ba_air.html — v14 (2026-09-15): Spider 링크도 Interceptor 와 같은 View More(채움+화살표) 버튼으로 통일 -->
 <!-- ba_air.html — v13 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
 <!-- ba_air.html — v12 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px) -->
@@ -602,7 +603,11 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
   ].filter(s => s.el);
 
   let currentName = '';
-  function renderName(name){ box.innerHTML = '<div class="sec-word">' + name + '</div>'; }
+  // 이전 이름(prev)이 있으면 슬롯 전환 — footer.js 의 window.baSlotRender (없으면 평문 교체)
+  function renderName(name, prev){
+    if (window.baSlotRender) window.baSlotRender(box, 'sec-word', prev, name);
+    else box.innerHTML = '<div class="sec-word">' + name + '</div>';
+  }
 
   // 히어로 이름(AIR/LAND/SEA)은 라벨에 쓰지 않는다.
   // 히어로로 올라올 때 숨는 것과 동시에 이름이 바뀌면, 슬라이드아웃 0.45초 동안
@@ -625,7 +630,7 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
     const inHero = found.el === heroEl;
     if (indicator) indicator.classList.toggle('is-visible', !inHero);
     // 숨어 있는 동안(히어로)에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
-    if (!inHero && found.name !== currentName) { currentName = found.name; renderName(currentName); }
+    if (!inHero && found.name !== currentName) { const prev = currentName; currentName = found.name; renderName(currentName, prev); }
   }
 
   let lastY = -1;

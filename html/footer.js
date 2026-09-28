@@ -19,7 +19,10 @@
         ID 선택자에 border:0 을 명시해 17개 페이지 전부를 덮어씀.
    v10: 푸터 ABOUT US 링크를 about.html(존재하지 않는 페이지) → http://basolutions.co.kr 로 변경 (2026-09-16)
    v11: <body data-no-sec-ind> 가 있으면 섹션 인디케이터를 아예 만들지 않음 (aegis.html 요청, 2026-09-16)
+   v12: 인디케이터 라벨 전환에 슬롯 효과 — window.baSlotRender (2026-09-17).
+        메인·ba_air/land/sea 의 자체 인디케이터도 이 함수를 호출함
         nav.js 의 ABOUT US 링크와 동일한 대상
+   v13: 푸터가 뷰포트에 진입하면 로고·텍스트·링크가 아래에서 순차 등장 (2026-09-28)
    v9: 좌우 padding clamp(20px 4.1667vw 60px) → --u 단위 (2026-09-14)
         기존 값은 쉼표가 빠져 선언 전체가 무효였고, 각 페이지의 footer{} 규칙이 대신 적용되고 있었음
         (product-aegis-v-jammer 는 규칙이 없어 좌우 여백 0). 이제 이 값이 전 페이지에 적용됨.
@@ -55,6 +58,16 @@
 #ba-footer .flinks a{font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;
   color:rgba(240,237,232,.45);text-decoration:none;transition:color .3s;white-space:nowrap;}
 #ba-footer .flinks a:hover{color:#F0EDE8;}
+#ba-footer.ba-footer-reveal-ready .ba-footer-reveal{opacity:0;transform:translateY(26px);}
+#ba-footer.ba-footer-reveal-ready.is-revealed .ba-footer-reveal{opacity:1;transform:translateY(0);
+  transition:opacity .72s cubic-bezier(.2,.7,.2,1),transform .72s cubic-bezier(.2,.7,.2,1);
+  transition-delay:var(--ba-footer-delay, 0ms);}
+#ba-footer.ba-footer-reveal-ready.is-revealed .flinks a.ba-footer-reveal{
+  transition:color .3s,opacity .72s cubic-bezier(.2,.7,.2,1),transform .72s cubic-bezier(.2,.7,.2,1);
+  transition-delay:0ms,var(--ba-footer-delay, 0ms),var(--ba-footer-delay, 0ms);}
+@media (prefers-reduced-motion:reduce){
+  #ba-footer.ba-footer-reveal-ready .ba-footer-reveal{opacity:1;transform:none;transition:none;}
+}
 </style>
 <footer id="ba-footer">
   <div>
@@ -75,6 +88,38 @@
 `);
 })();
 
+/* 푸터가 처음 화면에 들어올 때만 콘텐츠를 아래에서 순차적으로 노출한다.
+   JS가 실행된 뒤에만 ready 클래스를 붙여, 스크립트 오류 시 푸터가 숨지 않게 한다. */
+(function(){
+  var footer=document.getElementById('ba-footer');
+  if(!footer)return;
+  var items=[
+    footer.querySelector('.logo-wrap'),
+    footer.querySelector('.foot-addr'),
+    footer.querySelector('.foot-copy')
+  ];
+  var links=footer.querySelectorAll('.flinks a');
+  for(var i=0;i<links.length;i++)items.push(links[i]);
+  for(i=0;i<items.length;i++){
+    if(!items[i])continue;
+    items[i].classList.add('ba-footer-reveal');
+    var delay=i<3?i*80:40+(i-3)*60;
+    items[i].style.setProperty('--ba-footer-delay',delay+'ms');
+  }
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  footer.classList.add('ba-footer-reveal-ready');
+  if(reduce||!('IntersectionObserver' in window)){
+    footer.classList.add('is-revealed');
+    return;
+  }
+  var observer=new IntersectionObserver(function(entries){
+    if(!entries[0].isIntersecting)return;
+    footer.classList.add('is-revealed');
+    observer.disconnect();
+  },{threshold:.08});
+  observer.observe(footer);
+})();
+
 
 /* ===================================================================
    스크롤바 숨김 + 섹션 인디케이터 (v9) — 메인(BA_Solutions)과 동일 사양
@@ -91,7 +136,52 @@ document.write('<style>'
 +'#ba-sec-ind .ba-sec-box{display:flex;flex-direction:row;gap:2px;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.7,.2,1);}'
 +'#ba-sec-ind.is-visible .ba-sec-box{transform:translateX(0);}'
 +'#ba-sec-ind .ba-sec-word{writing-mode:vertical-rl;text-orientation:mixed;background:#f0ede8;padding:14px 5px 11px;font-size:10px;font-weight:400;color:#0a0a0c;letter-spacing:.3em;line-height:1;white-space:nowrap;}'
+/* v12 슬롯 전환: 글자마다 칸(.ba-slot)을 만들어 릴처럼 돌린다. 라벨은 세로쓰기라 글자가 시계방향 90° 누워 있으므로,
+   글자 기준 '아래로 내려감 / 위에서 내려옴' = 화면 기준 '왼쪽으로 빠짐 / 오른쪽에서 들어옴'(translateX).
+   칸 높이(글자 진행 방향)는 JS가 이전 글자 → 새 글자 크기로 함께 보간하고, 칸 밖은 잘라낸다. */
++'.ba-slot{display:inline-block;position:relative;clip-path:inset(0);}'
++'.ba-slot-ph{visibility:hidden;}'
++'.ba-slot-out,.ba-slot-in{position:absolute;top:0;right:0;bottom:0;left:0;}'
++'.ba-slot-out{animation:baSlotOut .42s cubic-bezier(.55,0,.25,1) both;}'
++'.ba-slot-in{animation:baSlotIn .42s cubic-bezier(.2,.7,.2,1) both;}'
++'@keyframes baSlotOut{from{transform:translateX(0)}to{transform:translateX(-100%)}}'
++'@keyframes baSlotIn{from{transform:translateX(100%)}to{transform:translateX(0)}}'
 +'</style>');
+/* 인디케이터 라벨 슬롯 전환. box 안을 <div class="cls">to</div> 로 바꾸되, from 이 있으면
+   글자 하나씩(위→아래 순서로 STEP 간격) 이전 글자가 (누운 글자 기준) 아래로 빠지고 새 글자가 위에서 내려온다
+   — 화면으로는 왼쪽으로 빠지고 오른쪽에서 들어옴.
+   글자마다 폭이 달라(P→I 등) 칸 높이를 이전 글자 크기에서 새 글자 크기로 같이 줄이거나 늘린다 —
+   그래서 시작 프레임은 이전 단어, 끝 프레임은 새 단어와 크기가 같고 박스도 부드럽게 길이가 바뀐다.
+   애니메이션이 끝나면 평문으로 되돌려 원래 자간·크기를 그대로 유지한다. */
+window.baSlotRender=function(box,cls,from,to){
+  var STEP=45,DUR=420;
+  function plain(){box.innerHTML='<div class="'+cls+'">'+to+'</div>';}
+  var tok=box._baSlotTok=(box._baSlotTok||0)+1;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!from||from===to||reduce){plain();return;}
+  var n=Math.max(from.length,to.length),h='';
+  for(var i=0;i<n;i++){
+    var o=from.charAt(i),t=to.charAt(i),d='animation-delay:'+(i*STEP)+'ms';
+    h+='<span class="ba-slot"><span class="ba-slot-ph">'+(o||t)+'</span>'
+      +(o?'<span class="ba-slot-out" style="'+d+'">'+o+'</span>':'')
+      +(t?'<span class="ba-slot-in" style="'+d+'">'+t+'</span>':'')+'</span>';
+  }
+  box.innerHTML='<div class="'+cls+'">'+h+'</div>';
+  var cells=box.firstChild.children,sz=[];
+  for(i=0;i<n;i++){
+    var ph=cells[i].firstChild,o2=from.charAt(i),t2=to.charAt(i);
+    ph.textContent=o2;var ho=o2?ph.getBoundingClientRect().height:0;
+    ph.textContent=t2;var ht=t2?ph.getBoundingClientRect().height:0;
+    ph.textContent=o2||t2;sz.push(ht);
+    cells[i].style.height=ho+'px';
+  }
+  box.firstChild.getBoundingClientRect();
+  for(i=0;i<n;i++){
+    cells[i].style.transition='height '+DUR+'ms cubic-bezier(.2,.7,.2,1) '+(i*STEP)+'ms';
+    cells[i].style.height=sz[i]+'px';
+  }
+  setTimeout(function(){if(box._baSlotTok===tok)plain();},(n-1)*STEP+DUR+30);
+};
 (function(){
   function shorten(t){
     t=(t||'').trim().toUpperCase();
@@ -126,7 +216,7 @@ document.write('<style>'
     ind.innerHTML='<div class="ba-sec-box"></div>';
     document.body.appendChild(ind);
     var box=ind.firstChild,cur='';
-    function render(n){box.innerHTML='<div class="ba-sec-word">'+n+'</div>';}
+    function render(n,prev){if(window.baSlotRender)window.baSlotRender(box,'ba-sec-word',prev,n);else box.innerHTML='<div class="ba-sec-word">'+n+'</div>';}
     /* 히어로 이름(TOP)은 라벨에 쓰지 않는다 — 히어로로 올라올 때 숨는 것과 동시에
        이름이 바뀌면 슬라이드아웃 0.45초 동안 바뀐 이름이 스쳐 보이기 때문.
        시작 시 첫 비히어로 항목 이름을 미리 그려 박스 폭을 확보해 둔다
@@ -139,7 +229,7 @@ document.write('<style>'
         if(r.top>cy)break;found=items[i];}
       var inHero = (hero && found.el===hero);
       if(inHero) ind.classList.remove('is-visible'); else ind.classList.add('is-visible');
-      if(!inHero && found.name!==cur){cur=found.name;render(cur);}
+      if(!inHero && found.name!==cur){var prev=cur;cur=found.name;render(cur,prev);}
     }
     var ly=-1;(function loop(){var y=window.scrollY||0;if(y!==ly){ly=y;update();}requestAnimationFrame(loop);})();
     window.addEventListener('resize',update);

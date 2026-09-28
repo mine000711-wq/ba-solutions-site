@@ -253,6 +253,29 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   object-fit:contain;
 }
 
+/* ── 인트로 (첫 로드) ──────────────────────────────────────────
+   검은 화면의 로고 락업 → 심볼이 중앙 로고 자리로 이동, 글자는 심볼 안으로 빨려 들어감
+   → 육각형 세 꼭짓점에서 구분선이 뻗어 나감 → 검은 배경이 세 조각으로 잘려
+   각자 로고 반대 방향(좌상 / 우상 / 아래)으로 빠지며 히어로가 드러난다.
+   html.intro-on 은 <body> 상단 인라인 스크립트가 붙인다(재생 조건 판단).
+   v2: 화면 고정 오버레이 → #hero 안의 레이어. 스크롤을 막지 않고 히어로와 함께 지나가며,
+       메뉴바(fixed, z-index 1000001)는 이 레이어보다 위라 영향받지 않는다.
+   타이밍은 스크립트의 INTRO 상수에서 조정. */
+#intro { display:none; }
+html.intro-on #intro {
+  display:block; position:absolute; inset:0; z-index:30;   /* 히어로 안 최상단(중앙 로고 20 위), 메뉴바 아래 */
+  background:#000; overflow:hidden;
+}
+html.intro-on #intro.is-built { background:transparent; }
+#intro .intro-bg,
+#intro .intro-piece { position:absolute; inset:0; background:#000; will-change:transform; }
+#intro .intro-lines { position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+#intro .intro-mark { position:absolute; transform:translate(-50%,-50%); will-change:transform; }
+#intro .intro-mark img { display:block; width:100%; height:100%; }
+/* 글자 창 — 심볼 오른쪽 변에서 잘린다. 글자가 왼쪽으로 밀려 들어가면 심볼 안으로 사라지는 것처럼 보임 */
+#intro .intro-word { position:absolute; left:100%; overflow:hidden; }
+#intro .intro-word svg { position:absolute; top:0; height:100%; color:#f0ede8; will-change:transform; }
+
 /* 하단 카피 */
 #hero-copy {
   position:absolute; bottom:clamp(48px,7vh,80px);
@@ -572,6 +595,17 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
 #products, #news { position:relative; }
 </style>
 
+<!-- 인트로 — 재생 여부를 첫 페인트 전에 정한다 (히어로가 먼저 번쩍 보이지 않게) -->
+<script>
+(function(){
+  var nav = window.performance && performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* 뒤로/앞으로 가기로 돌아왔거나 #앵커로 들어오면 생략 — 보던 위치를 지킨다 */
+  if (reduce || location.hash || (nav && nav.type === 'back_forward')) return;
+  document.documentElement.classList.add('intro-on');
+})();
+</script>
+
 <!-- 섹션 인디케이터 -->
 <div id="sec-indicator"><div class="sec-label-box" id="sec-label-box"></div></div>
 
@@ -635,6 +669,9 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
   <div id="center-logo">
     <img id="logo-img" src="images/logo_b.png" alt="BA Solutions">
   </div>
+
+  <!-- 인트로 레이어 (첫 로드, JS가 채우고 끝나면 제거) -->
+  <div id="intro" aria-hidden="true"></div>
 </div>
 
 <!-- PRODUCTS -->
@@ -750,6 +787,151 @@ function updateClipPaths() {
 
 updateClipPaths();
 window.addEventListener('resize', updateClipPaths);
+
+/* ── 인트로 ──
+   좌표는 전부 중앙 로고(#logo-img)의 실제 위치·크기에서 뽑는다 →
+   끝나고 오버레이를 걷으면 같은 자리의 히어로 로고·구분선이 그대로 이어진다.
+
+   로고 락업(nav.js 의 .ba-lockup)의 SVG 단위 — 심볼 높이 200 기준:
+     심볼 0 ~ 173.2 (가운데 86.6) / 글자 254 ~ 1760, 세로 45 ~ 155 */
+(function(){
+  const root  = document.documentElement;
+  const intro = document.getElementById('intro');
+  if (!intro) return;
+
+  const INTRO = {
+    SHOW:  1100,  /* 락업만 보이는 시간 (페이드인 600 포함) */
+    MOVE:  1200,  /* 심볼 → 중앙 이동 + 글자 흡수 */
+    LINES:  700,  /* 세 꼭짓점에서 선이 뻗는 시간 */
+    GAP:    150,  /* 선 다 그린 뒤 잠깐 멈춤 */
+    SPLIT: 1100,  /* 세 조각이 빠지는 시간 */
+  };
+
+  function finish() {
+    intro.remove();
+    root.classList.remove('intro-on');
+    window.removeEventListener('resize', onResize);
+  }
+  if (!root.classList.contains('intro-on')) { intro.remove(); return; }
+  const logo = document.getElementById('logo-img');
+  const lockup = document.querySelector('.ba-lockup');
+  if (!intro.animate || !logo || !lockup) { finish(); return; }
+
+  /* 좌표계 = #hero 박스 (레이어가 히어로 안에 있으므로 스크롤 위치와 무관) */
+  const W = hero.clientWidth, H = hero.clientHeight;
+  const hr = hero.getBoundingClientRect(), lr = logo.getBoundingClientRect();
+  const cx = lr.left - hr.left + lr.width / 2, cy = lr.top - hr.top + lr.height / 2;
+  const hexH = lr.height;                 /* logo_b.png(596×687)는 정사각 박스에 contain → 높이가 박스를 채움 */
+  const hexW = hexH * 596 / 687;
+  const u = hexH / 200;                   /* SVG 1단위 → px (최종 크기 기준) */
+  const SVG = 'http://www.w3.org/2000/svg';
+
+  /* 중심에서 angle 방향으로 히어로 가장자리까지의 교점 (updateClipPaths 와 같은 방식) */
+  function ray(deg) {
+    const a = deg * Math.PI / 180, dx = Math.cos(a), dy = Math.sin(a), ts = [];
+    if (dx >  1e-9) ts.push((W - cx) / dx);
+    if (dx < -1e-9) ts.push(-cx / dx);
+    if (dy >  1e-9) ts.push((H - cy) / dy);
+    if (dy < -1e-9) ts.push(-cy / dy);
+    const t = Math.min(...ts.filter(v => v > 1e-4));
+    return [cx + dx * t, cy + dy * t];
+  }
+  const EASE = 'cubic-bezier(.65,0,.35,1)';
+
+  /* 1) 검은 조각 셋 — 받침(bg)은 조각 사이 이음매가 비쳐 보이지 않도록 분리 직전까지 깔아둔다 */
+  const bg = document.createElement('div'); bg.className = 'intro-bg'; intro.appendChild(bg);
+  const pTop = ray(-90), pL = ray(150), pR = ray(30);
+  const poly = pts => 'polygon(' + pts.map(p => p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px').join(',') + ')';
+  const D = Math.hypot(W, H);
+  const pieces = [
+    { pts:[[cx,cy], pTop, [0,0], [0,H], pL], dir:[-0.866,-0.5] },   /* AIR  → 좌상 */
+    { pts:[[cx,cy], pR, [W,H], [W,0], pTop], dir:[ 0.866,-0.5] },   /* SEA  → 우상 */
+    { pts:[[cx,cy], pL, [0,H], [W,H], pR],   dir:[ 0,     1  ] },   /* LAND → 아래 */
+  ].map(p => {
+    const el = document.createElement('div');
+    el.className = 'intro-piece';
+    el.style.clipPath = el.style.webkitClipPath = poly(p.pts);
+    intro.appendChild(el);
+    return { el, dir:p.dir };
+  });
+
+  /* 2) 구분선 — 육각형 꼭짓점(중심에서 hexH/2)에서 히어로 끝까지 */
+  const lines = document.createElementNS(SVG, 'svg');
+  lines.setAttribute('class', 'intro-lines');
+  lines.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const lineEls = [[-90, pTop], [150, pL], [30, pR]].map(([deg, end]) => {
+    const a = deg * Math.PI / 180;
+    const x1 = cx + Math.cos(a) * hexH / 2, y1 = cy + Math.sin(a) * hexH / 2;
+    const len = Math.max(0, Math.hypot(end[0] - x1, end[1] - y1));
+    const ln = document.createElementNS(SVG, 'line');
+    ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+    ln.setAttribute('x2', end[0]); ln.setAttribute('y2', end[1]);
+    ln.setAttribute('stroke', 'rgba(240,237,232,.75)');
+    ln.setAttribute('stroke-width', '1');
+    ln.style.strokeDasharray = len;
+    ln.style.strokeDashoffset = len;
+    lines.appendChild(ln);
+    return { ln, len };
+  });
+  intro.appendChild(lines);
+
+  /* 3) 로고 — 최종 크기로 만들어 두고 transform 으로 락업 위치·크기에서 출발 */
+  const mark = document.createElement('div');
+  mark.className = 'intro-mark';
+  mark.style.cssText = `left:${cx}px; top:${cy}px; width:${hexW}px; height:${hexH}px;`;
+  const img = document.createElement('img');
+  img.src = logo.getAttribute('src'); img.alt = '';
+  const word = document.createElement('div');
+  word.className = 'intro-word';
+  const WORD_W = 1760 - 173.2;                           /* 심볼 오른쪽 변 ~ 글자 끝 */
+  word.style.cssText = `top:${45 * u}px; height:${110 * u}px; width:${WORD_W * u}px;`;
+  const text = lockup.cloneNode(true);
+  text.querySelector('g').remove();                     /* 심볼은 PNG 를 쓰므로 글자 path 만 남김 */
+  text.removeAttribute('class'); text.removeAttribute('role'); text.removeAttribute('aria-label');
+  text.setAttribute('viewBox', '254 45 1506 110');
+  text.style.cssText = `left:${(254 - 173.2) * u}px; width:${1506 * u}px;`;
+  word.appendChild(text);
+  mark.appendChild(word);
+  mark.appendChild(img);
+  intro.appendChild(mark);
+  intro.classList.add('is-built');
+
+  /* 락업 시작 크기: 전체 폭이 화면의 80%(최대 820px)를 넘지 않게, 최종 로고보다 크지 않게 */
+  const k  = Math.min(1, Math.min(W * 0.8, 820) / (1760 * u));
+  const dx = (86.6 - 880) * u * k;                      /* 락업 전체를 화면 중앙에 뒀을 때 심볼 중심의 x 오프셋 */
+  const BASE = 'translate(-50%,-50%)';
+
+  let t = 0;
+  mark.animate([{ opacity:0 }, { opacity:1 }], { duration:600, easing:'ease-out' });
+  mark.animate(
+    [{ transform:`${BASE} translateX(${dx}px) scale(${k})` }, { transform:BASE }],
+    { duration:INTRO.MOVE, delay:INTRO.SHOW, easing:EASE, fill:'backwards' });
+  text.animate(
+    [{ transform:'translateX(0)' }, { transform:`translateX(${-(WORD_W + 1) * u}px)` }],   /* 왼쪽 여백 80.8 + 글자 1506 = WORD_W 만큼 밀면 전부 잘림 */
+    { duration:INTRO.MOVE, delay:INTRO.SHOW, easing:'cubic-bezier(.55,0,.45,1)', fill:'forwards' });
+
+  t = INTRO.SHOW + INTRO.MOVE;
+  lineEls.forEach(({ ln, len }) => ln.animate(
+    [{ strokeDashoffset:len }, { strokeDashoffset:0 }],
+    { duration:INTRO.LINES, delay:t, easing:'cubic-bezier(.2,.7,.2,1)', fill:'forwards' }));
+
+  t += INTRO.LINES + INTRO.GAP;
+  bg.animate([{ opacity:1 }, { opacity:0 }], { duration:1, delay:t, fill:'forwards' });
+  pieces.forEach(({ el, dir }) => el.animate(
+    [{ transform:'translate(0,0)' }, { transform:`translate(${dir[0] * D}px, ${dir[1] * D}px)` }],
+    { duration:INTRO.SPLIT, delay:t, easing:'cubic-bezier(.7,0,.25,1)', fill:'forwards' }));
+  /* 선·로고는 히어로의 같은 요소(구분선 .22 / 로고 PNG)로 자연스럽게 넘겨준다 */
+  lines.animate([{ opacity:1 }, { opacity:.3 }], { duration:INTRO.SPLIT, delay:t, fill:'forwards' });
+  mark.animate([{ opacity:1 }, { opacity:0 }], { duration:INTRO.SPLIT, delay:t, easing:'ease-in', fill:'forwards' });
+
+  setTimeout(finish, t + INTRO.SPLIT);
+  /* 도중에 히어로 크기가 바뀌면 좌표가 틀어지므로 바로 종료.
+     스크롤 중 모바일 주소창이 접히며 오는 resize(높이만 소폭 변화)는 무시한다. */
+  function onResize() {
+    if (hero.clientWidth !== W || Math.abs(hero.clientHeight - H) > 120) finish();
+  }
+  window.addEventListener('resize', onResize);
+})();
 
 /* ── 비전 섹션 차고문 reveal 효과 ──
    스크롤한 만큼 커튼이 접히고, 되감으면 그만큼 다시 내려온다.
@@ -987,8 +1169,11 @@ ni.innerHTML = `
   const heroEl = document.getElementById('hero');
 
   // v6: 세로쓰기 한 줄 — 단어 수와 무관하게 항상 컬럼 1개
-  function renderName(name) {
-    box.innerHTML = '<div class="sec-word">' + name + '</div>';
+  // v46: 이전 이름(prev)이 있으면 슬롯 전환 — 글자가 하나씩 아래로 빠지고 새 글자가 위에서 내려옴
+  //     (footer.js 의 window.baSlotRender. 없으면 평문으로 바로 교체)
+  function renderName(name, prev) {
+    if (window.baSlotRender) window.baSlotRender(box, 'sec-word', prev, name);
+    else box.innerHTML = '<div class="sec-word">' + name + '</div>';
   }
 
   // 히어로 이름(HOME)은 라벨에 쓰지 않는다 — 히어로로 올라올 때 숨는 것과 동시에
@@ -1011,8 +1196,9 @@ ni.innerHTML = `
     if (indicator) indicator.classList.toggle('is-visible', !inHero);
     // 숨어 있는 동안에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
     if (!inHero && found.name !== currentName) {
+      const prev = currentName;
       currentName = found.name;
-      renderName(currentName);
+      renderName(currentName, prev);
     }
   }
 

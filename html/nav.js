@@ -1,3 +1,5 @@
+/* v16 (2026-09-28): IT SERVICES 메뉴 표기를 TECH로 단축. */
+/* v15 (2026-09-21): IT SERVICES 메뉴 추가, 메뉴 충돌 방지 전환점 1100px. */
 /* ===================================================================
    BA SOLUTIONS 공용 상단 메뉴바  —  v14
    v3: E안 락업 인라인 SVG 적용
@@ -66,7 +68,8 @@
     ['AIR','ba_air.html'],
     ['LAND','ba_land.html'],
     ['SEA','ba_sea.html'],
-    ['AEGIS','aegis.html']
+    ['AEGIS','aegis.html'],
+    ['TECH','it-services.html']
   ];
   var li = links.map(function(l){
     return '<li><a href="'+pageBase+l[1]+'">'+l[0]+'</a></li>';
@@ -76,6 +79,7 @@
     ['LAND','ba_land.html'],
     ['SEA','ba_sea.html'],
     ['AEGIS','aegis.html'],
+    ['TECH','it-services.html'],
     ['NEWS','news.html']
   ];
   var mli = mLinks.map(function(l){
@@ -118,8 +122,8 @@
   '#ba-menu ul a{font-size:13px;padding:13px 0;}'+
   '#ba-menu .about{margin-top:20px;font-size:10.5px;letter-spacing:.14em;padding:12px 0;}'+
   '#ba-menu a:hover,#ba-menu a:focus-visible{color:#F0EDE8;}'+
-  '@media (max-width:820px){#ba-nav .nav-links,#ba-nav .nav-about{display:none;}#ba-toggle{display:flex;}}'+
-  '@media (min-width:821px){#ba-menu{display:none;}}'+
+  '@media (max-width:1100px){#ba-nav .nav-links,#ba-nav .nav-about{display:none;}#ba-toggle{display:flex;}}'+
+  '@media (min-width:1101px){#ba-menu{display:none;}}'+
   '</style>'+
   '<nav id="ba-nav">'+
     '<div class="logo-wrap" onclick="location.href=\''+homeHref+'\'">'+
@@ -144,12 +148,14 @@
      페이지별 --pad와 무관하게 화면 가장자리 기준으로 위치를 통일한다. */
   document.write('<style>'+
     '#ba-corners{position:fixed;inset:0;z-index:999997;pointer-events:none;user-select:none;'+
-      '--corner-inset:24px;color:var(--ink, #f0ede8);opacity:.38;}' +
-    /* 홀수 크기 + 1px 중심선: 네 팔을 각각 6px로 맞춘다. */
-    '#ba-corners .ba-corner{position:absolute;width:13px;height:13px;}' +
+      '--corner-inset:24px;color:#fff;}' +
+    /* 불투명 백색 고정: 반투명이면 배경이 비쳐 위치마다 색이 달라 보인다.
+       얇은 선은 뒤 배경과 섞여 밝기가 달라 보이므로 옅은 검은 번짐으로 배경과 분리한다.
+       17px 칸 + 0.75px 선을 정중앙(8.125px)에 둔다. */
+    '#ba-corners .ba-corner{position:absolute;width:17px;height:17px;filter:drop-shadow(0 0 1px rgba(0,0,0,.45));}' +
     '#ba-corners .ba-corner::before,#ba-corners .ba-corner::after{content:"";position:absolute;background:currentColor;}' +
-    '#ba-corners .ba-corner::before{width:13px;height:1px;left:0;top:6px;}' +
-    '#ba-corners .ba-corner::after{width:1px;height:13px;left:6px;top:0;}' +
+    '#ba-corners .ba-corner::before{width:17px;height:.75px;left:0;top:8.125px;}' +
+    '#ba-corners .ba-corner::after{width:.75px;height:17px;left:8.125px;top:0;}' +
     '#ba-corners .ba-corner-tl,#ba-corners .ba-corner-tr{top:80px;}' +
     '#ba-corners .ba-corner-bl,#ba-corners .ba-corner-br{bottom:24px;}' +
     '#ba-corners .ba-corner-tl,#ba-corners .ba-corner-bl{left:var(--corner-inset);}' +
@@ -178,5 +184,5 @@
     if(!e.target.closest('.panel')) setOpen(false);   /* 패널 바깥(스크림) 클릭 */
   });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setOpen(false); });
-  window.addEventListener('resize', function(){ if(window.innerWidth > 820) setOpen(false); });
+  window.addEventListener('resize', function(){ if(window.innerWidth > 1100) setOpen(false); });
 })();

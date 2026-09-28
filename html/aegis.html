@@ -5,8 +5,11 @@
 <!-- aegis.html — v58 (2026-09-15): DECIDE 터미널 주황 #ffb300 → #daab4e (채도 100% → 약 65%, 빨강·파랑과 맞춤) -->
 <!-- aegis.html — v57 (2026-09-15): DECIDE 터미널 약한 색 4종 추가(TERM_WEAK_RE) — 식별자 #9790ad / 분류명 #7fa39c / 항목명 #7f8d9c / 수치 #b3a58c, 저채도·반투명. 강한 키워드 색이 우선 -->
 <!-- aegis.html — v56 (2026-09-15): DECIDE 터미널 빨강 #ff3b30 → #e0655c, 파랑 #4096ff → #729fda (채도 100% → 약 65%/58%) -->
+<!-- aegis.html — v56 (2026-09-17): FLOW 카드(AEGIS IS_ + 제목) 타이핑 효과는 카드별 최초 1회만 — 이후 재진입·단계 복귀 시 완성 상태 유지 -->
 <!-- aegis.html — v55 (2026-09-15): DECIDE 터미널 줄 단위 출력 → 글자 타이핑(rAF 타임라인). 반복 줄(mounting/TGT-0/rule[/opt/P()은 빠르게, 리더 점·'<--' 뒤 결과값은 짧게 대기. 전체 3.87s로 기존 3.90s 이내 (TERM_TYPE) -->
+<!-- aegis.html — v55 (2026-09-17): FLOW SENSE 영상 — 섹션 이탈 시 재생 중이면 일시정지(복귀 시 이어서 재생), 끝난 뒤면 페이드아웃→되감기→페이드인 -->
 <!-- aegis.html — v54 (2026-09-15): DECIDE 터미널 키워드 색 — 위협 #ff3b30 / 주의·선택 #ffb300 / 아군·링크 #4096ff / 정상 #34c759. 줄 전체가 아닌 단어 단위(termColorize) -->
+<!-- aegis.html — v54 (2026-09-17): FLOW SENSE 영상(aegis_sense_v2)이 로드 즉시 재생되어 3No를 보는 동안 끝나버리던 문제 → .flow-left가 화면에 다 들어온 뒤(카피 타이핑과 같은 시점) 처음부터 재생, 벗어나면 정지·되감기 -->
 <!-- aegis.html — v53 (2026-09-15): 3No sec-desc 글자 크기 20px 고정 → max(15px, calc(20 * var(--u))) — 1440px 이상에서 20px(최대), 좁아지면 비례 축소 (ba_air 기준) -->
 <!-- aegis.html — v52 (2026-09-15): 3No RELAY 색수차 수렴 속도 0.6s → 0.3s -->
 <!-- aegis.html — v51 (2026-09-15): 3No 세 번째 단어 DEPENDENCY → RELAY. decode 스크램블 대신 색수차(RGB 3채널 분리 → 가산혼합 수렴) 효과. 검토 프로토타입: Homepage/Prototype/06_3no_relay/ -->
@@ -190,6 +193,7 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   pointer-events:none;
 }
 .flow-vid.show { opacity:1; }
+.flow-vid.show.rewind { opacity:0; } /* 끝난 영상 되감기 중 페이드아웃 */
 .flow-cmd{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;z-index:1;pointer-events:none;background:#000000;}
 .flow-cmd.show{opacity:1;}
 /* DECIDE 터미널 스트림 */
@@ -729,9 +733,12 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     card.classList.add('flow-type-ready');
     return {label, title};
   });
+  // 타이핑이 한 번 끝난 카드는 이후 다시 들어와도 효과 없이 완성 상태 유지
+  const copyPlayed = cards.map(() => false);
   function resetCopy(){
     cancelAnimationFrame(copyFrame);
     cards.forEach((card, i) => {
+      if(copyPlayed[i]) return;
       card.classList.remove('is-typing', 'copy-done', 'cursor-blink');
       [...copyGlyphs[i].label, ...copyGlyphs[i].title].forEach(el => el.style.visibility = '');
     });
@@ -749,7 +756,9 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
       card.querySelector('.fc-cursor').style.left = (lastChar ? lastChar.offsetLeft + lastChar.offsetWidth : 0) + 'px';
       card.classList.remove('is-typing'); card.classList.add('copy-done');
       if(!reducedMotion.matches) card.classList.add('cursor-blink');
+      copyPlayed[i] = true;
     };
+    if(copyPlayed[i]) return;
     if(reducedMotion.matches){finish();return;}
     card.classList.add('is-typing');
     const start = performance.now();
@@ -776,6 +785,40 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     copyInView = full;
     if(full) playCopy(currentCopyStep);
     else resetCopy();
+    syncVids();
+  }
+
+  // 현재 단계 영상은 .flow-left가 화면에 다 들어왔을 때(카피 타이핑과 같은 시점) 재생.
+  // 벗어날 때: 재생 중이면 일시정지(다시 오면 이어서), 끝난 뒤면 페이드아웃 → 처음으로 되감기 → 페이드인
+  function playVid(v){ const p = v.play(); if (p) p.catch(()=>{}); }
+  function rewindVid(v){
+    v._rewinding = true;
+    v.classList.add('rewind');
+    setTimeout(() => {
+      let doneFlag = false;
+      const done = () => {
+        if (doneFlag) return; doneFlag = true;
+        v.classList.remove('rewind');
+        v._rewinding = false;
+        if (v._playAfter) { v._playAfter = false; playVid(v); }
+      };
+      v.addEventListener('seeked', done, { once:true });
+      setTimeout(done, 400); // seeked 이벤트가 오지 않는 경우 대비
+      try { v.currentTime = 0; } catch(e){ done(); }
+    }, 600); // .flow-vid opacity 전환 시간과 동일
+  }
+  function syncVids(){
+    vids.forEach((v) => {
+      const j = parseInt(v.dataset.step, 10);
+      if (j === currentCopyStep && copyInView) {
+        if (v._rewinding) v._playAfter = true;
+        else playVid(v);
+      } else {
+        v._playAfter = false;
+        v.pause();
+        if (v.ended && !v._rewinding) rewindVid(v);
+      }
+    });
   }
 
   const vids  = Array.from(document.querySelectorAll('.flow-vid'));
@@ -1050,19 +1093,12 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
       else if (j < i)   c.classList.add('above');
       else              c.classList.add('below');
     });
-    // 영상 재생 제어 (data-step 기준)
+    // 영상 재생 제어 (data-step 기준) — 섹션 진입 전에는 재생하지 않음
     vids.forEach((v) => {
       const j = parseInt(v.dataset.step, 10);
-      if (j === i) {
-        v.classList.add('show');
-        v.currentTime = 0;
-        const p = v.play();
-        if (p) p.catch(()=>{});
-      } else {
-        v.classList.remove('show');
-        v.pause();
-      }
+      v.classList.toggle('show', j === i);
     });
+    syncVids();
     var _cm=document.getElementById('cmdMap');if(_cm){_cm.classList.toggle('show', i===2);if(i===2){try{_cm.contentWindow&&_cm.contentWindow.__aegisReset&&_cm.contentWindow.__aegisReset();}catch(e){}}}
     // DECIDE(1) 터미널 제어
     if (i === 1) {
