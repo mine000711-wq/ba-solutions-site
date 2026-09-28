@@ -116,7 +116,7 @@
     if(!entries[0].isIntersecting)return;
     footer.classList.add('is-revealed');
     observer.disconnect();
-  },{threshold:.08});
+  },{threshold:.2});
   observer.observe(footer);
 })();
 
