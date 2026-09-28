@@ -794,7 +794,7 @@ window.addEventListener('resize', updateClipPaths);
    끝나고 오버레이를 걷으면 같은 자리의 히어로 로고·구분선이 그대로 이어진다.
 
    로고 락업(nav.js 의 .ba-lockup)의 SVG 단위 — 심볼 높이 200 기준:
-     심볼 0 ~ 173.2 (가운데 86.6) / 글자 254 ~ 1760, 세로 45 ~ 155 */
+     심볼 0 ~ 173.2 (가운데 86.6) / 글자 249 ~ 1749, 세로 47 ~ 153 (2026-09-28 새 락업, 획 두께 포함) */
 (function(){
   const root  = document.documentElement;
   const intro = document.getElementById('intro');
@@ -884,13 +884,13 @@ window.addEventListener('resize', updateClipPaths);
   img.src = logo.getAttribute('src'); img.alt = '';
   const word = document.createElement('div');
   word.className = 'intro-word';
-  const WORD_W = 1760 - 173.2;                           /* 심볼 오른쪽 변 ~ 글자 끝 */
-  word.style.cssText = `top:${45 * u}px; height:${110 * u}px; width:${WORD_W * u}px;`;
+  const WORD_W = 1749 - 173.2;                           /* 심볼 오른쪽 변 ~ 글자 끝 */
+  word.style.cssText = `top:${47 * u}px; height:${106 * u}px; width:${WORD_W * u}px;`;
   const text = lockup.cloneNode(true);
   text.querySelector('g').remove();                     /* 심볼은 PNG 를 쓰므로 글자 path 만 남김 */
   text.removeAttribute('class'); text.removeAttribute('role'); text.removeAttribute('aria-label');
-  text.setAttribute('viewBox', '254 45 1506 110');
-  text.style.cssText = `left:${(254 - 173.2) * u}px; width:${1506 * u}px;`;
+  text.setAttribute('viewBox', '249 47 1500 106');
+  text.style.cssText = `left:${(249 - 173.2) * u}px; width:${1500 * u}px;`;
   word.appendChild(text);
   mark.appendChild(word);
   mark.appendChild(img);
@@ -898,8 +898,8 @@ window.addEventListener('resize', updateClipPaths);
   intro.classList.add('is-built');
 
   /* 락업 시작 크기: 전체 폭이 화면의 80%(최대 820px)를 넘지 않게, 최종 로고보다 크지 않게 */
-  const k  = Math.min(1, Math.min(W * 0.8, 820) / (1760 * u));
-  const dx = (86.6 - 880) * u * k;                      /* 락업 전체를 화면 중앙에 뒀을 때 심볼 중심의 x 오프셋 */
+  const k  = Math.min(1, Math.min(W * 0.8, 820) / (1749 * u));
+  const dx = (86.6 - 874.5) * u * k;                      /* 락업 전체를 화면 중앙에 뒀을 때 심볼 중심의 x 오프셋 */
   const BASE = 'translate(-50%,-50%)';
 
   let t = 0;
@@ -908,7 +908,7 @@ window.addEventListener('resize', updateClipPaths);
     [{ transform:`${BASE} translateX(${dx}px) scale(${k})` }, { transform:BASE }],
     { duration:INTRO.MOVE, delay:INTRO.SHOW, easing:EASE, fill:'backwards' });
   text.animate(
-    [{ transform:'translateX(0)' }, { transform:`translateX(${-(WORD_W + 1) * u}px)` }],   /* 왼쪽 여백 80.8 + 글자 1506 = WORD_W 만큼 밀면 전부 잘림 */
+    [{ transform:'translateX(0)' }, { transform:`translateX(${-(WORD_W + 1) * u}px)` }],   /* 왼쪽 여백 75.8 + 글자 1500 = WORD_W 만큼 밀면 전부 잘림 */
     { duration:INTRO.MOVE, delay:INTRO.SHOW, easing:'cubic-bezier(.55,0,.45,1)', fill:'forwards' });
 
   t = INTRO.SHOW + INTRO.MOVE;
