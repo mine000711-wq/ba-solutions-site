@@ -1,3 +1,4 @@
+/* v15 (2026-09-29): 언어 선택 상자를 메뉴 목록 아래 → 왼편으로 이동(글자 높이 AIR POWER 에 맞춤). 640px 이하는 메뉴 아래. */
 /* v14 (2026-09-29): 한/영 전환을 메뉴바에서 푸터로 이동 — 오른쪽 링크 아래 접힌 상자(KOR ^).
         누르면 위로 펼쳐져 바꿀 수 있는 언어만(ENG 또는 KOR) 보이고, 고르면 바로 전환·저장 후 접힘. */
 /* v13 (2026-09-29): 푸터 개선 — 로고를 홈 링크(<a>)로, 링크에 TECH·NEWS 추가(메뉴바와 같은 구성),
@@ -74,8 +75,15 @@
 #ba-footer .flinks a{font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;
   color:rgba(240,237,232,.45);text-decoration:none;transition:color .3s;white-space:nowrap;}
 #ba-footer .flinks a:hover{color:#F0EDE8;}
-/* 언어 선택: 접힌 상자(KOR ^)를 누르면 위로 펼쳐져 바꿀 수 있는 언어(ENG)만 보인다. */
-#ba-footer .flang{position:relative;margin-top:36px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;}
+/* 언어 선택: 메뉴 목록 왼편의 접힌 상자(KOR ^). 누르면 위로 펼쳐져 바꿀 수 있는 언어(ENG)만 보인다.
+   상자 테두리 1px + 안쪽 여백 9px 만큼 끌어올려 KOR 글자를 AIR POWER 글자 높이에 맞춘다.
+   좁은 화면에서는 왼쪽 주소 칸이 밀리지 않도록 메뉴 아래로 내린다. */
+#ba-footer .fright{display:flex;align-items:flex-start;gap:max(28px, calc(48 * var(--u, calc(min(100vw, 1440px) / 1440))));}
+@media (max-width:640px){
+  #ba-footer .fright{flex-direction:column;align-items:flex-end;gap:36px;}
+  #ba-footer .fright .flang{order:1;margin-top:0;}
+}
+#ba-footer .flang{position:relative;margin-top:-10px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;}
 #ba-footer .flang button{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;
   margin:0;padding:9px 12px;background:transparent;border:0;border-radius:0;font:inherit;letter-spacing:inherit;
   color:rgba(240,237,232,.45);cursor:pointer;transition:color .3s;white-space:nowrap;}
@@ -113,6 +121,14 @@
     <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>${P('56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 13572', '경기도 성남시 분당구 안골로 56<br>(13572)')}<br><br>${P('Tel', '전화')}: +82-2-576-5295<br>${P('Fax', '팩스')}: +82-31-707-7943<br>${P('Email', '이메일')}: <a href="mailto:babystar@basolutions.co.kr">babystar@basolutions.co.kr</a></div>
     <div class="foot-copy">© 2004 ~ ${year} BA Solutions, Co., Ltd. All rights reserved.<br>${P('The Jammer is the strategic item and is under control of Korean government.', '재머는 전략물자로 대한민국 정부의 통제를 받습니다.')}</div>
   </div>
+  <div class="fright">
+  <div class="flang" id="ba-flang">
+    <div class="flang-list" id="ba-flang-list">
+      <button type="button" data-set-lang="ko">KOR</button>
+      <button type="button" data-set-lang="en">ENG</button>
+    </div>
+    <button type="button" class="flang-btn" aria-expanded="false" aria-controls="ba-flang-list"><span class="flang-cur"></span><svg viewBox="0 0 8 5" aria-hidden="true" focusable="false"><path d="M.5 4.5 4 1l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1"/></svg></button>
+  </div>
   <div class="flinks">
     <a href="${pageBase}ba_air.html">AIR POWER</a>
     <a href="${pageBase}ba_land.html">LAND POWER</a>
@@ -121,13 +137,7 @@
     <a href="${pageBase}it-services.html">TECH</a>
     <a href="${pageBase}news.html" style="margin-top:36px;">NEWS</a>
     <a href="https://basolutions.co.kr">ABOUT US</a>
-    <div class="flang" id="ba-flang">
-      <div class="flang-list" id="ba-flang-list">
-        <button type="button" data-set-lang="ko">KOR</button>
-        <button type="button" data-set-lang="en">ENG</button>
-      </div>
-      <button type="button" class="flang-btn" aria-expanded="false" aria-controls="ba-flang-list"><span class="flang-cur"></span><svg viewBox="0 0 8 5" aria-hidden="true" focusable="false"><path d="M.5 4.5 4 1l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1"/></svg></button>
-    </div>
+  </div>
   </div>
 </footer>
 `);
