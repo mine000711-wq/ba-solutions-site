@@ -1,3 +1,5 @@
+/* v20 (2026-09-29): 한/영 토글(KO / EN)을 메뉴바·모바일 드로어에서 제거 — 푸터 언어 선택 상자(footer.js v14)로 이동.
+        햄버거·드로어 접근성 문구는 계속 선택 언어를 따름('ba:lang' 이벤트). */
 /* v19 (2026-09-29): 로고를 div onclick → <a> 홈 링크로(모양 그대로). 새 탭 열기·링크 복사·키보드 이동 가능.
         링크 이름은 aria-label("BA SOLUTIONS home", i18n 페이지에서 한국어), 로고 SVG 는 aria-hidden.
         ABOUT US 링크 http → https. */
@@ -90,8 +92,6 @@
     ['TECH','it-services.html'],
     ['NEWS','news.html']
   ];
-  /* 언어 토글 — hreflang 만 쓰고 lang 속성은 달지 않는다(lang.js 가 body 안 lang 쌍을 숨기므로). */
-  var langLinks = '<a href="?lang=ko" hreflang="ko" data-set-lang="ko">KO</a><span class="sep" aria-hidden="true">/</span><a href="?lang=en" hreflang="en" data-set-lang="en">EN</a>';
   var isKo = function(){ return window.BA_LANG === 'ko'; };
   var mli = mLinks.map(function(l){
     return '<li><a href="'+pageBase+l[1]+'">'+l[0]+'</a></li>';
@@ -114,11 +114,6 @@
   '#ba-nav .nav-about{display:block;padding:18px 13px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:11.5px;letter-spacing:.1em;color:rgba(240,237,232,.4);text-decoration:none;transition:color .3s;border:none;background:transparent;white-space:nowrap;}'+
   '#ba-nav .nav-about:hover{color:#F0EDE8;background:transparent;}'+
   '#ba-nav .nav-right{display:flex;align-items:center;}'+
-  /* 언어 토글: 메뉴와 같은 서체·크기. 비선택 .4 / 선택·호버 bone. 밝은 메뉴바 페이지는 aria-current 색을 덮어쓴다. */
-  '#ba-nav .nav-lang{display:flex;align-items:center;margin-left:6px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:11.5px;letter-spacing:.1em;color:rgba(240,237,232,.4);white-space:nowrap;}'+
-  '#ba-nav .nav-lang a{display:block;padding:18px 5px;color:inherit;text-decoration:none;transition:color .3s;}'+
-  '#ba-nav .nav-lang a:hover,#ba-nav .nav-lang a[aria-current="true"]{color:#F0EDE8;}'+
-  '#ba-nav .nav-lang .sep,#ba-menu .menu-lang .sep{opacity:.6;}'+
   /* 토글 버튼은 nav 바깥의 최상위 요소 — 메뉴바가 블러·차폐돼도 항상 또렷하고 누를 수 있음 */
   '#ba-toggle{display:none;position:fixed;top:11px;right:calc(max(20px, calc(40 * var(--u, calc(min(100vw, 1440px) / 1440)))) - 6px);z-index:1000002;width:34px;height:34px;align-items:center;justify-content:center;padding:0;background:transparent;border:0;cursor:pointer;color:#F0EDE8;}'+
   '#ba-toggle span{display:block;position:relative;width:22px;height:1.5px;background:currentColor;transition:background .2s ease;}'+
@@ -139,10 +134,7 @@
   '#ba-menu ul a{font-size:13px;padding:13px 0;}'+
   '#ba-menu .about{margin-top:20px;font-size:10.5px;letter-spacing:.14em;padding:12px 0;}'+
   '#ba-menu a:hover,#ba-menu a:focus-visible{color:#F0EDE8;}'+
-  '#ba-menu .menu-lang{display:flex;align-items:center;gap:10px;margin-top:8px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.14em;color:rgba(240,237,232,.55);}'+
-  '#ba-menu .menu-lang a{padding:12px 0;letter-spacing:inherit;}'+
-  '#ba-menu .menu-lang a[aria-current="true"]{color:#F0EDE8;}'+
-  '@media (max-width:1100px){#ba-nav .nav-links,#ba-nav .nav-about,#ba-nav .nav-lang{display:none;}#ba-toggle{display:flex;}}'+
+  '@media (max-width:1100px){#ba-nav .nav-links,#ba-nav .nav-about{display:none;}#ba-toggle{display:flex;}}'+
   '@media (min-width:1101px){#ba-menu{display:none;}}'+
   '</style>'+
   '<nav id="ba-nav">'+
@@ -153,7 +145,6 @@
     '<div class="nav-right">'+
       '<a href="'+pageBase+'news.html" class="nav-about">NEWS</a>'+
       '<a href="https://basolutions.co.kr" class="nav-about">ABOUT US</a>'+
-      '<div class="nav-lang" role="group" aria-label="Language / 언어">'+langLinks+'</div>'+
     '</div>'+
   '</nav>'+
   '<button id="ba-toggle" type="button" aria-expanded="false" aria-controls="ba-menu" aria-label="'+(isKo()?'메뉴 열기':'Open menu')+'"><span></span></button>'+
@@ -161,7 +152,6 @@
     '<div class="panel">'+
       '<ul>'+mli+'</ul>'+
       '<a href="https://basolutions.co.kr" class="about">ABOUT US</a>'+
-      '<div class="menu-lang" role="group" aria-label="Language / 언어">'+langLinks+'</div>'+
     '</div>'+
   '</div>'
   );
@@ -202,29 +192,17 @@
 
   btn.addEventListener('click', function(){ setOpen(!btn.classList.contains('open')); });
   menuEl.addEventListener('click', function(e){
-    if(e.target.closest('[data-set-lang]')) return;   /* 언어 전환은 드로어를 닫지 않음 — 바뀐 선택이 보이도록 */
     if(e.target.closest('a')){ setOpen(false); return; }
     if(!e.target.closest('.panel')) setOpen(false);   /* 패널 바깥(스크림) 클릭 */
   });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setOpen(false); });
   window.addEventListener('resize', function(){ if(window.innerWidth > 1100) setOpen(false); });
 
-  /* ---- 언어 토글 ---- */
+  /* ---- 언어 변경 시 접근성 문구 갱신 (전환 UI 는 footer.js) ---- */
   function syncLang(){
-    var links = document.querySelectorAll('[data-set-lang]');
-    for (var i = 0; i < links.length; i++) {
-      if (links[i].getAttribute('data-set-lang') === window.BA_LANG) links[i].setAttribute('aria-current', 'true');
-      else links[i].removeAttribute('aria-current');
-    }
     btn.setAttribute('aria-label', isKo() ? (btn.classList.contains('open') ? '메뉴 닫기' : '메뉴 열기') : (btn.classList.contains('open') ? 'Close menu' : 'Open menu'));
     menuEl.setAttribute('aria-label', isKo() ? '메뉴' : 'Menu');
   }
   syncLang();
   document.addEventListener('ba:lang', syncLang);
-  document.addEventListener('click', function(e){
-    var a = e.target.closest && e.target.closest('[data-set-lang]');
-    if (!a || !window.baSetLang) return;   /* lang.js 가 없으면 ?lang= 링크로 이동 */
-    e.preventDefault();
-    window.baSetLang(a.getAttribute('data-set-lang'));
-  });
 })();

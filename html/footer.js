@@ -1,3 +1,5 @@
+/* v14 (2026-09-29): 한/영 전환을 메뉴바에서 푸터로 이동 — 오른쪽 링크 아래 접힌 상자(KOR ^).
+        누르면 위로 펼쳐져 바꿀 수 있는 언어만(ENG 또는 KOR) 보이고, 고르면 바로 전환·저장 후 접힘. */
 /* v13 (2026-09-29): 푸터 개선 — 로고를 홈 링크(<a>)로, 링크에 TECH·NEWS 추가(메뉴바와 같은 구성),
         이메일(공식 관리자 메일) 추가, 우편번호 135721 → 13572(공식 사이트 표기), 저작권 연도는 현재 연도 자동,
         ABOUT US http → https. */
@@ -72,6 +74,26 @@
 #ba-footer .flinks a{font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;
   color:rgba(240,237,232,.45);text-decoration:none;transition:color .3s;white-space:nowrap;}
 #ba-footer .flinks a:hover{color:#F0EDE8;}
+/* 언어 선택: 접힌 상자(KOR ^)를 누르면 위로 펼쳐져 바꿀 수 있는 언어(ENG)만 보인다. */
+#ba-footer .flang{position:relative;margin-top:36px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.08em;}
+#ba-footer .flang button{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;box-sizing:border-box;
+  margin:0;padding:9px 12px;background:transparent;border:0;border-radius:0;font:inherit;letter-spacing:inherit;
+  color:rgba(240,237,232,.45);cursor:pointer;transition:color .3s;white-space:nowrap;}
+#ba-footer .flang button:hover,#ba-footer .flang.open .flang-btn{color:#F0EDE8;}
+#ba-footer .flang button:focus-visible{outline:1px solid currentColor;outline-offset:-4px;}
+#ba-footer .flang .flang-btn{border:1px solid rgba(240,237,232,.2);transition:color .3s,border-color .3s;}
+#ba-footer .flang .flang-btn:hover,#ba-footer .flang.open .flang-btn{border-color:rgba(240,237,232,.45);}
+#ba-footer .flang-btn svg{width:8px;height:5px;flex:none;transition:transform .3s cubic-bezier(.2,.7,.2,1);}
+#ba-footer .flang.open .flang-btn svg{transform:rotate(180deg);}
+#ba-footer .flang-list{position:absolute;left:0;right:0;bottom:100%;background:#000;
+  border:1px solid rgba(240,237,232,.45);border-bottom:0;
+  visibility:hidden;clip-path:inset(100% 0 0 0);
+  transition:clip-path .32s cubic-bezier(.2,.7,.2,1),visibility 0s .32s;}
+#ba-footer .flang.open .flang-list{visibility:visible;clip-path:inset(0);transition:clip-path .32s cubic-bezier(.2,.7,.2,1),visibility 0s;}
+#ba-footer .flang-list button[hidden]{display:none;}
+@media (prefers-reduced-motion:reduce){
+  #ba-footer .flang-list,#ba-footer .flang.open .flang-list,#ba-footer .flang-btn svg{transition:none;}
+}
 #ba-footer.ba-footer-reveal-ready .ba-footer-reveal{opacity:0;transform:translateY(26px);}
 #ba-footer.ba-footer-reveal-ready.is-revealed .ba-footer-reveal{opacity:1;transform:translateY(0);
   transition:opacity .72s cubic-bezier(.2,.7,.2,1),transform .72s cubic-bezier(.2,.7,.2,1);
@@ -99,9 +121,48 @@
     <a href="${pageBase}it-services.html">TECH</a>
     <a href="${pageBase}news.html" style="margin-top:36px;">NEWS</a>
     <a href="https://basolutions.co.kr">ABOUT US</a>
+    <div class="flang" id="ba-flang">
+      <div class="flang-list" id="ba-flang-list">
+        <button type="button" data-set-lang="ko">KOR</button>
+        <button type="button" data-set-lang="en">ENG</button>
+      </div>
+      <button type="button" class="flang-btn" aria-expanded="false" aria-controls="ba-flang-list"><span class="flang-cur"></span><svg viewBox="0 0 8 5" aria-hidden="true" focusable="false"><path d="M.5 4.5 4 1l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1"/></svg></button>
+    </div>
   </div>
 </footer>
 `);
+})();
+
+/* 언어 선택 상자. 선택·저장은 lang.js(window.baSetLang).
+   옵션 버튼에는 lang 속성을 달지 않는다 — lang.js 가 body 안의 lang 요소를 숨기기 때문. */
+(function(){
+  var box=document.getElementById('ba-flang');
+  if(!box)return;
+  if(!window.baSetLang){box.style.display='none';return;}
+  var btn=box.querySelector('.flang-btn'),cur=box.querySelector('.flang-cur'),opts=box.querySelectorAll('[data-set-lang]');
+  var NAME={ko:'KOR',en:'ENG'};
+  function sync(){
+    var l=window.BA_LANG==='ko'?'ko':'en';
+    cur.textContent=NAME[l];
+    for(var i=0;i<opts.length;i++)opts[i].hidden=opts[i].getAttribute('data-set-lang')===l;
+    btn.setAttribute('aria-label',l==='ko'?'언어 선택 (현재 한국어)':'Language (current: English)');
+  }
+  function setOpen(on){
+    box.classList.toggle('open',on);
+    btn.setAttribute('aria-expanded',on?'true':'false');
+  }
+  btn.addEventListener('click',function(){setOpen(!box.classList.contains('open'));});
+  for(var i=0;i<opts.length;i++)opts[i].addEventListener('click',function(){
+    window.baSetLang(this.getAttribute('data-set-lang'));
+    setOpen(false);
+    btn.focus();
+  });
+  document.addEventListener('click',function(e){if(!box.contains(e.target))setOpen(false);});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&box.classList.contains('open')){setOpen(false);btn.focus();}
+  });
+  document.addEventListener('ba:lang',sync);
+  sync();
 })();
 
 /* 푸터가 처음 화면에 들어올 때만 콘텐츠를 아래에서 순차적으로 노출한다.
@@ -116,6 +177,7 @@
   ];
   var links=footer.querySelectorAll('.flinks a');
   for(var i=0;i<links.length;i++)items.push(links[i]);
+  items.push(footer.querySelector('.flang'));
   for(i=0;i<items.length;i++){
     if(!items[i])continue;
     items[i].classList.add('ba-footer-reveal');
