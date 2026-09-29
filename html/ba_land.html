@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<!-- ba_land.html — v27 (2026-09-29): 한/영 병기(data-i18n). 소개·섹션 설명·카드 설명·AEGIS 문단만 병기, 대제목 슬로건·제품명·View More 버튼·대문자 CTA는 영문 유지 -->
 <!-- ba_land.html — v26 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
 <!-- ba_land.html — v25 (2026-09-15): 제품 VIEW DETAILS → ba_air Interceptor 의 View More 버튼(CSS·마크업 동일)으로 교체, 링크를 각 제품 상세 페이지로 -->
 <!-- ba_land.html — v24 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
@@ -14,8 +15,9 @@
 <!-- ba_land.html — v15 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
 <!-- ba_land.html — v14 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
 <!-- ba_land.html — v15 (2026-09-03): AEGIS 섹션 텍스트 색상도 ba_air.html와 동일하게 — sec-title #000000, sec-desc #fff -->
-<html lang="en">
+<html lang="en" data-i18n>
 <head>
+<script src="lang.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -55,33 +57,12 @@
 ::selection{background:#f0ede8;color:#000;}
 /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
 :root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)))}
-body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
 /* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
 html{scrollbar-width:none;}
 html::-webkit-scrollbar{display:none;}
-body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
-
-/* ── 섹션 인디케이터 (우측 고정, 메인페이지 BA_Solutions.html와 동일) ── */
-/* 히어로 구간에서는 숨고, PRODUCTS 섹션에 들어서면 .is-visible 이 붙어 나타난다.
-   박스(#sec-indicator)는 제자리에 고정하고, 내용(.sec-label-box)만 우→좌로 밀려 들어온다.
-   박스의 overflow:hidden 이 밖으로 나간 내용을 잘라내므로 이동 범위는 화면 끝이 아니라
-   박스 자기 폭 안(translateX 100% = 라벨 폭)이다. 페이드 아님 — transform 만 이동. */
-#sec-indicator{position:fixed;right:10px;top:50%;transform:translateY(-50%);overflow:hidden;z-index:999999;pointer-events:none;font-family:"Michroma",'Helvetica Neue',Helvetica,Arial,sans-serif;}
-#sec-indicator .sec-label-box{display:flex;flex-direction:row;gap:2px;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.7,.2,1);}
-#sec-indicator.is-visible .sec-label-box{transform:translateX(0);}
-#sec-indicator .sec-word{writing-mode:vertical-rl;text-orientation:mixed;background:#f0ede8;padding:14px 5px 11px;font-size:10px;font-weight:400;color:#0a0a0c;letter-spacing:.3em;line-height:1;white-space:nowrap;}
-
-
-/* ── NAVBAR ── */
-nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(240,237,232,.08);}
-.logo-wrap{display:flex;align-items:center;gap:8px;}
-.nav-links{display:flex;gap:32px;list-style:none;}
-.nav-links a{font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.75);text-decoration:none;transition:color .3s;}
-.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
-.nav-about{background:transparent;border:0.5px solid rgba(240,237,232,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
-.nav-about:hover{background:#f0ede8;color:#000;}
-
+body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
 #hero{height:100vh;min-height:600px;position:relative;overflow:hidden;background:#000000;}
 #tc{position:absolute;top:0;left:0;width:100%;height:100%;display:block;z-index:0;}
@@ -104,13 +85,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
 /* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_air/ba_sea 와 공유) ── */
 
 
-/* ── FOOTER ── */
-footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
-.foot-addr{font-size:11px;color:rgba(66, 50, 21, 0.7);line-height:1.5;letter-spacing:.04em;}
-.foot-copy{font-size:10px;color:rgba(240,237,232,.5);letter-spacing:.04em;margin-top:24px;line-height:1.4;}
-.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
-.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(240,237,232,.8);text-decoration:none;transition:color .3s;}
-.flinks a:hover{color:#f0ede8;}
 
 /* ── 대문 제품 박스 (가로 4개, 흰색 채우기 + decode) ── */
 /* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (ba_air 의 AEGIS Spider 버튼 기준).
@@ -240,9 +214,6 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
 </head>
 <body>
 
-<!-- 섹션 인디케이터 (우측 고정) -->
-<div id="sec-indicator"><div class="sec-label-box" id="sec-label-box"></div></div>
-
 <!-- NAVBAR -->
 <script src="nav.js"></script>
 
@@ -252,7 +223,7 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
   <div class="hero-fade"></div>
   <div class="hero-content">
     <h1 class="ht">Ground.<br><span>Secured.</span></h1>
-    <p class="hero-sub">AEGIS-integrated solutions for ground-level drone and RCIED threats.</p>
+    <p class="hero-sub"><span lang="ko">드론부터 원격조종 급조폭발물(RCIED)까지, 지상의 위협에 맞서는 AEGIS 통합 솔루션.</span><span lang="en">AEGIS-integrated solutions for ground-level drone and RCIED threats.</span></p>
     <div class="hero-products">
       <button class="hp-btn" data-target="prod-cuas" data-tag="C-UAS · MOBILE" data-name="AEGIS C-UAS">
         <div class="hp-fill"></div>
@@ -278,9 +249,9 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
   </div>
   </section>
 
-<section class="product-section sec" id="products">
+<section class="product-section sec" id="products" data-sec-label="PRODUCTS">
   <h2 class="sec-title decode">PRODUCT LINEUP</h2>
-  <p class="sec-desc fade-in">Four platforms. One AEGIS intelligence layer.</p>
+  <p class="sec-desc fade-in"><span lang="ko">플랫폼은 넷, 인텔리전스는 하나 — AEGIS.</span><span lang="en">Four platforms. One AEGIS intelligence layer.</span></p>
 
   <div class="product-list">
 
@@ -292,7 +263,7 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
         <div class="pcard-num">01</div>
         <div class="pcard-tag">C-UAS · MOBILE</div>
         <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-cuas.html">AEGIS<br>C-UAS System</a></h3>
-        <p class="pcard-desc">Vehicle-mounted counter-drone suite.<br>Detect, Track, Defeat on the move.</p>
+        <p class="pcard-desc"><span lang="ko">탐지·대응·C2를 하나의 체계로.<br>구성은 사업에 맞춰.</span><span lang="en">Detection, response and C2 in one system.<br>Configured to each project.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-aegis-cuas.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -305,7 +276,7 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
         <div class="pcard-num">02</div>
         <div class="pcard-tag">JAMMER · VEHICLE</div>
         <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-v-jammer.html">AEGIS-V<br>Vehicle Jammer</a></h3>
-        <p class="pcard-desc">The world's first liquid-cooled vehicle RCIED jammer.<br>Silent, Heatless, Unlimited.</p>
+        <p class="pcard-desc"><span lang="ko">차량 안에 자리 잡는 재머 제품군.<br>차량 전원, 배터리 백업, 수랭식 냉각.</span><span lang="en">A jammer range installed inside the vehicle.<br>Vehicle power, battery backup, liquid cooling.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-aegis-v-jammer.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -318,7 +289,7 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
         <div class="pcard-num">03</div>
         <div class="pcard-tag">JAMMER · FIXED</div>
         <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-f-jammer.html">AEGIS-F<br>Facility Jammer</a></h3>
-        <p class="pcard-desc">Fixed-site protection for bases and critical infrastructure.<br>24/7, autonomous.</p>
+        <p class="pcard-desc"><span lang="ko">시설에 붙박이로 설치하는 재머 제품군.<br>FBM·FBW·FC, 세 가지 시리즈.</span><span lang="en">A jammer range for fixed facility installation.<br>Three series: FBM, FBW, FC.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-aegis-f-jammer.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -331,7 +302,7 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
         <div class="pcard-num">04</div>
         <div class="pcard-tag">JAMMER · PORTABLE</div>
         <h3 class="pcard-name"><a class="pcard-name-link" href="product-aegis-b-jammer.html">AEGIS-B<br>Backpack Jammer</a></h3>
-        <p class="pcard-desc">Man-portable RF protection for dismounted teams.<br>Instant-on, hot-swap battery.</p>
+        <p class="pcard-desc"><span lang="ko">운용자가 메고 움직이는 백팩형 재머.<br>본체·배터리·안테나를 한 몸에.</span><span lang="en">A backpack jammer carried by the operator.<br>Main unit, battery and antennas in one pack.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-aegis-b-jammer.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -339,9 +310,9 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
   </div>
 </section>
 
-<section class="sec aegis-sec">
+<section class="sec aegis-sec" data-sec-label="AEGIS">
   <h2 class="sec-title decode">HOW AEGIS WORKS</h2>
-  <p class="sec-desc fade-in">The intelligence behind every LAND POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</p>
+  <p class="sec-desc fade-in"><span lang="ko">모든 LAND POWER 플랫폼 뒤에는 AEGIS가 있습니다.<br>감지하고, 판단하고, 지휘한다.<br>클라우드 없이, 엣지에서 스스로.</span><span lang="en">The intelligence behind every LAND POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</span></p>
   <a href="aegis.html" style="text-decoration:none;display:block;">
   <div class="aegis-cta-block" id="aegisCta">
     <div class="aegis-cta-text">
@@ -895,58 +866,6 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
 })();
 </script>
 <script>
-/* ── 섹션 인디케이터 (우측 고정, ba_air.html / BA_Solutions.html와 동일 로직) ── */
-(function(){
-  const box = document.getElementById('sec-label-box');
-  if (!box) return;
-  const indicator = document.getElementById('sec-indicator');
-  const heroEl = document.getElementById('hero');
-
-  const sections = [
-    { el: document.getElementById('hero'),      name: 'LAND' },
-    { el: document.getElementById('products'),  name: 'PRODUCTS' },
-    { el: document.querySelector('.aegis-sec'), name: 'AEGIS' },
-    { el: document.querySelector('footer'),     name: 'CONTACT' },
-  ].filter(s => s.el);
-
-  let currentName = '';
-  // 이전 이름(prev)이 있으면 슬롯 전환 — footer.js 의 window.baSlotRender (없으면 평문 교체)
-  function renderName(name, prev){
-    if (window.baSlotRender) window.baSlotRender(box, 'sec-word', prev, name);
-    else box.innerHTML = '<div class="sec-word">' + name + '</div>';
-  }
-
-  // 히어로 이름(AIR/LAND/SEA)은 라벨에 쓰지 않는다.
-  // 히어로로 올라올 때 숨는 것과 동시에 이름이 바뀌면, 슬라이드아웃 0.45초 동안
-  // 바뀐 이름이 스쳐 보이기 때문. 숨는 동안에는 직전 이름을 그대로 둔다.
-  // 시작 시 첫 비히어로 섹션 이름을 미리 그려 박스 크기를 확보해 둔다
-  // (라벨이 비어 있으면 박스 폭이 0이라 첫 진입 때 translateX(100%) 가 0이 되어 안 움직임).
-  const firstNamed = sections.find(s => s.el !== heroEl);
-  if (firstNamed) { currentName = firstNamed.name; renderName(currentName); }
-
-  function update(){
-    const centerY = window.innerHeight / 2;
-    let found = sections[0];
-    for (const s of sections) {
-      const r = s.el.getBoundingClientRect();
-      if (r.top <= centerY && r.bottom >= centerY) { found = s; break; }
-      if (r.top > centerY) break;
-      found = s;
-    }
-    // 히어로 구간에서는 숨김, PRODUCTS 이후로는 노출
-    const inHero = found.el === heroEl;
-    if (indicator) indicator.classList.toggle('is-visible', !inHero);
-    // 숨어 있는 동안(히어로)에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
-    if (!inHero && found.name !== currentName) { const prev = currentName; currentName = found.name; renderName(currentName, prev); }
-  }
-
-  let lastY = -1;
-  (function loop(){
-    const y = window.scrollY || 0;
-    if (y !== lastY) { lastY = y; update(); }
-    requestAnimationFrame(loop);
-  })();
-})();
 </script>
 </body>
 </html>

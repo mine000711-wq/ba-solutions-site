@@ -15,6 +15,7 @@
 <!-- news.html — v4 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #ffffff + color-scheme light -->
 <html lang="en">
 <head>
+<script src="lang.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
 <meta name="color-scheme" content="light">
@@ -38,16 +39,8 @@
   --dark2:#1a1a1a;
   --pad:max(20px, calc(60 * var(--u)))
 }
-body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-/* ── NAVBAR ── */
-nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(6,6,8,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(240,237,232,.08);}
-.logo-wrap{display:flex;align-items:center;gap:8px;}
-.nav-links{display:flex;gap:32px;list-style:none;}
-.nav-links a{font-size:11px;letter-spacing:.2em;color:rgba(240,237,232,.75);text-decoration:none;transition:color .3s;}
-.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
-.nav-about{background:transparent;border:0.5px solid rgba(240,237,232,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
-.nav-about:hover{background:#fff;color:#000;}
 /* HEADER */
 #page-header{padding:220px var(--pad) 56px;border-bottom:none;}
 #page-header h1{font-size:max(36px, calc(68 * var(--u)));font-weight:700;letter-spacing:-.01em;line-height:1.05;color:var(--ink);}
@@ -100,13 +93,6 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
 .pg.act{border-color:var(--ink);color:var(--ink);font-weight:700;}
 .pg-sep{font-size:11px;color:var(--ink3);padding:0 4px;}
 
-/* ── FOOTER ── */
-footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:72px 60px 56px;display:flex;justify-content:space-between;align-items:start;}
-.foot-addr{font-size:11px;color:rgba(240,237,232,.7);line-height:1.5;letter-spacing:.04em;}
-.foot-copy{font-size:10px;color:rgba(240,237,232,.5);letter-spacing:.04em;margin-top:24px;line-height:1.4;}
-.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
-.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(240,237,232,.8);text-decoration:none;transition:color .3s;}
-.flinks a:hover{color:#f0ede8;}
 /* FADE */
 .fade-in{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;}
 .fade-in.visible{opacity:1;transform:translateY(0);}
@@ -131,6 +117,9 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
 #ba-menu .panel{background:#fff;}
 #ba-menu a{color:rgba(0,0,0,.5);}
 #ba-menu a:hover,#ba-menu a:focus-visible{color:#111;}
+/* 언어 토글(nav.js v18)도 밝은 테마로 — 비선택 .5 검정, 선택·호버 #111 */
+#ba-nav .nav-lang,#ba-menu .menu-lang{color:rgba(0,0,0,.5);}
+#ba-nav .nav-lang a:hover,#ba-nav .nav-lang a[aria-current="true"],#ba-menu .menu-lang a[aria-current="true"]{color:#111;}
 </style>
 
 <div id="page-header">
@@ -160,87 +149,9 @@ footer{background:#000000;border-top:0.5px solid rgba(240,237,232,.08);padding:7
 <!-- FOOTER -->
 <script src="footer.js"></script>
 
+<script src="news-data.js"></script>
 <script>
-const newsItems = [
-  {
-    tag: 'ANNOUNCEMENT',
-    title: 'ROK Army Drone Combat Challenge 2026',
-    date: '2026 / 07 / 29',
-    excerpt: 'We advance to the finals in the ROK Army Drone Combat Challenge.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2023/06/105038_105891_415.png',
-    href: 'news-drone-combat-challenge.html'
-  },
-  {
-    tag: 'DEPLOYMENT',
-    title: 'ROK Police SOU (Special Operation Unit) Drone Defense System',
-    date: '2025 / 11 / 10',
-    excerpt: 'Since 2024, we have been supplying our cutting-edge vehicle-mounted drone defense systems.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2025/11/SOU-logo.png'
-  },
-  {
-    tag: 'ANNOUNCEMENT',
-    title: 'Supply of RCIED vehicle jammers to U.N',
-    date: '2023 / 06 / 29',
-    excerpt: 'Successful completion of the 2nd project: advancing RCIED jammer supply.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2023/06/20220324_1526231.jpg'
-  },
-  {
-    tag: 'MEDIA',
-    title: 'Anti-drone technology for public safety purposes \u2013 KBS news',
-    date: '2020 / 08 / 16',
-    excerpt: 'In order to protect major facilities such as nuclear power plants from drone threats.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2017/04/A004S.png'
-  },
-  {
-    tag: 'PRODUCT',
-    title: 'New Product Announce [DTMF signal generator]',
-    date: '2020 / 03 / 19',
-    excerpt: 'Successful testing of our innovative vehicle-based platform system.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2020/03/DT0021.png'
-  },
-  {
-    tag: 'DEMO',
-    title: 'Incheon International Airport Drone Sniper Demo',
-    date: '2018 / 12 / 07',
-    excerpt: 'Drone sniper was demonstrated at Incheon International Airport.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2018/12/INCHEON01.jpg'
-  },
-  {
-    tag: 'PRODUCT',
-    title: 'Portable Drone Jammer (Drone Sniper) Intro',
-    date: '2018 / 07 / 26',
-    excerpt: 'Introducing our portable drone jammer, the Drone Sniper.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2014/08/B005s.jpg'
-  },
-  {
-    tag: 'DEMO',
-    title: 'Drone Sniper Demo in France',
-    date: '2018 / 07 / 26',
-    excerpt: 'A demonstration of our partners in France.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2018/07/DS0011.jpg'
-  },
-  {
-    tag: 'TEST',
-    title: 'Cooling performance test at 60 degrees Celsius high temperature',
-    date: '2017 / 05 / 02',
-    excerpt: 'Extreme high-temperature cooling performance test of our jammer system.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2014/08/C002.png'
-  },
-  {
-    tag: 'EXHIBITION',
-    title: 'IDEX 2017 Review',
-    date: '2017 / 04 / 14',
-    excerpt: 'We participated in IDEX 2017 held in Abu Dhabi.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2017/04/S_DSC01780.jpg'
-  },
-  {
-    tag: 'EXHIBITION',
-    title: 'AEGIS Jammers in Korea Defense Technology Exhibition 2014',
-    date: '2014 / 08 / 06',
-    excerpt: 'AEGIS Jammers of BA Solutions shown at the Korea Defense Technology Exhibition 2014.',
-    image: 'https://jamkor.co.kr/wp-content/uploads/2014/08/kdtf-banner_2-269x200.jpg'
-  },
-];
+const newsItems = window.BA_NEWS.map(n => Object.assign({}, n, { date: n.date.split('-').join(' / ') }));
 
 const list = document.getElementById('news-list');
 newsItems.forEach((n, i) => {

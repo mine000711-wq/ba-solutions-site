@@ -1,34 +1,19 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
 <!-- IT services v1 · 2026-09-21 -->
-<html lang="ko">
+<!-- 2026-09-29: 한/영 병기(data-i18n). 한국어 원문 + 영문 신규 작성. 제목·속성은 한국어 기본값, 영어는 data-en 속성 -->
+<html lang="ko" data-i18n>
 <head>
+<script src="lang.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
-<title>인프라 설계·구축 | BA Solutions</title>
+<title data-en="Infrastructure Design &amp; Build | BA Solutions">인프라 설계·구축 | BA Solutions</title>
 <meta name="description" content="업무 특성과 데이터 흐름을 기준으로 서버, 스토리지와 냉각 환경을 함께 검토합니다. 신규 도입부터 기존 인프라의 확장까지, 운영 조건에 맞는 구성을 설계합니다.">
-<style>
-*{box-sizing:border-box;margin:0;padding:0} :root{--u:calc(min(100vw,1440px) / 1440);--bg:#000000;--bg2:#000000;--ink:#f0ede8;--muted:rgba(240,237,232,.62);--line:rgba(240,237,232,.21);--pad:max(20px,calc(60 * var(--u)))}
-html{scrollbar-width:none;scroll-behavior:smooth;scroll-padding-top:90px}body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:16px;line-height:1.65}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit}button,a,input,select,textarea{touch-action:manipulation}a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--ink);outline-offset:6px}::selection{background:var(--ink);color:#000}.skip{position:fixed;left:20px;top:-100px;z-index:1000010;background:var(--ink);color:#000;padding:12px}.skip:focus{top:65px}.wrap{padding:0 var(--pad);max-width:1800px;margin:auto}.eyebrow,.mono{font-family:'Michroma',sans-serif;font-size:10px;letter-spacing:.09em;line-height:1.7}.eyebrow{color:var(--muted);display:block;margin-bottom:24px}.hero{padding-top:max(120px,calc(155 * var(--u)))}.hero-top{display:grid;grid-template-columns:1.6fr 1fr;gap:8%;align-items:end}.hero h1{font-size:max(48px,calc(98 * var(--u)));line-height:1.02;letter-spacing:-.045em;font-weight:500}.hero h1 em{font-style:normal;color:var(--muted)}.hero-copy{max-width:440px;padding-bottom:8px}.hero-copy p{font-size:max(16px,calc(19 * var(--u)));line-height:1.8;color:var(--muted)}.link{display:inline-block;border-bottom:1px solid currentColor;padding:7px 0;margin-top:26px;transition:background .25s,color .25s}.link:hover{background:var(--ink);color:#000}.hero-meta{margin-top:45px;display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:16px 0;color:var(--muted);gap:20px}.diagram{height:max(200px,calc(270 * var(--u)));position:relative;border-bottom:1px solid var(--line);overflow:hidden}.diagram svg{width:100%;height:100%;display:block}.diagram .route{stroke:var(--ink);stroke-width:1;fill:none;opacity:.32}.diagram .signal{stroke:var(--ink);stroke-width:2;fill:none;stroke-dasharray:5 150;animation:travel 12s linear infinite}.diagram .node{fill:#000;stroke:var(--ink);stroke-width:1}.diagram text{font-family:'Michroma',sans-serif;font-size:10px;letter-spacing:1px;fill:var(--ink)}@keyframes travel{to{stroke-dashoffset:-620}}.section{padding-top:max(70px,calc(110 * var(--u)));padding-bottom:max(45px,calc(70 * var(--u)))}.section-head{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:40px}.section-head h2,.contact h2{font-size:max(28px,calc(47 * var(--u)));font-weight:500;line-height:1.2;letter-spacing:-.025em}.section-head p{max-width:390px;color:var(--muted)}.service{border-top:1px solid var(--line)}.service:last-child{border-bottom:1px solid var(--line)}.service summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:65px 1.25fr 1fr 35px;gap:20px;align-items:center;padding:30px 0;transition:color .25s}.service summary::-webkit-details-marker{display:none}.service summary:hover h3{color:var(--ink)}.service h3{font-size:max(19px,calc(30 * var(--u)));font-family:'Michroma',sans-serif;font-weight:400;color:rgba(240,237,232,.8);line-height:1.4;overflow-wrap:anywhere}.service .number{color:var(--muted)}.service .summary-copy{font-size:14px;color:var(--muted)}.arrow{font-size:27px;font-weight:300;transition:transform .3s}.service[open] .arrow{transform:rotate(90deg)}.service-body{padding:8px 55px 38px 85px;display:grid;grid-template-columns:1.25fr 1fr;gap:45px}.service-body p{color:var(--muted);max-width:640px}.service-body .tags{margin-top:22px;font-size:10px}.service-body ul{list-style:none;font-size:14px}.service-body li{padding:6px 0}.service-body li:before{content:'↗';padding-right:13px;color:var(--muted)}.steps{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);margin-top:40px}.step{padding:28px 25px 0 0}.step+.step{padding-left:25px;border-left:1px solid var(--line)}.step h3{font-size:20px;font-weight:400;margin:22px 0 10px}.step p{font-size:14px;color:var(--muted)}.contact{border-top:1px solid var(--line);display:grid;grid-template-columns:1fr 1fr;gap:10%;padding-top:65px;padding-bottom:80px}.contact p{color:var(--muted);margin-top:20px;max-width:470px}.contact-address{margin-top:30px}.contact-address a{display:block;width:fit-content;font-size:18px;margin:8px 0}.contact-address small{color:var(--muted)}.brief label{display:block;font-size:13px;margin:16px 0 8px}.brief select,.brief textarea{width:100%;background:#000;color:var(--ink);border:1px solid var(--line);border-radius:0;padding:12px}.brief textarea{min-height:135px;resize:vertical}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.button{cursor:pointer;display:inline-block;background:var(--ink);color:#000;border:1px solid var(--ink);padding:12px 19px;font-size:13px;transition:background .25s,color .25s}.button:hover{background:#000;color:var(--ink)}.button.secondary{background:#000;color:var(--ink);border-color:var(--line)}.hint{font-size:12px!important;line-height:1.65!important;margin-top:12px!important}.status{font-size:12px;min-height:22px;margin-top:10px;color:var(--ink)}.crumb{display:flex;flex-wrap:wrap;gap:15px;font-size:11px;color:var(--muted);margin-bottom:38px}.crumb a:hover{color:var(--ink)}.detail-hero{padding-bottom:55px}.detail-hero .hero-top{grid-template-columns:1.4fr 1fr}.detail-hero h1{font-size:max(43px,calc(76 * var(--u)))}.audience{border-top:1px solid var(--line);margin-top:42px;padding-top:18px;font-size:12px;color:var(--muted)}.detail-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:7%;border-top:1px solid var(--line);padding-top:55px}.side-nav{position:sticky;top:95px;align-self:start}.side-nav a{display:block;padding:11px 0;color:var(--muted);font-size:13px}.side-nav a:hover{color:var(--ink)}.side-nav .back{margin-top:30px}.detail-section{padding-bottom:80px;scroll-margin-top:90px}.detail-section h2{font-size:max(26px,calc(35 * var(--u)));font-weight:400;line-height:1.3;margin-bottom:28px}.case-list{list-style:none}.case-list li{padding:18px 0;border-bottom:1px solid var(--line);font-size:max(17px,calc(21 * var(--u)))}.case-list li:before{content:'↗';margin-right:22px;color:var(--muted)}table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.8}th,td{text-align:left;vertical-align:top;border-bottom:1px solid var(--line);padding:20px 16px 20px 0}th{font-size:11px;color:var(--muted);font-weight:400}td:first-child{width:24%;font-weight:500}td:nth-child(2){width:42%}td:last-child{color:var(--muted)}.check{display:grid;grid-template-columns:55px 1fr;gap:12px;padding:22px 0;border-top:1px solid var(--line)}.check h3{font-size:18px;font-weight:400;margin-bottom:8px}.check p{color:var(--muted);font-size:15px}.output{border:1px solid var(--line);padding:22px;margin-top:26px;font-size:14px}.output .eyebrow{margin-bottom:8px}.references{margin-top:28px}.references summary{cursor:pointer;color:var(--muted);font-size:12px;padding:12px 0}.references a{display:inline-block;margin:6px 18px 6px 0;font-size:12px;border-bottom:1px solid var(--line)}.references p{font-size:12px;color:var(--muted)}.related{display:flex;flex-wrap:wrap;gap:12px 26px;border-top:1px solid var(--line);padding:28px 0 60px}.related a{font-size:12px;color:var(--muted)}.related a:hover{color:var(--ink)}#ba-nav a[href="it-services.html"]{color:var(--ink)}
-@media(max-width:1000px){.hero-top{gap:5%;grid-template-columns:1.3fr 1fr}.service summary{grid-template-columns:35px 1.2fr 1fr 25px;gap:15px}.service-body{padding-left:50px}.detail-layout{grid-template-columns:170px minmax(0,1fr);gap:5%}.steps{grid-template-columns:repeat(2,1fr)}.step{padding-bottom:25px}.step:nth-child(3){padding-left:0;border-left:0}.step:nth-child(n+3){border-top:1px solid var(--line)}}
-@media(max-width:700px){.hero-top,.detail-hero .hero-top{grid-template-columns:1fr;gap:28px}.hero-copy{max-width:none}.hero-copy p{max-width:510px}.hero h1{font-size:max(43px,calc(80 * var(--u)))}.hero-meta{margin-top:30px;font-size:9px}.hero-meta span:last-child{display:none}.diagram{height:160px}.section-head{display:block}.section-head p{margin-top:20px}.service summary{grid-template-columns:26px minmax(0,1fr) 22px;padding:25px 0;gap:12px}.service h3{font-size:17px}.summary-copy{grid-column:2;grid-row:2}.service .arrow{grid-column:3;grid-row:1}.service-body{padding:0 0 28px 38px;grid-template-columns:1fr;gap:18px}.contact{grid-template-columns:1fr;gap:30px}.detail-layout{display:block;padding-top:25px}.side-nav{position:static;display:flex;gap:8px 20px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:35px;padding-bottom:20px}.side-nav .eyebrow,.side-nav .back{display:none}.side-nav a{padding:5px 0}.detail-section{padding-bottom:55px}thead{display:none}table,tbody,tr,td{display:block}tr{border-bottom:1px solid var(--line);padding:18px 0}td,td:first-child,td:nth-child(2){width:100%;border:0;padding:5px 0}td:first-child{font-size:18px;margin-bottom:8px}td:last-child:before{content:'검토 조건 · ';color:var(--ink)}.related{gap:15px}.contact h2{font-size:32px}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
-
-caption.eyebrow{display:table-caption;caption-side:top}
-/* 이동 CTA — 도메인 제품 섹션의 채움·밑줄→화살표 전환을 IT 문맥에 맞게 재사용. */
-.cta-arrow{--cta-weight:400;--cta-e:cubic-bezier(.65,0,.35,1);position:relative;display:inline-block;margin-top:26px;color:#f0ede8;line-height:1;font-weight:300;padding:0 0 calc(.2em + 1.5px);white-space:nowrap}.cta-arrow-fill{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:var(--ink);color:#000;font-weight:var(--cta-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none}.cta-arrow:hover .cta-arrow-fill,.cta-arrow:focus-visible .cta-arrow-fill{clip-path:inset(0)}.cta-arrow-text{display:inline-grid}.cta-arrow-text::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--cta-weight);height:0;overflow:hidden;visibility:hidden}.cta-arrow-glyph{visibility:hidden}.cta-arrow-line{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:var(--ink);pointer-events:none;transition:bottom .2s var(--cta-e) .3s,left .2s var(--cta-e) .48s,width .2s var(--cta-e) .48s,height .2s var(--cta-e) .48s,color .15s linear .08s}.cta-arrow:hover .cta-arrow-line,.cta-arrow:focus-visible .cta-arrow-line{left:calc(100% - .61em);width:.68em;height:1px;bottom:calc(.745em + 1px);color:#000;transition:left .22s var(--cta-e),width .22s var(--cta-e),height .22s var(--cta-e),bottom .22s var(--cta-e) .2s,color .12s linear}.cta-arrow-shaft{position:absolute;inset:0;background:currentColor;transition:transform .2s var(--cta-e) .12s,left .2s var(--cta-e) .12s,right .2s var(--cta-e) .12s}.cta-arrow:hover .cta-arrow-shaft,.cta-arrow:focus-visible .cta-arrow-shaft{left:-.095em;right:-.095em;transform:rotate(45deg);transition:transform .22s var(--cta-e) .42s,left .22s var(--cta-e) .42s,right .22s var(--cta-e) .42s}.cta-arrow-head{position:absolute;top:0;right:0;width:.25em;height:100%;background:currentColor;transform-origin:100% 50%;transform:rotate(-45deg) scaleX(0);transition:transform .15s var(--cta-e)}.cta-arrow-head-b{transform:rotate(45deg) scaleX(0)}.cta-arrow:hover .cta-arrow-head,.cta-arrow:focus-visible .cta-arrow-head{transform:rotate(-45deg) scaleX(1);transition:transform .18s var(--cta-e) .64s}.cta-arrow:hover .cta-arrow-head-b,.cta-arrow:focus-visible .cta-arrow-head-b{transform:rotate(45deg) scaleX(1)}
-html::-webkit-scrollbar{display:none}
-/* IT page refinements: preserve Korean word boundaries and visible navigation state. */
-p,li,td,.summary-copy{word-break:keep-all;overflow-wrap:break-word}
-#ba-nav .nav-links a[href="it-services.html"],#ba-menu a[href="it-services.html"]{color:#f0ede8}
-.service summary:hover{background:rgba(240,237,232,.04)}
-@media(max-width:700px){caption.eyebrow{display:block;width:100%}.diagram text{font-size:30px;letter-spacing:0}.diagram text:last-child{display:none}.diagram{height:135px}}
-
-</style>
+<link rel="stylesheet" href="tech.css">
 </head>
 <body>
-<a class="skip" href="#main">본문으로 바로가기</a>
+<a class="skip" href="#main"><span lang="ko">본문으로 바로가기</span><span lang="en">Skip to content</span></a>
 <script src="nav.js">
 </script>
 <main class="wrap" id="main">
@@ -38,114 +23,114 @@ p,li,td,.summary-copy{word-break:keep-all;overflow-wrap:break-word}
 <span>/</span>
 <span>INFRASTRUCTURE</span>
 </div>
-<span class="eyebrow">01 / 인프라 설계·구축</span>
+<span class="eyebrow"><span lang="ko">01 / 인프라 설계·구축</span><span lang="en">01 / INFRASTRUCTURE DESIGN & BUILD</span></span>
 <div class="hero-top">
 <h1>Engineered<br>for your workload.</h1>
 <div class="hero-copy">
-<p>업무 특성과 데이터 흐름을 기준으로 서버, 스토리지와 냉각 환경을 함께 검토합니다. 신규 도입부터 기존 인프라의 확장까지, 운영 조건에 맞는 구성을 설계합니다.</p>
-<a class="cta-arrow" href="#contact"><span class="cta-arrow-text" data-text="이 분야 문의하기 ↘"><span>이 분야 문의하기 <span class="cta-arrow-glyph">↘</span></span></span><span class="cta-arrow-fill" aria-hidden="true">이 분야 문의하기 <span class="cta-arrow-glyph">↘</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
+<p><span lang="ko">업무 특성과 데이터 흐름을 기준으로 서버, 스토리지와 냉각 환경을 함께 검토합니다. 신규 도입부터 기존 인프라의 확장까지, 운영 조건에 맞는 구성을 설계합니다.</span><span lang="en">We review servers, storage and cooling together, based on how your business runs and how your data flows. From new deployments to expanding existing infrastructure, we design configurations that fit your operating conditions.</span></p>
+<a class="cta-arrow" href="#contact"><span class="cta-arrow-text" data-text="이 분야 문의하기 ↘" data-ko-data-text="이 분야 문의하기 ↘" data-en-data-text="Ask about this service ↘"><span><span lang="ko">이 분야 문의하기</span><span lang="en">Ask about this service</span> <span class="cta-arrow-glyph">↘</span></span></span><span class="cta-arrow-fill" aria-hidden="true"><span lang="ko">이 분야 문의하기</span><span lang="en">Ask about this service</span> <span class="cta-arrow-glyph">↘</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
 </div>
 </div>
-<div class="audience">전산 인프라 담당자 · 데이터센터 운영자 · IT 구매 담당자</div>
+<div class="audience"><span lang="ko">전산 인프라 담당자 · 데이터센터 운영자 · IT 구매 담당자</span><span lang="en">Infrastructure managers · Data center operators · IT procurement</span></div>
 </header>
 <div class="detail-layout">
-<aside class="side-nav" aria-label="페이지 목차">
+<aside class="side-nav" aria-label="페이지 목차" data-ko-aria-label="페이지 목차" data-en-aria-label="On this page">
 <span class="eyebrow">ON THIS PAGE</span>
-<a href="#when">01 적용 상황</a>
-<a href="#scope">02 서비스 범위</a>
-<a href="#review">03 검토 조건</a>
-<a href="#prepare">04 문의 준비</a>
-<a class="back" href="it-services.html#infrastructure">← 전체 서비스</a>
+<a href="#when"><span lang="ko">01 적용 상황</span><span lang="en">01 When to engage</span></a>
+<a href="#scope"><span lang="ko">02 서비스 범위</span><span lang="en">02 Service scope</span></a>
+<a href="#review"><span lang="ko">03 검토 조건</span><span lang="en">03 Considerations</span></a>
+<a href="#prepare"><span lang="ko">04 문의 준비</span><span lang="en">04 Before we talk</span></a>
+<a class="back" href="it-services.html#infrastructure"><span lang="ko">← 전체 서비스</span><span lang="en">← All services</span></a>
 </aside>
 <div>
 <section class="detail-section" id="when">
 <span class="eyebrow">01 / WHEN TO ENGAGE</span>
-<h2>이런 과제를 검토하고 있다면.</h2>
+<h2><span lang="ko">이런 과제를 검토하고 있다면.</span><span lang="en">If you are facing any of these.</span></h2>
 <ul class="case-list">
-<li>서버 노후화에 따라 교체·통합을 계획할 때</li>
-<li>데이터 처리량이 늘어 I/O 병목과 성능을 검토할 때</li>
-<li>랙 공간·전력·냉각 용량이 확장의 제약이 될 때</li>
+<li><span lang="ko">서버 노후화에 따라 교체·통합을 계획할 때</span><span lang="en">Planning server replacement or consolidation as hardware ages</span></li>
+<li><span lang="ko">데이터 처리량이 늘어 I/O 병목과 성능을 검토할 때</span><span lang="en">Reviewing I/O bottlenecks and performance as data volumes grow</span></li>
+<li><span lang="ko">랙 공간·전력·냉각 용량이 확장의 제약이 될 때</span><span lang="en">Rack space, power or cooling capacity is limiting expansion</span></li>
 </ul>
 </section>
 <section class="detail-section" id="scope">
 <span class="eyebrow">02 / SERVICE SCOPE</span>
-<h2>기술과 업무를 함께 살핍니다.</h2>
+<h2><span lang="ko">기술과 업무를 함께 살핍니다.</span><span lang="en">Technology and business, reviewed together.</span></h2>
 <table>
-<caption class="eyebrow" style="text-align:left">인프라 설계·구축 — 범위와 검토 조건</caption>
+<caption class="eyebrow" style="text-align:left"><span lang="ko">인프라 설계·구축 — 범위와 검토 조건</span><span lang="en">Infrastructure design & build — scope and considerations</span></caption>
 <thead>
 <tr>
-<th scope="col">영역</th>
-<th scope="col">수행·협의 범위</th>
-<th scope="col">주요 검토 조건</th>
+<th scope="col"><span lang="ko">영역</span><span lang="en">Area</span></th>
+<th scope="col"><span lang="ko">수행·협의 범위</span><span lang="en">Delivery & agreed scope</span></th>
+<th scope="col"><span lang="ko">주요 검토 조건</span><span lang="en">Key considerations</span></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>고성능 컴퓨팅</td>
-<td>서버·워크스테이션 구성 검토, CPU·메모리·디스크 I/O 요구사항 정리</td>
-<td>워크로드, 동시 처리량, OS·애플리케이션 호환성</td>
+<td><span lang="ko">고성능 컴퓨팅</span><span lang="en">High-performance computing</span></td>
+<td><span lang="ko">서버·워크스테이션 구성 검토, CPU·메모리·디스크 I/O 요구사항 정리</span><span lang="en">Server and workstation configuration review; CPU, memory and disk I/O requirements</span></td>
+<td><span lang="ko">워크로드, 동시 처리량, OS·애플리케이션 호환성</span><span lang="en">Workloads, concurrent throughput, OS and application compatibility</span></td>
 </tr>
 <tr>
-<td>인프라 아키텍처</td>
-<td>컴퓨팅·스토리지·네트워크의 연결 구조와 확장 방향 설계</td>
-<td>기존 자산, 의존 시스템, 증설 여유와 예산</td>
+<td><span lang="ko">인프라 아키텍처</span><span lang="en">Infrastructure architecture</span></td>
+<td><span lang="ko">컴퓨팅·스토리지·네트워크의 연결 구조와 확장 방향 설계</span><span lang="en">Design of how compute, storage and network connect, and how they scale</span></td>
+<td><span lang="ko">기존 자산, 의존 시스템, 증설 여유와 예산</span><span lang="en">Existing assets, dependent systems, expansion headroom and budget</span></td>
 </tr>
 <tr>
-<td>데이터센터 냉각</td>
-<td>액침냉각 적용 가능성과 설치·운영 조건 검토</td>
-<td>전력 밀도, 장비 적합성, 공간·배관·유지관리 조건</td>
+<td><span lang="ko">데이터센터 냉각</span><span lang="en">Data center cooling</span></td>
+<td><span lang="ko">액침냉각 적용 가능성과 설치·운영 조건 검토</span><span lang="en">Feasibility review of immersion cooling and its installation and operating conditions</span></td>
+<td><span lang="ko">전력 밀도, 장비 적합성, 공간·배관·유지관리 조건</span><span lang="en">Power density, equipment suitability, space, piping and maintenance conditions</span></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section class="detail-section" id="review">
 <span class="eyebrow">03 / DESIGN CONSIDERATIONS</span>
-<h2>적용 전에 확인할 조건.</h2>
+<h2><span lang="ko">적용 전에 확인할 조건.</span><span lang="en">What to confirm before you start.</span></h2>
 <div class="check">
 <span class="mono">01</span>
 <div>
-<h3>성능 목표</h3>
-<p>평균 사용률과 피크 부하를 구분하고, 실제 업무에서 검증할 지표를 정합니다.</p>
+<h3><span lang="ko">성능 목표</span><span lang="en">Performance targets</span></h3>
+<p><span lang="ko">평균 사용률과 피크 부하를 구분하고, 실제 업무에서 검증할 지표를 정합니다.</span><span lang="en">Separate average utilization from peak load, and set the metrics to validate against real workloads.</span></p>
 </div>
 </div>
 <div class="check">
 <span class="mono">02</span>
 <div>
-<h3>호환성</h3>
-<p>OS·DB·애플리케이션 버전, 라이선스와 주변 장비의 지원 조건을 확인합니다.</p>
+<h3><span lang="ko">호환성</span><span lang="en">Compatibility</span></h3>
+<p><span lang="ko">OS·DB·애플리케이션 버전, 라이선스와 주변 장비의 지원 조건을 확인합니다.</span><span lang="en">Confirm OS, DB and application versions, licensing, and support conditions for surrounding equipment.</span></p>
 </div>
 </div>
 <div class="check">
 <span class="mono">03</span>
 <div>
-<h3>운영 비용</h3>
-<p>장비 도입뿐 아니라 전력·냉각·유지관리와 향후 확장 비용을 함께 검토합니다.</p>
+<h3><span lang="ko">운영 비용</span><span lang="en">Operating cost</span></h3>
+<p><span lang="ko">장비 도입뿐 아니라 전력·냉각·유지관리와 향후 확장 비용을 함께 검토합니다.</span><span lang="en">Review power, cooling, maintenance and future expansion costs — not just the equipment purchase.</span></p>
 </div>
 </div>
 <div class="output">
 <span class="eyebrow">PROJECT DELIVERABLES</span>
-<p>현황·요구사항 정리 / 구성안 / 검증 항목 / 구축·전환 계획</p>
-<p class="hint">산출물의 종류와 상세 수준은 프로젝트 범위에 따라 협의합니다.</p>
+<p><span lang="ko">현황·요구사항 정리 / 구성안 / 검증 항목 / 구축·전환 계획</span><span lang="en">Current state & requirements / Configuration proposal / Validation items / Build & cutover plan</span></p>
+<p class="hint"><span lang="ko">산출물의 종류와 상세 수준은 프로젝트 범위에 따라 협의합니다.</span><span lang="en">The type and level of detail of deliverables are agreed according to project scope.</span></p>
 </div>
 <details class="references">
-<summary>관련 기술·기존 소개 자료 보기</summary>
-<p>고성능 서버·워크스테이션, 액침냉각</p>
-<a href="https://basolutions.co.kr/?p=4957" target="_blank" rel="noopener">고성능 서버 소개 ↗</a>
-<a href="https://basolutions.co.kr/?p=3318" target="_blank" rel="noopener">CarnotJet 냉각 시스템 소개 ↗</a>
-<a href="https://basolutions.co.kr/?p=186" target="_blank" rel="noopener">IT 인프라 설계 ↗</a>
-<p>기존 소개 자료입니다. 제품 버전·지원 환경·공급 가능 여부는 상담 시 확인합니다.</p>
+<summary><span lang="ko">관련 기술·기존 소개 자료 보기</span><span lang="en">Related technologies and existing materials</span></summary>
+<p><span lang="ko">고성능 서버·워크스테이션, 액침냉각</span><span lang="en">High-performance servers and workstations, immersion cooling</span></p>
+<a href="https://basolutions.co.kr/?p=4957" target="_blank" rel="noopener"><span lang="ko">고성능 서버 소개 ↗</span><span lang="en">High-performance servers ↗</span></a>
+<a href="https://basolutions.co.kr/?p=3318" target="_blank" rel="noopener"><span lang="ko">CarnotJet 냉각 시스템 소개 ↗</span><span lang="en">CarnotJet cooling system ↗</span></a>
+<a href="https://basolutions.co.kr/?p=186" target="_blank" rel="noopener"><span lang="ko">IT 인프라 설계 ↗</span><span lang="en">IT infrastructure design ↗</span></a>
+<p><span lang="ko">기존 소개 자료입니다. 제품 버전·지원 환경·공급 가능 여부는 상담 시 확인합니다.</span><span lang="en">These are existing introductory materials (in Korean). Product versions, supported environments and availability are confirmed during consultation.</span></p>
 </details>
 </section>
 <section class="detail-section" id="prepare">
 <span class="eyebrow">04 / BEFORE WE TALK</span>
-<h2>이 정보를 알려주시면 좋습니다.</h2>
+<h2><span lang="ko">이 정보를 알려주시면 좋습니다.</span><span lang="en">Helpful information to share.</span></h2>
 <ul class="case-list">
-<li>현재 서버·OS·스토리지 구성</li>
-<li>주요 업무와 성능 병목</li>
-<li>설치 장소·전력·냉각 조건</li>
-<li>도입 일정과 예산 범위</li>
+<li><span lang="ko">현재 서버·OS·스토리지 구성</span><span lang="en">Current server, OS and storage configuration</span></li>
+<li><span lang="ko">주요 업무와 성능 병목</span><span lang="en">Key workloads and performance bottlenecks</span></li>
+<li><span lang="ko">설치 장소·전력·냉각 조건</span><span lang="en">Installation site, power and cooling conditions</span></li>
+<li><span lang="ko">도입 일정과 예산 범위</span><span lang="en">Timeline and budget range</span></li>
 </ul>
-<p class="hint">모든 항목이 준비되어 있지 않아도 괜찮습니다. 현재 파악한 내용부터 공유해 주세요.</p>
+<p class="hint"><span lang="ko">모든 항목이 준비되어 있지 않아도 괜찮습니다. 현재 파악한 내용부터 공유해 주세요.</span><span lang="en">You don't need every item ready. Start with what you know today.</span></p>
 </section>
 </div>
 </div>
@@ -157,33 +142,33 @@ p,li,td,.summary-copy{word-break:keep-all;overflow-wrap:break-word}
 <section class="contact" id="contact">
 <div>
 <span class="eyebrow">START A CONVERSATION</span>
-<h2>현재의 IT 과제부터<br>이야기해 주세요.</h2>
-<p>운영 환경과 필요한 지원을 알려주시면, 검토할 범위와 다음 단계를 함께 정리하겠습니다.</p>
+<h2><span lang="ko">현재의 IT 과제부터<br>이야기해 주세요.</span><span lang="en">Start with your<br>current IT challenge.</span></h2>
+<p><span lang="ko">운영 환경과 필요한 지원을 알려주시면, 검토할 범위와 다음 단계를 함께 정리하겠습니다.</span><span lang="en">Tell us about your environment and the support you need, and we will work out the scope to review and the next steps with you.</span></p>
 <div class="contact-address">
 <a href="tel:+8225765295">02-576-5295 ↗</a>
 <a href="mailto:babystar@basolutions.co.kr">babystar@basolutions.co.kr ↗</a>
-<small>BA Solutions 대표 연락처</small>
+<small><span lang="ko">BA Solutions 대표 연락처</span><span lang="en">BA Solutions main contact</span></small>
 </div>
 </div>
 <form class="brief" id="brief-form">
-<label for="brief-topic">문의 분야</label>
+<label for="brief-topic"><span lang="ko">문의 분야</span><span lang="en">Service area</span></label>
 <select id="brief-topic" name="topic">
 <option value="infrastructure" selected>인프라 설계·구축</option>
 <option value="security">데이터·시스템 보안</option>
 <option value="continuity">이중화·재해복구·전환</option>
 <option value="operations">운영·개발·기술지원</option>
 </select>
-<label for="brief-text">운영 환경과 요청 사항</label>
+<label for="brief-text"><span lang="ko">운영 환경과 요청 사항</span><span lang="en">Your environment and request</span></label>
 <textarea id="brief-text" name="brief" maxlength="1200" aria-describedby="brief-hint">
 </textarea>
-<p class="hint" id="brief-hint">공유 가능한 범위의 개요만 적어 주세요. 비밀번호·개인정보·상세 접속정보는 필요하지 않습니다.</p>
+<p class="hint" id="brief-hint"><span lang="ko">공유 가능한 범위의 개요만 적어 주세요. 비밀번호·개인정보·상세 접속정보는 필요하지 않습니다.</span><span lang="en">Share only an overview you can disclose. Passwords, personal data and detailed access information are not needed.</span></p>
 <div class="actions">
-<a class="button" id="compose-mail" href="mailto:babystar@basolutions.co.kr">메일 앱에서 문의 작성 ↗</a>
-<button class="button secondary" id="copy-brief" type="button">초안 복사</button>
+<a class="button" id="compose-mail" href="mailto:babystar@basolutions.co.kr"><span lang="ko">메일 앱에서 문의 작성 ↗</span><span lang="en">Draft in your email app ↗</span></a>
+<button class="button secondary" id="copy-brief" type="button"><span lang="ko">초안 복사</span><span lang="en">Copy draft</span></button>
 </div>
-<p class="hint">이 페이지에서 접수되지는 않습니다. 메일 앱에서 확인 후 발송해 주세요.</p>
+<p class="hint"><span lang="ko">이 페이지에서 접수되지는 않습니다. 메일 앱에서 확인 후 발송해 주세요.</span><span lang="en">Nothing is submitted from this page. Please review and send it from your email app.</span></p>
 <div id="copy-panel" hidden>
-<label for="copy-output">복사할 문의 초안</label>
+<label for="copy-output"><span lang="ko">복사할 문의 초안</span><span lang="en">Inquiry draft to copy</span></label>
 <textarea id="copy-output" readonly>
 </textarea>
 </div>
@@ -193,23 +178,6 @@ p,li,td,.summary-copy{word-break:keep-all;overflow-wrap:break-word}
 </section>
 </main>
 <script src="footer.js"></script>
-<script>(function(){
-var section=document.getElementById(location.hash.slice(1));
-if(section && section.classList.contains('service'))section.open=true;
-var navLinks=document.querySelectorAll('#ba-nav a[href="it-services.html"],#ba-menu a[href="it-services.html"]');
-for(var n=0;n<navLinks.length;n++)navLinks[n].setAttribute('aria-current','location');
-var form=document.getElementById('brief-form');if(!form)return;
-var field=document.getElementById('brief-topic'),area=document.getElementById('brief-text'),status=document.getElementById('brief-status');
-var prompts={"infrastructure": ["현재 서버·OS·스토리지 구성", "주요 업무와 성능 병목", "설치 장소·전력·냉각 조건", "도입 일정과 예산 범위"], "security": ["보호 대상 DB·데이터와 업무 범위", "현재 보안 구성과 적용 목적", "프로그램 수정·테스트 환경 유무", "허용 가능한 성능 영향과 적용 일정"], "continuity": ["대상 시스템과 업무 간 의존관계", "목표 RTO·RPO 또는 허용 중단시간", "데이터 용량·일일 변경량·회선 구성", "전환 가능 시간과 원복 조건"], "operations": ["시스템·WAS·DB 버전과 구성", "발생 증상·시각·빈도·영향 범위", "최근 변경과 기존 점검 내용", "희망 지원 범위와 원격 접근 가능 여부"]};
-function setPrompt(){area.placeholder=prompts[field.value].join('\n');}
-setPrompt();field.addEventListener('change',setPrompt);
-function draft(){return '문의 분야: '+field.options[field.selectedIndex].text+'\n\n'+area.value+'\n\n[추가로 공유 가능한 정보]\n'+prompts[field.value].join('\n')+'\n\n회사 / 담당자 / 회신 연락처: ';}
-var compose=document.getElementById('compose-mail');
-function updateMail(){compose.href='mailto:babystar@basolutions.co.kr?subject='+encodeURIComponent('[IT 서비스 문의] '+field.options[field.selectedIndex].text)+'&body='+encodeURIComponent(draft());}
-updateMail();area.addEventListener('input',updateMail);field.addEventListener('change',updateMail);
-form.addEventListener('submit',function(event){event.preventDefault();});
-compose.addEventListener('click',function(){status.textContent='메일 앱에서 내용을 확인하고 직접 보내주세요. 앱이 열리지 않으면 초안을 복사해 대표 이메일로 보내실 수 있습니다.';});
-document.getElementById('copy-brief').addEventListener('click',function(){var text=draft();if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(function(){status.textContent='문의 초안을 복사했습니다.';},fallback);}else fallback();function fallback(){var panel=document.getElementById('copy-panel'),output=document.getElementById('copy-output');panel.hidden=false;output.value=text;output.focus();output.select();status.textContent='아래 초안의 선택된 내용을 복사해 주세요. 작성한 요청 사항은 그대로 유지됩니다.';}});
-})();</script>
+<script src="tech.js"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<!-- ba_air.html — v16 (2026-09-29): 한/영 병기(data-i18n). 소개·섹션 설명·카드 설명·AEGIS 문단만 병기, 대제목 슬로건·제품명·View More 버튼·대문자 CTA는 영문 유지 -->
 <!-- ba_air.html — v15 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
 <!-- ba_air.html — v14 (2026-09-15): Spider 링크도 Interceptor 와 같은 View More(채움+화살표) 버튼으로 통일 -->
 <!-- ba_air.html — v13 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
@@ -9,8 +10,9 @@
 <!-- ba_air.html — v9 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
 <!-- ba_air.html — v8 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
 
-<html lang="en">
+<html lang="en" data-i18n>
 <head>
+<script src="lang.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
@@ -59,34 +61,7 @@ html::-webkit-scrollbar{display:none;}
 body{
   background:var(--bg);
   color:#f0ede8;
-  font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
-
-/* ── 섹션 인디케이터 (우측 고정, 메인페이지 BA_Solutions.html와 동일) ── */
-/* 히어로 구간에서는 숨고, PRODUCTS 섹션에 들어서면 .is-visible 이 붙어 나타난다.
-   박스(#sec-indicator)는 제자리에 고정하고, 내용(.sec-label-box)만 우→좌로 밀려 들어온다.
-   박스의 overflow:hidden 이 밖으로 나간 내용을 잘라내므로 이동 범위는 화면 끝이 아니라
-   박스 자기 폭 안(translateX 100% = 라벨 폭)이다. 페이드 아님 — transform 만 이동. */
-#sec-indicator{
-  position:fixed;
-  right:10px;
-  top:50%;
-  transform:translateY(-50%);
-  overflow:hidden;
-  z-index:999999;
-  pointer-events:none;
-  font-family:"Michroma",'Helvetica Neue',Helvetica,Arial,sans-serif;
-}
-#sec-indicator .sec-label-box{display:flex;flex-direction:row;gap:2px;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.7,.2,1);}
-#sec-indicator.is-visible .sec-label-box{transform:translateX(0);}
-#sec-indicator .sec-word{writing-mode:vertical-rl;text-orientation:mixed;background:#f0ede8;padding:14px 5px 11px;font-size:10px;font-weight:400;color:#0a0a0c;letter-spacing:.3em;line-height:1;white-space:nowrap;}
-
-nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 var(--pad);z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:none;}
-.logo-wrap{display:flex;align-items:center;gap:8px;}
-.nav-links{display:flex;gap:32px;list-style:none;}
-.nav-links a{font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-decoration:none;transition:color .3s;}
-.nav-links a:hover,.nav-links a.act{color:#f0ede8;}
-.nav-about{background:transparent;border:0.5px solid rgba(255,255,255,.4);color:#f0ede8;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;}
-.nav-about:hover{background:#f0ede8;color:#000;}
+  font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
 /* HERO — AIR 망점 배경 */
 #hero{height:100vh;min-height:600px;position:relative;overflow:hidden;background:#000000;}
@@ -107,13 +82,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
 
 /* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_land/ba_sea 와 공유) ── */
 
-/* FOOTER */
-footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
-.foot-addr{font-size:11px;color:rgba(255,255,255,.35);line-height:2;letter-spacing:.04em;}
-.foot-copy{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em;margin-top:24px;line-height:1.8;}
-.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
-.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s;}
-.flinks a:hover{color:#f0ede8;}
 
 /* ── 대문 제품 박스 (가로 2개, 흰색 채우기 + decode) ── */
 /* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (AEGIS Spider 버튼 기준).
@@ -246,9 +214,6 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
 </head>
 <body>
 
-<!-- 섹션 인디케이터 (우측 고정) -->
-<div id="sec-indicator"><div class="sec-label-box" id="sec-label-box"></div></div>
-
 <script src="nav.js"></script>
 
 <section id="hero">
@@ -259,7 +224,7 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
   <canvas id="dot-canvas"></canvas>
   <div class="hero-content">
     <h1 class="ht">Air.<br><span>Decisive.</span></h1>
-    <p class="hero-sub">AEGIS-powered mission drones that detect, decide, and neutralize aerial threats — autonomously, at the edge.</p>
+    <p class="hero-sub"><span lang="ko">탐지하고, 판단하고, 무력화한다 — AEGIS를 품은 임무 드론이 엣지에서 스스로 공중 위협에 맞섭니다.</span><span lang="en">AEGIS-powered mission drones that detect, decide, and neutralize aerial threats — autonomously, at the edge.</span></p>
     <div class="hero-products">
       <button class="hp-btn" data-target="prod-interceptor" data-tag="HARD-KILL" data-name="AEGIS Interceptor">
         <div class="hp-fill"></div>
@@ -275,9 +240,9 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
   </div>
 </section>
 
-<section class="product-section sec" id="products">
+<section class="product-section sec" id="products" data-sec-label="PRODUCTS">
   <h2 class="sec-title decode">PRODUCT LINEUP</h2>
-  <p class="sec-desc fade-in">Two platforms. One AEGIS intelligence layer.</p>
+  <p class="sec-desc fade-in"><span lang="ko">플랫폼은 둘, 인텔리전스는 하나 — AEGIS.</span><span lang="en">Two platforms. One AEGIS intelligence layer.</span></p>
 
   <div class="product-list">
 
@@ -289,7 +254,7 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
         <div class="pcard-num">01</div>
         <div class="pcard-tag">HARD-KILL</div>
         <h3 class="pcard-name">AEGIS<br>Interceptor</h3>
-        <p class="pcard-desc">High-speed intercept drone for kinetic neutralization of hostile UAVs.</p>
+        <p class="pcard-desc"><span lang="ko">하늘에서 맞서는 요격 드론, 지금 개발 중.<br>최종 구성과 성능은 확정 전.</span><span lang="en">An interceptor drone, now in development.<br>Final configuration and performance to be confirmed.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-aegis-interceptor.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -302,7 +267,7 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
         <div class="pcard-num">02</div>
         <div class="pcard-tag">SOFT-KILL</div>
         <h3 class="pcard-name">AEGIS<br>Spider</h3>
-        <p class="pcard-desc">Non-destructive drone capture via precision net deployment.</p>
+        <p class="pcard-desc"><span lang="ko">Gryphon Dynamics와 함께 만드는 포획 드론.<br>기체 양옆에 BA Solutions 그물포 장착 예정.</span><span lang="en">A capture drone project with Gryphon Dynamics.<br>BA Solutions net launchers planned on both sides.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-aegis-spider.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -310,11 +275,11 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
   </div>
 </section>
 
-<section class="sec aegis-sec">
+<section class="sec aegis-sec" data-sec-label="AEGIS">
   <video class="aegis-terrain" aria-hidden="true" tabindex="-1" muted loop playsinline preload="none" poster="../assets/aegis-terrain-v2-poster.jpg" data-src-desktop="../assets/aegis-terrain-v2-desktop.mp4" data-src-mobile="../assets/aegis-terrain-v2-mobile.mp4"></video>
   <div class="aegis-terrain-shade" aria-hidden="true"></div>
   <h2 class="sec-title decode">HOW AEGIS WORKS</h2>
-  <p class="sec-desc fade-in">The intelligence behind every AIR POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</p>
+  <p class="sec-desc fade-in"><span lang="ko">모든 AIR POWER 플랫폼 뒤에는 AEGIS가 있습니다.<br>감지하고, 판단하고, 지휘한다.<br>클라우드 없이, 엣지에서 스스로.</span><span lang="en">The intelligence behind every AIR POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</span></p>
   <a href="aegis.html" style="text-decoration:none;display:block;">
   <div class="aegis-cta-block" id="aegisCta">
     <div class="aegis-cta-text">
@@ -589,58 +554,6 @@ footer{background:#000000;border-top:0.5px solid var(--line);padding:72px var(--
 })();
 </script>
 <script>
-/* ── 섹션 인디케이터 (우측 고정, 메인페이지 BA_Solutions.html와 동일 로직) ── */
-(function(){
-  const box = document.getElementById('sec-label-box');
-  if (!box) return;
-  const indicator = document.getElementById('sec-indicator');
-  const heroEl = document.getElementById('hero');
-
-  const sections = [
-    { el: document.getElementById('hero'),            name: 'AIR' },
-    { el: document.getElementById('products'),         name: 'PRODUCTS' },
-    { el: document.querySelector('.aegis-sec'),        name: 'AEGIS' },
-    { el: document.querySelector('footer'),            name: 'CONTACT' },
-  ].filter(s => s.el);
-
-  let currentName = '';
-  // 이전 이름(prev)이 있으면 슬롯 전환 — footer.js 의 window.baSlotRender (없으면 평문 교체)
-  function renderName(name, prev){
-    if (window.baSlotRender) window.baSlotRender(box, 'sec-word', prev, name);
-    else box.innerHTML = '<div class="sec-word">' + name + '</div>';
-  }
-
-  // 히어로 이름(AIR/LAND/SEA)은 라벨에 쓰지 않는다.
-  // 히어로로 올라올 때 숨는 것과 동시에 이름이 바뀌면, 슬라이드아웃 0.45초 동안
-  // 바뀐 이름이 스쳐 보이기 때문. 숨는 동안에는 직전 이름을 그대로 둔다.
-  // 시작 시 첫 비히어로 섹션 이름을 미리 그려 박스 크기를 확보해 둔다
-  // (라벨이 비어 있으면 박스 폭이 0이라 첫 진입 때 translateX(100%) 가 0이 되어 안 움직임).
-  const firstNamed = sections.find(s => s.el !== heroEl);
-  if (firstNamed) { currentName = firstNamed.name; renderName(currentName); }
-
-  function update(){
-    const centerY = window.innerHeight / 2;
-    let found = sections[0];
-    for (const s of sections) {
-      const r = s.el.getBoundingClientRect();
-      if (r.top <= centerY && r.bottom >= centerY) { found = s; break; }
-      if (r.top > centerY) break;
-      found = s;
-    }
-    // 히어로 구간에서는 숨김, PRODUCTS 이후로는 노출
-    const inHero = found.el === heroEl;
-    if (indicator) indicator.classList.toggle('is-visible', !inHero);
-    // 숨어 있는 동안(히어로)에는 이름을 갱신하지 않는다 — 슬라이드아웃 중 깜빡임 방지
-    if (!inHero && found.name !== currentName) { const prev = currentName; currentName = found.name; renderName(currentName, prev); }
-  }
-
-  let lastY = -1;
-  (function loop(){
-    const y = window.scrollY || 0;
-    if (y !== lastY) { lastY = y; update(); }
-    requestAnimationFrame(loop);
-  })();
-})();
 </script>
 
 <script src="../assets/aegis-terrain-v2.js" defer></script>

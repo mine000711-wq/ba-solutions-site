@@ -1,3 +1,10 @@
+/* v13 (2026-09-29): 푸터 개선 — 로고를 홈 링크(<a>)로, 링크에 TECH·NEWS 추가(메뉴바와 같은 구성),
+        이메일(공식 관리자 메일) 추가, 우편번호 135721 → 13572(공식 사이트 표기), 저작권 연도는 현재 연도 자동,
+        ABOUT US http → https. */
+/* v12 (2026-09-29): 주소·연락처 안내·통제 품목 문구를 lang.js baPair 로 한/영 병기 — data-i18n 페이지에서만 한국어가 나옴.
+        회사명·저작권 줄과 오른쪽 링크(Michroma)는 두 언어 모두 영문. */
+/* v11 (2026-09-29): 섹션 인디케이터가 section.sec 외에 [data-sec-label] 요소도 읽음 —
+        메인·ba_air/land/sea 의 자체 인디케이터(#sec-indicator)를 없애고 이 자동 생성으로 통일. */
 /* v10 (2026-09-28): 로고를 새 락업(로고디자인/비에이솔루션즈로고.png = 로고.ai 대지 11 벡터)으로 교체. nav.js v17 과 동일 SVG. 표시 높이 20px 그대로. */
 /* ===================================================================
    BA SOLUTIONS 공용 푸터  —  v9
@@ -44,6 +51,9 @@
   var inSub = /\/html\//.test(location.pathname);
   var assetBase = inSub ? '../' : '';
   var pageBase  = inSub ? '' : 'html/';
+  var homeHref  = inSub ? '../BA_Solutions.html' : 'BA_Solutions.html';
+  var year = new Date().getFullYear();
+  var P = window.baPair || function(en){ return en; };
 
   document.write(`
 <style>
@@ -51,7 +61,10 @@
 #ba-footer{position:relative;z-index:999998;background:#000;border:0;
   padding:72px max(20px, calc(60 * var(--u, calc(min(100vw, 1440px) / 1440)))) 56px;display:flex;justify-content:space-between;align-items:flex-start;
   font-family:inherit;box-sizing:border-box;}
-#ba-footer .logo-wrap{display:flex;align-items:center;margin-bottom:28px;color:#F0EDE8;}
+#ba-footer .logo-wrap{display:flex;width:fit-content;align-items:center;margin-bottom:28px;color:#F0EDE8;text-decoration:none;}
+#ba-footer a:focus-visible{outline:1px solid currentColor;outline-offset:4px;}
+#ba-footer .foot-addr a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);transition:color .3s,border-color .3s;}
+#ba-footer .foot-addr a:hover{color:#F0EDE8;border-color:rgba(240,237,232,.6);}
 #ba-footer .logo-wrap svg{height:20px;width:auto;display:block;}
 #ba-footer .foot-addr{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5;letter-spacing:.04em;}
 #ba-footer .foot-copy{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em;margin-top:24px;line-height:1.8;}
@@ -72,18 +85,20 @@
 </style>
 <footer id="ba-footer">
   <div>
-    <div class="logo-wrap">
-      ${logoSvg}
-    </div>
-    <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 135721<br><br>Tel: +82-2-576-5295<br>Fax: +82-31-707-7943</div>
-    <div class="foot-copy">© 2004 ~ 2023 BA Solutions, Co., Ltd. All rights reserved.<br>The Jammer is the strategic item and is under control of Korean government.</div>
+    <a class="logo-wrap" href="${homeHref}" aria-label="BA SOLUTIONS home" data-ko-aria-label="BA SOLUTIONS 홈">
+      ${logoSvg.replace('role="img" aria-label="BA SOLUTIONS"','aria-hidden="true" focusable="false"')}
+    </a>
+    <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>${P('56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 13572', '경기도 성남시 분당구 안골로 56<br>(13572)')}<br><br>${P('Tel', '전화')}: +82-2-576-5295<br>${P('Fax', '팩스')}: +82-31-707-7943<br>${P('Email', '이메일')}: <a href="mailto:babystar@basolutions.co.kr">babystar@basolutions.co.kr</a></div>
+    <div class="foot-copy">© 2004 ~ ${year} BA Solutions, Co., Ltd. All rights reserved.<br>${P('The Jammer is the strategic item and is under control of Korean government.', '재머는 전략물자로 대한민국 정부의 통제를 받습니다.')}</div>
   </div>
   <div class="flinks">
     <a href="${pageBase}ba_air.html">AIR POWER</a>
     <a href="${pageBase}ba_land.html">LAND POWER</a>
     <a href="${pageBase}ba_sea.html">SEA POWER</a>
     <a href="${pageBase}aegis.html">AEGIS</a>
-    <a href="http://basolutions.co.kr" style="margin-top:36px;">ABOUT US</a>
+    <a href="${pageBase}it-services.html">TECH</a>
+    <a href="${pageBase}news.html" style="margin-top:36px;">NEWS</a>
+    <a href="https://basolutions.co.kr">ABOUT US</a>
   </div>
 </footer>
 `);
@@ -200,7 +215,7 @@ window.baSlotRender=function(box,cls,from,to){
     var items=[];
     var hero=document.getElementById('hero');
     if(hero)items.push({el:hero,name:'TOP'});
-    document.querySelectorAll('section.sec, section#brochure').forEach(function(sec){
+    document.querySelectorAll('section.sec, section#brochure, [data-sec-label]').forEach(function(sec){
       if(sec.id==='brochure'){items.push({el:sec,name:'DOCS'});return;}
       /* 라벨 출처: data-sec-label 속성 우선, 없으면 화면에 보이는 .sec-label.
          .sec-label 은 눈에 보이는 요소라, 인디케이터에만 이름을 주고 싶은 섹션은

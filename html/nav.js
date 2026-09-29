@@ -1,3 +1,9 @@
+/* v19 (2026-09-29): 로고를 div onclick → <a> 홈 링크로(모양 그대로). 새 탭 열기·링크 복사·키보드 이동 가능.
+        링크 이름은 aria-label("BA SOLUTIONS home", i18n 페이지에서 한국어), 로고 SVG 는 aria-hidden.
+        ABOUT US 링크 http → https. */
+/* v18 (2026-09-29): 한/영 전환 토글(KO / EN) — 데스크톱 ABOUT US 오른쪽, 모바일 드로어 하단.
+        선택·저장은 lang.js(window.baSetLang). 현재 언어 링크에 aria-current="true".
+        햄버거·드로어의 접근성 문구도 선택 언어를 따름. lang.js 가 없으면 ?lang= 링크로 동작. */
 /* v17 (2026-09-28): 로고를 새 락업(로고디자인/비에이솔루션즈로고.png = 로고.ai 대지 11 벡터)으로 교체.
         심볼 높이 200 기준 구조 유지 — 심볼 <g> 0~173.2 / 글자 249~1749, 세로 47~153. 표시 높이 22px 그대로. */
 /* v16 (2026-09-28): IT SERVICES 메뉴 표기를 TECH로 단축. */
@@ -84,6 +90,9 @@
     ['TECH','it-services.html'],
     ['NEWS','news.html']
   ];
+  /* 언어 토글 — hreflang 만 쓰고 lang 속성은 달지 않는다(lang.js 가 body 안 lang 쌍을 숨기므로). */
+  var langLinks = '<a href="?lang=ko" hreflang="ko" data-set-lang="ko">KO</a><span class="sep" aria-hidden="true">/</span><a href="?lang=en" hreflang="en" data-set-lang="en">EN</a>';
+  var isKo = function(){ return window.BA_LANG === 'ko'; };
   var mli = mLinks.map(function(l){
     return '<li><a href="'+pageBase+l[1]+'">'+l[0]+'</a></li>';
   }).join('');
@@ -95,7 +104,8 @@
   'html{scrollbar-gutter:stable;}'+
   '@font-face{font-family:"Michroma";src:url("'+assetBase+'fonts/michroma-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;}'+
   '#ba-nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 max(20px, calc(40 * var(--u, calc(min(100vw, 1440px) / 1440))));z-index:1000001;background:#000;border:0;backdrop-filter:none;-webkit-backdrop-filter:none;box-sizing:border-box;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;}'+
-  '#ba-nav .logo-wrap{display:flex;align-items:center;cursor:pointer;color:#F0EDE8;}'+
+  '#ba-nav .logo-wrap{display:flex;align-items:center;cursor:pointer;color:#F0EDE8;text-decoration:none;}'+
+  '#ba-nav .logo-wrap:focus-visible,#ba-nav a:focus-visible{outline:1px solid currentColor;outline-offset:4px;}'+
   '#ba-nav .logo-wrap svg{height:22px;width:auto;display:block;}'+
   
   '#ba-nav .nav-links{position:absolute;left:50%;transform:translateX(-50%);display:flex;gap:8px;list-style:none;margin:0;padding:0;}'+
@@ -104,6 +114,11 @@
   '#ba-nav .nav-about{display:block;padding:18px 13px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:11.5px;letter-spacing:.1em;color:rgba(240,237,232,.4);text-decoration:none;transition:color .3s;border:none;background:transparent;white-space:nowrap;}'+
   '#ba-nav .nav-about:hover{color:#F0EDE8;background:transparent;}'+
   '#ba-nav .nav-right{display:flex;align-items:center;}'+
+  /* 언어 토글: 메뉴와 같은 서체·크기. 비선택 .4 / 선택·호버 bone. 밝은 메뉴바 페이지는 aria-current 색을 덮어쓴다. */
+  '#ba-nav .nav-lang{display:flex;align-items:center;margin-left:6px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:11.5px;letter-spacing:.1em;color:rgba(240,237,232,.4);white-space:nowrap;}'+
+  '#ba-nav .nav-lang a{display:block;padding:18px 5px;color:inherit;text-decoration:none;transition:color .3s;}'+
+  '#ba-nav .nav-lang a:hover,#ba-nav .nav-lang a[aria-current="true"]{color:#F0EDE8;}'+
+  '#ba-nav .nav-lang .sep,#ba-menu .menu-lang .sep{opacity:.6;}'+
   /* 토글 버튼은 nav 바깥의 최상위 요소 — 메뉴바가 블러·차폐돼도 항상 또렷하고 누를 수 있음 */
   '#ba-toggle{display:none;position:fixed;top:11px;right:calc(max(20px, calc(40 * var(--u, calc(min(100vw, 1440px) / 1440)))) - 6px);z-index:1000002;width:34px;height:34px;align-items:center;justify-content:center;padding:0;background:transparent;border:0;cursor:pointer;color:#F0EDE8;}'+
   '#ba-toggle span{display:block;position:relative;width:22px;height:1.5px;background:currentColor;transition:background .2s ease;}'+
@@ -124,24 +139,29 @@
   '#ba-menu ul a{font-size:13px;padding:13px 0;}'+
   '#ba-menu .about{margin-top:20px;font-size:10.5px;letter-spacing:.14em;padding:12px 0;}'+
   '#ba-menu a:hover,#ba-menu a:focus-visible{color:#F0EDE8;}'+
-  '@media (max-width:1100px){#ba-nav .nav-links,#ba-nav .nav-about{display:none;}#ba-toggle{display:flex;}}'+
+  '#ba-menu .menu-lang{display:flex;align-items:center;gap:10px;margin-top:8px;font-family:"Michroma","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:10.5px;letter-spacing:.14em;color:rgba(240,237,232,.55);}'+
+  '#ba-menu .menu-lang a{padding:12px 0;letter-spacing:inherit;}'+
+  '#ba-menu .menu-lang a[aria-current="true"]{color:#F0EDE8;}'+
+  '@media (max-width:1100px){#ba-nav .nav-links,#ba-nav .nav-about,#ba-nav .nav-lang{display:none;}#ba-toggle{display:flex;}}'+
   '@media (min-width:1101px){#ba-menu{display:none;}}'+
   '</style>'+
   '<nav id="ba-nav">'+
-    '<div class="logo-wrap" onclick="location.href=\''+homeHref+'\'">'+
-      logoSvg+
-    '</div>'+
+    '<a class="logo-wrap" href="'+homeHref+'" aria-label="BA SOLUTIONS home" data-ko-aria-label="BA SOLUTIONS 홈">'+
+      logoSvg.replace('role="img" aria-label="BA SOLUTIONS"','aria-hidden="true" focusable="false"')+
+    '</a>'+
     '<ul class="nav-links">'+li+'</ul>'+
     '<div class="nav-right">'+
       '<a href="'+pageBase+'news.html" class="nav-about">NEWS</a>'+
-      '<a href="http://basolutions.co.kr" class="nav-about">ABOUT US</a>'+
+      '<a href="https://basolutions.co.kr" class="nav-about">ABOUT US</a>'+
+      '<div class="nav-lang" role="group" aria-label="Language / 언어">'+langLinks+'</div>'+
     '</div>'+
   '</nav>'+
-  '<button id="ba-toggle" type="button" aria-expanded="false" aria-controls="ba-menu" aria-label="메뉴 열기"><span></span></button>'+
-  '<div id="ba-menu" role="dialog" aria-modal="true" aria-label="메뉴">'+
+  '<button id="ba-toggle" type="button" aria-expanded="false" aria-controls="ba-menu" aria-label="'+(isKo()?'메뉴 열기':'Open menu')+'"><span></span></button>'+
+  '<div id="ba-menu" role="dialog" aria-modal="true" aria-label="'+(isKo()?'메뉴':'Menu')+'">'+
     '<div class="panel">'+
       '<ul>'+mli+'</ul>'+
-      '<a href="http://basolutions.co.kr" class="about">ABOUT US</a>'+
+      '<a href="https://basolutions.co.kr" class="about">ABOUT US</a>'+
+      '<div class="menu-lang" role="group" aria-label="Language / 언어">'+langLinks+'</div>'+
     '</div>'+
   '</div>'
   );
@@ -176,15 +196,35 @@
     btn.classList.toggle('open', on);
     menuEl.classList.toggle('open', on);
     btn.setAttribute('aria-expanded', on ? 'true' : 'false');
-    btn.setAttribute('aria-label', on ? '메뉴 닫기' : '메뉴 열기');
+    btn.setAttribute('aria-label', isKo() ? (on ? '메뉴 닫기' : '메뉴 열기') : (on ? 'Close menu' : 'Open menu'));
     document.documentElement.style.overflow = on ? 'hidden' : '';
   }
 
   btn.addEventListener('click', function(){ setOpen(!btn.classList.contains('open')); });
   menuEl.addEventListener('click', function(e){
+    if(e.target.closest('[data-set-lang]')) return;   /* 언어 전환은 드로어를 닫지 않음 — 바뀐 선택이 보이도록 */
     if(e.target.closest('a')){ setOpen(false); return; }
     if(!e.target.closest('.panel')) setOpen(false);   /* 패널 바깥(스크림) 클릭 */
   });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') setOpen(false); });
   window.addEventListener('resize', function(){ if(window.innerWidth > 1100) setOpen(false); });
+
+  /* ---- 언어 토글 ---- */
+  function syncLang(){
+    var links = document.querySelectorAll('[data-set-lang]');
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].getAttribute('data-set-lang') === window.BA_LANG) links[i].setAttribute('aria-current', 'true');
+      else links[i].removeAttribute('aria-current');
+    }
+    btn.setAttribute('aria-label', isKo() ? (btn.classList.contains('open') ? '메뉴 닫기' : '메뉴 열기') : (btn.classList.contains('open') ? 'Close menu' : 'Open menu'));
+    menuEl.setAttribute('aria-label', isKo() ? '메뉴' : 'Menu');
+  }
+  syncLang();
+  document.addEventListener('ba:lang', syncLang);
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('[data-set-lang]');
+    if (!a || !window.baSetLang) return;   /* lang.js 가 없으면 ?lang= 링크로 이동 */
+    e.preventDefault();
+    window.baSetLang(a.getAttribute('data-set-lang'));
+  });
 })();
