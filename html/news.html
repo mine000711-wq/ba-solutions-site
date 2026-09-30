@@ -97,6 +97,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 .fade-in{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;}
 .fade-in.visible{opacity:1;transform:translateY(0);}
 </style>
+<link rel="stylesheet" href="news.css?v=1">
 </head>
 <body>
 
@@ -135,58 +136,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
   <!-- JS로 렌더링 -->
 </div>
 
-<div id="pagination">
-  <a class="pg act" href="#">1</a>
-  <a class="pg" href="#">2</a>
-  <a class="pg" href="#">3</a>
-  <a class="pg" href="#">4</a>
-  <span class="pg-sep">/</span>
-  <a class="pg" href="#">></a>
-</div>
+<div id="pagination" aria-live="polite"></div>
 
 <!-- FOOTER -->
 <script src="footer.js"></script>
 
 <script src="news-data.js"></script>
-<script>
-const newsItems = window.BA_NEWS.map(n => Object.assign({}, n, { date: n.date.split('-').join(' / ') }));
-
-const list = document.getElementById('news-list');
-newsItems.forEach((n, i) => {
-  const item = document.createElement('div');
-  const featured = i === 0;
-  item.className = 'news-item fade-in ' + (featured ? 'featured' : 'row');
-  const img = featured
-    ? `<div class="ni-image"><img src="${n.image}" alt="${n.title}" loading="lazy"></div>`
-    : `<div class="ni-thumb"><img src="${n.image}" alt="${n.title}" loading="lazy"></div>`;
-  item.innerHTML = `
-    ${img}
-    <div class="ni-left">
-      <span class="ni-tag">${n.tag}</span>
-      <div class="news-title">${n.title}</div>
-      <span class="news-date">${n.date}</span>
-    </div>`;
-  if (n.href) {
-    item.style.cursor = 'pointer';
-    item.addEventListener('click', () => { window.location.href = n.href; });
-  }
-  list.appendChild(item);
-});
-
-/* 검색 필터 */
-document.getElementById('search-input').addEventListener('input', function(){
-  const q = this.value.toLowerCase();
-  document.querySelectorAll('.news-item').forEach(el => {
-    const title = el.querySelector('.news-title').textContent.toLowerCase();
-    el.style.display = title.includes(q) ? '' : 'none';
-  });
-});
-
-/* 스크롤 fade-in */
-const obs = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
-}, {threshold:.1});
-document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
-</script>
+<script src="news-store.js"></script>
+<script src="news-public.js"></script>
 </body>
 </html>

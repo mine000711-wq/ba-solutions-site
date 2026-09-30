@@ -1,0 +1,13 @@
+/* News pages: no corner ornaments; article navigation. */
+#ba-corners{display:none!important;}
+.news-pagination{display:grid;grid-template-columns:1fr 1fr;margin:0 var(--pad);border-top:1px solid var(--line);}
+.news-neighbor{display:flex;flex-direction:column;gap:14px;min-width:0;padding:max(24px, calc(36 * var(--u))) 0;color:var(--ink);text-decoration:none;}
+.news-neighbor:first-child{padding-right:24px;}
+.news-neighbor:last-child{padding-left:24px;text-align:right;border-left:1px solid var(--line);}
+.news-neighbor span{font-size:12px;letter-spacing:.08em;color:var(--ink3);}
+.news-neighbor strong{font-size:max(16px, calc(20 * var(--u)));font-weight:500;line-height:1.45;overflow-wrap:anywhere;}
+.news-neighbor[href]:hover strong{text-decoration:underline;text-underline-offset:5px;}
+.news-neighbor:focus-visible{outline:1px solid var(--ink);outline-offset:5px;}
+.news-neighbor[aria-disabled]{opacity:.4;}
+.news-pagination[hidden]{display:none;}
+@media(max-width:640px){.news-pagination{grid-template-columns:1fr;}.news-neighbor:first-child{padding-right:0;}.news-neighbor:last-child{padding-left:0;border-left:0;border-top:1px solid var(--line);}}
