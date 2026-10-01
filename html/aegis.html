@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<!-- aegis.html — 배포 보류본 v60 + 2026-10-01 DOMAIN 카드 호버 변경만 반영(원본 v63 해당 부분). 카드 하나로 효과 한정, 카드별 영상, 이름 박스 고정, 나가면 설명·제품 글자가 왼쪽부터 채워지며 복귀 -->
 <!-- aegis.html — v60 (2026-09-16): 우측 섹션 인디케이터 제거 — <body data-no-sec-ind> (footer.js v11 가드) -->
 <!-- aegis.html — v59 (2026-09-15): DECIDE 터미널 빨강 7곳 → 3곳 (HIGH / P(hostile_intent) / EXECUTE). UAS_SWARM·HARD-KILL은 약한 분류명 색으로 -->
 <!-- aegis.html — v58 (2026-09-15): DECIDE 터미널 주황 #ffb300 → #daab4e (채도 100% → 약 65%, 빨강·파랑과 맞춤) -->
@@ -79,31 +80,10 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
 /* FADE */
 .fade-in{opacity:0;transform:translateY(16px);transition:opacity 1s ease,transform 1s ease;}
 .fade-in.visible{opacity:1;transform:translateY(0);}
-/* 도메인 타이틀 인터랙션 */
 #domainTitle.dt-pre{opacity:0;}
-.dom-slot,.dom-s{position:relative;display:inline-block;white-space:nowrap;}
-.dom-slot::after,.dom-s::after{content:'';position:absolute;inset:0;background:#fff;clip-path:inset(0 100% 0 0);pointer-events:none;}
-.dom-hov{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;white-space:nowrap;color:#000;opacity:0;}
-#domainTitle.dt-hover .dom-slot::after{animation:dom-fill 420ms cubic-bezier(.65,0,.35,1) both;}
-#domainTitle.dt-reveal .dom-hov{opacity:1;}
-#domainTitle.dt-reveal .dom-def{visibility:hidden;}
-#domainTitle.dt-singular .dom-s::after{animation:dom-s-wipe 560ms cubic-bezier(.65,0,.35,1) 420ms both;}
-#domainTitle.dt-singular .dom-s{animation:dom-s-hide 560ms linear 420ms both;}
-#domainTitle.dt-s-return .dom-s::after{animation:dom-s-return-wipe 560ms cubic-bezier(.65,0,.35,1) both;}
-#domainTitle.dt-s-return .dom-s{animation:dom-s-show 560ms linear both;}
-@keyframes dom-fill{to{clip-path:inset(0);}}
-@keyframes dom-s-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
-@keyframes dom-s-hide{0%,49.99%{color:inherit;}50%,100%{color:transparent;}}
-@keyframes dom-s-return-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
-@keyframes dom-s-show{0%,49.99%{color:transparent;}50%,100%{color:inherit;}}
-@media(prefers-reduced-motion:reduce){
-  #domainTitle.dt-hover .dom-slot::after{animation:none;clip-path:inset(0);}
-  #domainTitle.dt-singular .dom-s::after{animation:none;}
-  #domainTitle.dt-singular .dom-s{animation:none;color:transparent;}
-  #domainTitle.dt-s-return .dom-s::after{animation:none;}
-  #domainTitle.dt-s-return .dom-s{animation:none;color:inherit;}
-}
-/* Only the hovered card wipes its text; the title stays inverted inside the box. */
+@keyframes dom-s-return-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}   /* 3NO 섹션 NO 토큰이 사용 */
+/* Only the hovered card changes. Name: box fills and stays (black text inside).
+   Description/products: box passes and hides text; on leave (.dl-leave) the text alone fills back in left→right (no box). */
 .dl-name,.dl-description,.dl-products>span{position:relative;}
 .dl-products>span{align-self:flex-start;}
 .dl-name::after,.dl-products>span::after{
@@ -117,22 +97,29 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   background-image:linear-gradient(#fff,#fff);
   background-repeat:no-repeat;background-size:0% 100%;background-position:left;
 }
-.dl:hover .dl-description-text{animation:dom-description-wipe 840ms cubic-bezier(.65,0,.35,1) both;}
-@keyframes dom-description-wipe{
+.dl:hover .dl-name::after{animation:dl-fill 420ms cubic-bezier(.65,0,.35,1) both;}
+.dl.dl-leave .dl-name::after{animation:dl-unfill 420ms cubic-bezier(.65,0,.35,1) both;}
+.dl:hover .dl-description-text{animation:dl-desc-wipe 840ms cubic-bezier(.65,0,.35,1) both;}
+.dl:hover .dl-description,.dl:hover .dl-products>span{animation:dl-hide 840ms linear both;}
+.dl.dl-leave .dl-description,.dl.dl-leave .dl-products>span{animation:dl-text-fill 560ms cubic-bezier(.65,0,.35,1) both;}
+.dl:hover .dl-products>span::after{animation:dl-wipe 840ms cubic-bezier(.65,0,.35,1) both;}
+/* 호버/복귀 키프레임은 이름을 달리해야 클래스가 바뀔 때 처음부터 다시 재생된다 */
+@keyframes dl-fill{to{clip-path:inset(0);}}
+@keyframes dl-unfill{from{clip-path:inset(0);}to{clip-path:inset(0 0 0 100%);}}
+@keyframes dl-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
+@keyframes dl-hide{0%,49.99%{color:inherit;}50%,100%{color:transparent;}}
+@keyframes dl-text-fill{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0);}}   /* 복귀: 글자만 박스와 같은 방향으로 채움 */
+@keyframes dl-desc-wipe{
   0%{background-size:0% 100%;background-position:left;}
   50%{background-size:100% 100%;background-position:left;}
   50.01%{background-size:100% 100%;background-position:right;}
   100%{background-size:0% 100%;background-position:right;}
 }
-.dl:hover .dl-name,.dl:hover .dl-description,.dl:hover .dl-products>span{
-  animation:dom-s-hide 840ms linear both;
-}
-.dl:hover .dl-name::after,.dl:hover .dl-products>span::after{
-  animation:dom-s-wipe 840ms cubic-bezier(.65,0,.35,1) both;
-}
 @media(prefers-reduced-motion:reduce){
-  .dl:hover .dl-name,.dl:hover .dl-description,.dl:hover .dl-products>span{animation:none;color:transparent;}
-  .dl:hover .dl-name::after,.dl:hover .dl-products>span::after,.dl:hover .dl-description-text{animation:none;}
+  .dl:hover .dl-name::after{animation:none;clip-path:inset(0);}
+  .dl:hover .dl-description,.dl:hover .dl-products>span{animation:none;color:transparent;}
+  .dl:hover .dl-products>span::after,.dl:hover .dl-description-text,
+  .dl.dl-leave .dl-name::after,.dl.dl-leave .dl-description,.dl.dl-leave .dl-products>span{animation:none;}
 }
 .decode{opacity:0;transition:opacity 1s;}
 .decode.visible{opacity:1;}
@@ -399,12 +386,13 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   background:#000;
   padding:0;
 }
-/* 공유 비디오 레이어 — 섹션 전체 배경 */
-#domain-video-bg {
+/* 카드별 비디오 레이어 — 커서가 올라간 카드 안에서만 재생 */
+.dl-video {
   position:absolute; inset:0;
-  pointer-events:none; z-index:0;
+  overflow:hidden;
+  pointer-events:none;
 }
-#domain-video-bg video {
+.dl-video video {
   position:absolute;
   inset:0;
   width:100%; height:100%;
@@ -412,12 +400,15 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   opacity:0;
   transition:opacity 1.2s ease;
 }
-#domain-video-bg::after {
+.dl:hover .dl-video video { opacity:1; }
+.dl-video::after {
   content:'';
   position:absolute; inset:0;
   background:rgba(0,0,0,.55); /* 영상 위 어두운 오버레이 — 글자 가독성 */
-  pointer-events:none;
+  opacity:0;
+  transition:opacity 1.2s ease;
 }
+.dl:hover .dl-video::after { opacity:1; }
 /* 제목은 비디오 위에 패딩 섹션처럼 */
 .domains-head {
   position:relative; z-index:2;
@@ -431,7 +422,6 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   background:rgba(255,255,255,.06);
   margin-top:max(32px, calc(56 * var(--u)));
   position:relative; z-index:2;
-  transition:background .6s ease;
 }
 .dl {
   --domain-title-height:max(32px, calc(64 * var(--u)));
@@ -446,14 +436,10 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
   align-items:start;
   gap:max(12px, calc(20 * var(--u)));
   position:relative;
-  transition:background .6s ease,opacity .6s ease;
+  transition:background .6s ease;
 }
-/* Fade the other cards while keeping their hover targets available. */
-.domain-links:has(.dl:hover){background:transparent;}
-.domain-links:has(.dl:hover) .dl:not(:hover){opacity:0;}
-.dl:hover{opacity:1;transition:background .6s ease,opacity 0s;}
 @media(prefers-reduced-motion:reduce){
-  .domain-links,.domain-links .dl{transition:none;}
+  .dl,.dl-video video,.dl-video::after{transition:none;}
 }
 .dl::after {
   content:'';
@@ -580,27 +566,15 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
 <!-- DOMAINS -->
 <section class="domain-sec" id="domains-cta" style="padding:0;">
 
-  <!-- 도메인 호버 영상 배경 -->
-  <div id="domain-video-bg">
-    <video id="dv-land" src="../video/land-loop.mp4" muted loop playsinline preload="metadata"></video>
-    <video id="dv-sea"  src="../video/sea-loop.mp4"  muted loop playsinline preload="metadata"></video>
-    <video id="dv-air"  src="../video/air-loop.mp4"  muted loop playsinline preload="metadata"></video>
-  </div>
-
-  <!-- 비디오 배경 레이어 -->
-  <!-- TODO: 실제 영상 삽입 시 각 <source src="..."> 경로를 교체할 것
-       - video/land-loop.mp4 : 차량/지상 운용 영상 (15초 내외 루프)
-       - video/sea-loop.mp4  : 호버크래프트/해상 영상
-       - video/air-loop.mp4  : 드론 비행/요격 영상
-       영상 스펙 권장: 1920x1080, H.264, 무음, 루프, 15초 이내 -->
   <!-- 제목 -->
   <div class="domains-head">
-    <h2 class="sec-title dt-pre" id="domainTitle"><span class="dt-p">AEGIS ACROSS </span><span class="dom-slot"><span class="dom-def">ALL THREE</span><span class="dom-hov"></span></span><span class="dt-p"> DOMAIN</span><span class="dom-s">S</span></h2>
+    <h2 class="sec-title dt-pre" id="domainTitle"><span class="dt-p">AEGIS ACROSS </span><span class="dom-def">ALL THREE</span><span class="dt-p"> DOMAIN</span><span class="dom-s">S</span></h2>
   </div>
 
   <!-- 카드 -->
   <div class="domain-links fade-in">
     <a class="dl" href="ba_air.html" data-domain="air">
+      <span class="dl-video" aria-hidden="true"><video src="../video/air-loop.mp4" muted loop playsinline preload="metadata"></video></span>
       <span class="dl-name" data-text="Air">Air</span>
       <span class="dl-description"><span class="dl-description-text">Stop hostile drones with interceptor drones and net launchers.</span></span>
       <span class="dl-products">
@@ -609,6 +583,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
       </span>
     </a>
     <a class="dl" href="ba_land.html" data-domain="land">
+      <span class="dl-video" aria-hidden="true"><video src="../video/land-loop.mp4" muted loop playsinline preload="metadata"></video></span>
       <span class="dl-name" data-text="Land">Land</span>
       <span class="dl-description"><span class="dl-description-text">Protect people and sites from hostile drones with counter-drone systems.</span></span>
       <span class="dl-products">
@@ -619,6 +594,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
       </span>
     </a>
     <a class="dl" href="ba_sea.html" data-domain="sea">
+      <span class="dl-video" aria-hidden="true"><video src="../video/sea-loop.mp4" muted loop playsinline preload="metadata"></video></span>
       <span class="dl-name" data-text="Sea">Sea</span>
       <span class="dl-description"><span class="dl-description-text">Patrol waters and respond to threats with autonomous hovercraft.</span></span>
       <span class="dl-products">
@@ -1133,62 +1109,22 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
   window.addEventListener('resize', onScroll, {passive:true});
 })();
 
-/* ── DOMAIN VIDEO HOVER (3D 극장으로 대체 → 비활성) ── */
+/* ── DOMAIN VIDEO HOVER: 커서가 올라간 카드의 영상만 재생 (표시는 CSS :hover) ── */
 (function(){
-  if(!document.getElementById('dv-land')) return;
-  const videos = {
-    land: document.getElementById('dv-land'),
-    sea:  document.getElementById('dv-sea'),
-    air:  document.getElementById('dv-air'),
-  };
-
-  /* 초기 스타일 명시적으로 설정 */
-  Object.values(videos).forEach(v => {
-    v.style.opacity = '0';
-    v.style.transition = 'opacity 1.2s ease';   /* 영상 페이드 — CSS와 동일 값 유지 */
-    v.muted = true;
-  });
-
-  const cards = document.querySelectorAll('.dl[data-domain]');
-  let active = null;
-  let fadeTimer = null;
-  let pauseTimers = {};
-
-  function showVideo(key) {
-    /* 해당 영상의 예약된 pause 취소 */
-    if (pauseTimers[key]) { clearTimeout(pauseTimers[key]); pauseTimers[key] = null; }
-
-    /* 다른 영상 숨기기 */
-    Object.entries(videos).forEach(([k, v]) => {
-      if (k !== key) {
-        v.style.opacity = '0';
-        if (pauseTimers[k]) { clearTimeout(pauseTimers[k]); }
-        pauseTimers[k] = setTimeout(() => { try { v.pause(); } catch(e){} }, 1200);
-      }
-    });
-
-    active = key;
-    const vid = videos[key];
+  document.querySelectorAll('.dl[data-domain]').forEach(card => {
+    const vid = card.querySelector('.dl-video video');
     if (!vid) return;
-
-    vid.muted = true;
-    vid.currentTime = 0;
-    vid.play().catch(() => {});
-    vid.style.opacity = '1';
-  }
-
-  function hideAll() {
-    Object.entries(videos).forEach(([k, v]) => {
-      v.style.opacity = '0';
-      if (pauseTimers[k]) { clearTimeout(pauseTimers[k]); }
-      pauseTimers[k] = setTimeout(() => { try { v.pause(); } catch(e){} }, 1200);
+    let pauseTimer = null;
+    card.addEventListener('mouseenter', () => {
+      clearTimeout(pauseTimer);
+      vid.muted = true;
+      vid.currentTime = 0;
+      vid.play().catch(() => {});
     });
-    active = null;
-  }
-
-  cards.forEach(card => {
-    card.addEventListener('mouseenter', () => { clearTimeout(fadeTimer); showVideo(card.dataset.domain); });
-    card.addEventListener('mouseleave', () => { clearTimeout(fadeTimer); fadeTimer = setTimeout(hideAll, 60); }); // 카드 벗어나면 해제
+    card.addEventListener('mouseleave', () => {
+      clearTimeout(pauseTimer);
+      pauseTimer = setTimeout(() => { try { vid.pause(); } catch(e){} }, 1200);   /* CSS 페이드(1.2s) 끝난 뒤 정지 */
+    });
   });
 })();
 
@@ -1364,55 +1300,16 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
 })();
 </script>
 <script>
-/* ── DOMAINS 타이틀/카드 인터랙션 ── */
+/* ── DOMAINS 타이틀 디코드 / 카드 복귀 효과 ── */
 (function(){
   var title=document.getElementById('domainTitle'); if(!title) return;
-  var hov=title.querySelector('.dom-hov');
   var links=document.querySelector('.domain-links');
-  var section=document.getElementById('domains-cta');
   var cards=document.querySelectorAll('.dl[data-domain]');
-  var NAME={land:'LAND',sea:'SEA',air:'AIR'};
   var CH='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var hovRAF=null, revealT=null;
-  var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  var transAY=420;   // 도메인 박스 채움 완료 후 디코드와 S 와이프 시작
-  function decodeHov(text){
-    if(hovRAF)cancelAnimationFrame(hovRAF);
-    var len=text.length, start=null;
-    function fr(ts){ if(start===null)start=ts; var p=Math.min(1,(ts-start)/380), rev=Math.floor(p*(len+2));
-      var out=''; for(var k=0;k<len;k++){ if(k<rev-2)out+=text.charAt(k); else if(k<rev)out+=CH.charAt(Math.random()*CH.length|0); else out+=''; }
-      hov.textContent=out; if(p<1)hovRAF=requestAnimationFrame(fr); else {hov.textContent=text; hovRAF=null;} }
-    hovRAF=requestAnimationFrame(fr);
-  }
-  function enter(key){
-    clearTimeout(revealT);
-    if(hovRAF){cancelAnimationFrame(hovRAF);hovRAF=null;}
-    title.classList.remove('dt-hover','dt-reveal','dt-s-return');
-    hov.textContent='';
-    void title.offsetWidth;                         // 카드 전환 시 와이프를 처음부터 재생
-    title.classList.add('dt-hover','dt-singular');    // S 효과는 카드 전환 중에도 유지
-    var text=NAME[key]||key.toUpperCase();
-    if(reducedMotion.matches){
-      title.classList.add('dt-reveal');
-      hov.textContent=text;
-      return;
-    }
-    revealT=setTimeout(function(){                    // 흰 박스 위에 검정 디코드 표시
-      title.classList.add('dt-reveal');
-      decodeHov(text);
-    }, transAY);
-  }
-  function leave(){
-    clearTimeout(revealT);
-    if(hovRAF){cancelAnimationFrame(hovRAF);hovRAF=null;}
-    title.classList.remove('dt-hover','dt-singular');
-    title.classList.remove('dt-reveal');
-    title.classList.add('dt-s-return');             // 박스가 S를 덮은 시점에 복원하고 오른쪽으로 걷어냄
-  }
-  var lt=null;
+  // 커서가 나간 카드만 복귀 효과(박스가 지나가며 글자 복원). 다시 들어오면 호버 효과가 처음부터 재생
   cards.forEach(function(c){
-    c.addEventListener('mouseenter',function(){ if(lt)clearTimeout(lt); enter(c.dataset.domain); });
-    c.addEventListener('mouseleave',function(){ if(lt)clearTimeout(lt); lt=setTimeout(leave,60); }); // 카드 벗어나면 해제(다른 카드 진입 시 취소)
+    c.addEventListener('mouseenter',function(){ c.classList.remove('dl-leave'); });
+    c.addEventListener('mouseleave',function(){ c.classList.add('dl-leave'); });
   });
 
   // 스크롤 진입 시 타이틀 디코드(조각 스팬 구조 유지) + 카드 페이드인
