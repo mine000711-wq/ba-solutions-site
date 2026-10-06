@@ -287,6 +287,22 @@ const entranceSpan=2.8;
 const clamp=v=>Math.max(0,Math.min(1,v));
 const phase=(t,at,duration)=>clamp((t-at)/duration);
 const ease=p=>p*p*(3-2*p);
+// Opening timings, in seconds from its start (the sequence is described at applyIntro).
+// The preview's tuning panel edits this object live.
+const intro={dotAt:0,dotDur:.7,dotSweep:.6,dotRise:1.2,
+deviceAt:.6,deviceDur:.7,deviceRise:1.5,
+// The C-UAS indicator opens like the track's: X line, then the box in Y straight
+// after, then the plate slides in and its name decodes.
+boxAt:1,boxX:.2,boxY:.3,plateAt:1.45,plateDur:.3,decodeDur:.47,
+ringAt:1,ringDur:.8,ringFrom:.1,
+turnAt:2,turnDur:1,threatAt:2.6};
+const introEnd=()=>Math.max(intro.dotAt+intro.dotSweep+intro.dotDur,intro.deviceAt+intro.deviceDur,
+intro.boxAt+intro.boxX+intro.boxY,intro.plateAt+Math.max(intro.plateDur,intro.decodeDur),
+intro.ringAt+intro.ringDur,intro.turnAt+intro.turnDur);
+const headingFrom=0,headingTo=320;
+// What buildBase and the object mirror read: C-UAS strength, and its mirror held back
+// while it is still under the glass.
+const opening={device:1,deviceGate:1};
 // Homepage indicator timing: .45s cubic-bezier(.2,.7,.2,1).
 function indicatorEase(p){if(p<=0)return 0;if(p>=1)return 1;
 let lo=0,hi=1;for(let i=0;i<16;i++){const u=(lo+hi)/2,x=3*(1-u)*(1-u)*u*.2+3*(1-u)*u*u*.2+u*u*u;if(x<p)lo=u;else hi=u;}
@@ -379,6 +395,9 @@ const devicePlateGroup=new THREE.Group(),targetPlateGroup=new THREE.Group();
 // and its coverage cut out of the plate layer, halo and all, so the glass and the
 // lattice under the plate show through the letters (2026-10-06; black text before).
 const deviceTextGroup=new THREE.Group(),targetTextGroup=new THREE.Group();
+// The bearing ticks and labels turn as one dial during the opening (see applyIntro);
+// the heading line and its readout stay fixed to the C-UAS front.
+const dialGroup=new THREE.Group(),headingGroup=new THREE.Group();ringGroup.add(dialGroup,headingGroup);
 world.add(gridGroup,dotGroup,ringGroup,deviceMaskGroup,devicePlateGroup,deviceGroup,deviceTextGroup,targetPlateGroup,targetGroup,targetTextGroup);
 // The threat airframes sit in a group of their own inside the target layer, so they
 // can be rendered alone at low resolution while they resolve in (see frame).
@@ -569,19 +588,28 @@ const dotGeo=new THREE.BufferGeometry();
 dotGeo.setAttribute('position',new THREE.Float32BufferAttribute(dots,3));
 dotGeo.setAttribute('fade',new THREE.Float32BufferAttribute(fades,1));
 const dotMat=new THREE.ShaderMaterial({
-uniforms:{uColor:{value:groundColor},uF:{value:F},uPixelRatio:{value:1},uAlpha:{value:.95},uSizeBoost:{value:1},uResolution:{value:new THREE.Vector2(1,1)}},
+uniforms:{uColor:{value:groundColor},uF:{value:F},uPixelRatio:{value:1},uAlpha:{value:.95},uSizeBoost:{value:1},uResolution:{value:new THREE.Vector2(1,1)},
+// Opening (applyIntro): seconds since it began, when this row starts, how long a dot
+// takes, how deep under the glass it starts, and whether this is the mirror pass.
+uIntro:{value:1e4},uDotAt:{value:0},uDotDur:{value:1},uSweep:{value:0},uRise:{value:0},uYMin:{value:yMin},uMirror:{value:0}},
 transparent:true,depthWrite:false,
 // gl_PointSize cannot go below one pixel, but the 2D pass's dots are 0.98-1.47
 // device px and fillRect anti-aliases them - they fade with distance. Clamped to a
 // solid pixel they stay at full strength, pop on the pixel grid and the distance
 // blur then smears that speckle. So clamp the size and give back the lost area as
 // alpha, which is what partial coverage would have done.
-vertexShader:`attribute float fade;varying float vFade,vWant,vDrawn;uniform float uF,uPixelRatio,uSizeBoost;uniform vec2 uResolution;
-void main(){vec4 mv=modelViewMatrix*vec4(position,1.);
+vertexShader:`attribute float fade;varying float vFade,vWant,vDrawn,vReveal;uniform float uF,uPixelRatio,uSizeBoost,uIntro,uDotAt,uDotDur,uSweep,uRise,uYMin,uMirror;uniform vec2 uResolution;
+void main(){
+// Rows come up from the front of the field to the back: each dot rises out of the
+// glass to its own height, fading in as it goes. Its mirror waits until it is above.
+float p=clamp((uIntro-uDotAt-uSweep*clamp((position.y-uYMin)/(40.-uYMin),0.,1.))/uDotDur,0.,1.);
+float z=position.z-uRise*pow(1.-p,3.);
+vReveal=p*(uMirror>.5?clamp(z/position.z,0.,1.):1.);
+vec4 mv=modelViewMatrix*vec4(position.xy,z,1.);
 float s=clamp(55.*(uF/736.)/max(.001,-mv.z),1.2,2.4);
 vWant=ceil(s*uPixelRatio)*.78*.9*.7*uSizeBoost;
 vDrawn=max(2.,ceil(vWant)+1.);
-gl_PointSize=vDrawn;vFade=fade;
+gl_PointSize=vDrawn;vFade=fade*vReveal;
 vec4 clip=projectionMatrix*mv;
 // The 2D pass rounds each dot's top-left corner onto a device pixel, so a sub-pixel
 // dot lands on one pixel instead of straddling two and going dim. Same snap here,
@@ -655,7 +683,7 @@ const a=(deg-facing)*Math.PI/180,s=Math.sin(a),c=Math.cos(a),named=deg%45===0;
 const tick=deg%90===0?.5:named?.38:.25;
 (named?wide:narrow).push(s*(r-tick),c*(r-tick),ringZ,s*r,c*r,ringZ);
 (named?wideCol:narrowCol).push(groundColor.r,groundColor.g,groundColor.b,groundColor.r,groundColor.g,groundColor.b);}
-for(const [pos,col,width] of [[wide,wideCol,1],[narrow,narrowCol,.8]])ringGroup.add(lineSegs(pos,col,lineMat(groundColor,.7,width)));
+for(const [pos,col,width] of [[wide,wideCol,1],[narrow,narrowCol,.8]])dialGroup.add(lineSegs(pos,col,lineMat(groundColor,.7,width)));
 // Heading line from the C-UAS box front edge (+Y) out to the bearing ring, and the
 // current-bearing readout beside its top, just inside the ring and clear of the ticks.
 ringGroup.add(polyline([[0,deviceHalf,ringZ],[0,r,ringZ]],groundColor,.75,.8,thinWidth));
@@ -667,14 +695,20 @@ ringGroup.add(quadFace([[bx0,by0,ringZ],[bx1,by0,ringZ],[bx1,by1,ringZ],[bx0,by1
 // degree numbers. Rebuilt when the webfont arrives.
 function buildCompassText(){
 const r=11.5,base=r+.3,facing=320,names={0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW'};
-const p=beginText(ringGroup),color=hex(groundColor);
+const p=beginText(dialGroup),color=hex(groundColor);
 for(let deg=0;deg<360;deg+=15){
 const a=(deg-facing)*Math.PI/180,s=Math.sin(a),c=Math.cos(a),name=names[deg],north=deg===0,angle=-a;
 const w=north?4.2:name?2.4:2.1,h=north?2.8:name?1.6:1.1;
 placeText(p,name||deg+'\u00b0',[s*base,c*base,ringZ+.002],
 [Math.cos(angle)*w/2,Math.sin(angle)*w/2,0],[-Math.sin(angle)*h/2,Math.cos(angle)*h/2,0],
 color,name?.95:.85,name?700:500,68/192,'center','alphabetic',true);}
-placeText(p,facing+'\u00b0',[.65,r-.85,ringZ+.002],[1.2,0,0],[0,.625,0],color,.95,300,68/192,'center','middle',true);
+endText(p);drawHeading(headingShown);}
+// Current-bearing readout beside the top of the heading line. It counts during the
+// opening while the dial turns under it, so it is a pool of its own.
+let headingShown=320;
+function drawHeading(deg){headingShown=deg;
+const p=beginText(headingGroup);
+placeText(p,deg+'\u00b0',[.65,11.5-.85,ringZ+.002],[1.2,0,0],[0,.625,0],hex(groundColor),.95,300,68/192,'center','middle',true);
 endText(p);}
 
 // --- objects: location boxes, C-UAS cube, target body ------------------------
@@ -703,7 +737,6 @@ return lineSegs(pos,col,lineMat(color,alpha,width,minWidth));}
 
 function buildDevice(){
 const g=new THREE.Group();
-g.add(boxOutline(deviceHalf,boxZ,deviceColor,.55,2.25,.025));
 // Cube keeps its Blender size; its base sits on the C-UAS location box.
 // Only the three faces the camera can see are drawn. Hidden edges and the ground
 // behind the translucent faces otherwise read as a lattice inside the box.
@@ -715,18 +748,19 @@ const v=[[-x,-y,z-h],[x,-y,z-h],[x,y,z-h],[-x,y,z-h],[-x,-y,z+h],[x,-y,z+h],[x,y
 for(const f of [[0,1,5,4],[1,2,6,5],[4,5,6,7]])g.add(quadFace(f.map(i=>v[i]),deviceColor,.85,1.1,.14));
 deviceGroup.add(g);return g;}
 
-let devicePlate=null;
-function buildDeviceNameplate(){
-const {z,w,h,x,y}=nameplate(0,0,deviceHalf);
-if(!devicePlate){
-devicePlate=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:deviceColor,transparent:true,opacity:1,side:THREE.DoubleSide,depthWrite:false}));
-devicePlate.position.set(x,y,z);devicePlateGroup.add(devicePlate);
-const c=[[x-w/2,y-h/2],[x+w/2,y-h/2],[x+w/2,y+h/2],[x-w/2,y+h/2]],pos=[],col=[];
-for(let i=0;i<4;i++){const a=c[i],b=c[(i+1)%4];pos.push(a[0],a[1],z,b[0],b[1],z);
-col.push(deviceColor.r,deviceColor.g,deviceColor.b,deviceColor.r,deviceColor.g,deviceColor.b);}
-deviceGroup.add(lineSegs(pos,col,lineMat(deviceColor,1,.8)));}
+// The C-UAS readout is the same indicator as the track's and the Spider's: location
+// box opening X then Y, plate sliding in, name decoding. It plays in the opening and
+// stays open after it. Its lines are rebuilt as it opens, so fadeGroup leaves them
+// alone (userData.live) and they take the C-UAS strength directly.
+let deviceInd=null,deviceIndAt=Infinity;
+function updateDeviceIndicator(it){
+if(!deviceInd){deviceInd=buildIndicator(deviceGroup,deviceColor);devicePlateGroup.add(deviceInd.plateFill);
+for(const k of ['box','boxFill','vert','minors','majors','plateLine','altFrame','plateFill'])deviceInd[k].userData.live=true;}
+deviceIndAt=it;const o=deviceInd,op=opening.device,i=intro;
+updateLocationBox(o,deviceColor,0,0,deviceHalf,ease(phase(it,i.boxAt,Math.max(.01,i.boxX))),ease(phase(it,i.boxAt+i.boxX,Math.max(.01,i.boxY))),op);
 const p=beginText(deviceTextGroup);
-flatText(p,'C-UAS',x,y,z,1.65,h,'#ffffff',1,700,.8,'center');
+updateNameplate(o,deviceColor,1,0,0,deviceHalf,decodedName('C-UAS',phase(it,i.plateAt,Math.max(.01,i.decodeDur)),it),
+op,indicatorEase(phase(it,i.plateAt,Math.max(.01,i.plateDur))),null,'','',p,null);
 endText(p);}
 
 // An indicator is the whole acquisition readout - location box, vertical guide,
@@ -1353,14 +1387,14 @@ updateAltitude(o,spiderColor,x,y,topZ,z*worldMetres/.3048*count,opacity,indicato
 
 const {dotMat:dotMaterial}=buildGround();
 buildRings();buildCompassText();buildGridText();
-buildDevice();buildDeviceNameplate();
+buildDevice();updateDeviceIndicator(Infinity);
 const target=buildTarget();
 // Chakra Petch may arrive after the first frames; every glyph cached against the
 // fallback face, and the static layers built from them, are rebuilt once it lands.
 Promise.all(['300','400','500','700'].map(w=>document.fonts.load(w+' 64px "Chakra Petch"')))
 .then(()=>{for(const tex of glyphCache.values())tex.dispose();glyphCache.clear();
 for(const g of tightGlyphs.values())g.tex.dispose();tightGlyphs.clear();
-buildCompassText();buildGridText();buildDeviceNameplate();markBaseDirty();}).catch(()=>{});
+buildCompassText();buildGridText();updateDeviceIndicator(deviceIndAt);markBaseDirty();}).catch(()=>{});
 
 // --- render pipeline ---------------------------------------------------------
 // No depth buffer anywhere: these are translucent hologram lines, so nothing
@@ -1373,7 +1407,7 @@ buildCompassText();buildGridText();buildDeviceNameplate();markBaseDirty();}).cat
 const ringMats=[];ringGroup.traverse(o=>{if(o.isLineSegments2)ringMats.push([o.material,o.material.linewidth]);});
 function groundMirrorBoost(on){
 for(const [m,base] of ringMats)m.linewidth=base*(on?groundReflectionLineBoost:1);
-dotMaterial.uniforms.uSizeBoost.value=on?groundReflectionDotBoost:1;}
+dotMaterial.uniforms.uSizeBoost.value=on?groundReflectionDotBoost:1;dotMaterial.uniforms.uMirror.value=on?1:0;}
 
 const rt=(samples=0)=>new THREE.WebGLRenderTarget(1,1,{samples});
 // rtAccA/rtAccB stack one lit layer onto the next; a stack cannot read the buffer it
@@ -1532,7 +1566,7 @@ stackInto(rtLitStatic.texture,rtAccA.texture,rtAccB);
 litLayer([ringGroup],rtLitStatic,true,px);
 stackInto(rtLitStatic.texture,rtAccB.texture,rtAccA);
 renderGroups([deviceMaskGroup],rtMask);
-maskGroundInto(rtAccA.texture,rtMask.texture,rtAccB);
+maskGroundInto(rtAccA.texture,rtMask.texture,rtAccB,.95*opening.device);
 litLayer([devicePlateGroup],rtLitStatic,true,px,.4);
 renderGroups([deviceTextGroup],rtLayer);
 cutTextInto(rtLitStatic.texture,rtLayer.texture,rtScratch);
@@ -1556,7 +1590,7 @@ world.scale.z=-1;world.updateMatrixWorld(true);
 renderGroups([deviceMaskGroup],rtMask);
 world.scale.z=1;world.updateMatrixWorld(true);
 blurInto(rtMask.texture,rtMaskBlur,rtScratch,4*px);
-maskGroundInto(rtMirrorGround.texture,rtMaskBlur.texture,rtMirrorGroundMasked);}
+maskGroundInto(rtMirrorGround.texture,rtMaskBlur.texture,rtMirrorGroundMasked,.95*opening.device*opening.deviceGate);}
 
 function resize(){
 W=root.clientWidth;H=root.clientHeight||W*9/16;if(!W||!H)return;
@@ -1578,7 +1612,7 @@ const mw=Math.max(1,Math.round(w*reflectionScale)),mh=Math.max(1,Math.round(h*re
 for(const t of [rtMirrorObj,rtMirrorScratch])t.setSize(mw,mh);
 markBaseDirty();}
 new ResizeObserver(resize).observe(root);
-new MutationObserver(()=>{deviceColor=cssColor('--viz-series-1','#38bdf8');killColor=cssColor('--viz-series-3','#4ade80');spiderColor=deviceColor;markBaseDirty();})
+new MutationObserver(()=>{deviceColor=cssColor('--viz-series-1','#38bdf8');killColor=cssColor('--viz-series-3','#4ade80');spiderColor=deviceColor;updateDeviceIndicator(deviceIndAt);markBaseDirty();})
 .observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
 resize();
 
@@ -1616,7 +1650,7 @@ interceptor.hide();spiderModel.hide();for(const k in threatModels)for(const m of
 for(const b of target.bodies)b.visible=false;
 // Threat airframes resolve in: drawn in blocks that shrink every .24 s, from 14 CSS
 // pixels down to full resolution about a second and a half after it appears.
-const step=Math.floor(t/pixelStep);pixelBlock=step<pixelBlocks.length?pixelBlocks[step]:1;
+const step=Math.floor(t/pixelStep);pixelBlock=step>=0&&step<pixelBlocks.length?pixelBlocks[step]:1;
 // Pools are reset every frame: telemetry grows a row at a time as it types itself in.
 const textPool=beginText(targetGroup),platePool=beginText(targetTextGroup);
 const models=th.model&&threatModels[th.model]||[],lead=models[0];
@@ -1701,6 +1735,44 @@ updateAltitude(target,targetColor,x,y,topZ,z*worldMetres/.3048*altitudeCount,opa
 endText(textPool);endText(platePool);
 return y;}
 
+// --- opening: the hologram switching on over the bare glass ------------------------
+// Every visit opens on the glass grid alone. The dot field rises out of the glass from
+// the front rows back, the C-UAS follows it up, then the bearing ring grows out of the
+// C-UAS small to full size with its ticks, letters and numbers at once - its dial set
+// to the C-UAS front as 0. Once it is all out, the dial turns under the fixed heading
+// line until that line reads the bearing the C-UAS actually faces. While it rises the
+// C-UAS indicator opens like a track's (updateDeviceIndicator). The first threat
+// comes in at threatAt. All timings are in `intro`, up with the entrance constants.
+
+// Fades a whole static group by its materials, each against the opacity it was built with.
+const builtOpacity=new WeakMap();
+function fadeGroup(g,f){g.traverse(o=>{const m=o.material;if(!m||o.userData.live)return;
+const u=m.uniforms&&m.uniforms.opacity;
+if(!builtOpacity.has(m))builtOpacity.set(m,u?u.value:m.opacity);
+if(u)u.value=builtOpacity.get(m)*f;else m.opacity=builtOpacity.get(m)*f;});}
+const easeOut=p=>1-Math.pow(1-p,3);
+function applyIntro(it){
+const u=dotMaterial.uniforms;
+u.uIntro.value=Math.min(it,1e4);u.uDotAt.value=intro.dotAt;u.uDotDur.value=Math.max(.01,intro.dotDur);
+u.uSweep.value=intro.dotSweep;u.uRise.value=intro.dotRise;
+const d=phase(it,intro.deviceAt,Math.max(.01,intro.deviceDur)),dz=-intro.deviceRise*(1-easeOut(d));
+for(const g of [deviceGroup,devicePlateGroup,deviceTextGroup,deviceMaskGroup])g.position.z=dz;
+opening.device=d;opening.deviceGate=clamp((boxZ+dz)/boxZ);
+fadeGroup(deviceGroup,d);fadeGroup(devicePlateGroup,d);updateDeviceIndicator(it);
+const r=phase(it,intro.ringAt,Math.max(.01,intro.ringDur)),s=intro.ringFrom+(1-intro.ringFrom)*easeOut(r);
+ringGroup.scale.set(s,s,1);
+// Shortest way round from the front-as-zero dial to the real bearing.
+const turn=((headingTo-headingFrom)%360+540)%360-180;
+const heading=headingFrom+turn*ease(phase(it,intro.turnAt,Math.max(.01,intro.turnDur)));
+dialGroup.rotation.z=(heading-headingTo)*Math.PI/180;
+const shown=Math.round((heading%360+360)%360)%360;
+if(shown!==headingShown)drawHeading(shown);
+fadeGroup(ringGroup,clamp(r*2));}
+// ms; null while it waits for the page to show this frame, -Infinity once played.
+let introStart=null;
+// Tuning panel's scrub: holds the opening at this second (null = play).
+let introFreeze=null;
+
 // One threat per loop, drawn at random and never the same one twice in a row. Each
 // threat sets its own loop length, since they do not take equally long to arrive.
 let threat=threats[Math.floor(Math.random()*threats.length)],loopStart=performance.now();
@@ -1708,20 +1780,68 @@ let threat=threats[Math.floor(Math.random()*threats.length)],loopStart=performan
 // fades in only on that step. While it is hidden nothing is drawn, and the page calls
 // __aegisReset as it shows it, so every visit starts a fresh threat from the top.
 const host=(()=>{try{const f=window.frameElement;return f&&f.id==='cmdMap'?f:null;}catch(e){return null;}})();
+function startIntro(now){introStart=now;loopStart=now+intro.threatAt*1000;}
 window.__aegisReset=()=>{const others=threats.filter(o=>o!==threat);
-threat=others[Math.floor(Math.random()*others.length)];loopStart=performance.now();};
+threat=others[Math.floor(Math.random()*others.length)];startIntro(performance.now());};
+// On its own the preview opens straight away; in the page it waits to be shown.
+if(!host)startIntro(performance.now());
+// Timing panel: every value a motion's timing hangs on, live, in the preview alone (the
+// page's frame never shows it). A motion hands over its value object and its rows
+// [key, label, min, max, step]; each change restarts it, the scrub holds one moment,
+// and the line at the bottom is the object to paste back into the source.
+// Keep timing-critical motion tunable this way rather than hard-coding guesses.
+function tunePanel(title,values,rows,restart,scrub){
+const box=document.createElement('div');
+box.style.cssText='position:fixed;top:8px;right:8px;z-index:9;background:rgba(0,0,0,.78);color:#cfe8ff;font:11px/1.3 monospace;padding:8px 10px;border:1px solid #2a4a66;max-height:96vh;overflow:auto;width:300px;box-sizing:border-box';
+const head=document.createElement('div');head.style.cssText='cursor:pointer;color:#fff;margin-bottom:4px';
+const body=document.createElement('div');head.textContent=title+' \u25be';
+head.onclick=()=>{const open=body.style.display==='none';body.style.display=open?'':'none';head.textContent=title+(open?' \u25be':' \u25b8');};
+const slider=(min,max,step,value)=>{const r=document.createElement('input');Object.assign(r,{type:'range',min,max,step,value});
+r.style.cssText='width:110px;vertical-align:middle;margin:0 6px';return r;};
+const out=document.createElement('div');out.style.cssText='margin-top:6px;white-space:pre-wrap;word-break:break-all;user-select:all;color:#8fb';
+const show=()=>{out.textContent=JSON.stringify(values);};
+for(const [k,label,min,max,step] of rows){const row=document.createElement('label');row.style.cssText='display:block;margin:2px 0';
+const v=document.createElement('span');v.textContent=values[k];const r=slider(min,max,step,values[k]);
+r.oninput=()=>{values[k]=+r.value;v.textContent=r.value;show();restart();};
+row.append(label,r,v);body.append(row);}
+const hold=document.createElement('label');hold.style.cssText='display:block;margin:6px 0 4px;color:#fd8';
+const on=document.createElement('input');on.type='checkbox';
+const at=slider(0,scrub.max,.05,0),atV=document.createElement('span');atV.textContent='0';
+const sync=()=>{atV.textContent=at.value;scrub.set(on.checked?+at.value:null);if(!on.checked)restart();};
+on.onchange=sync;at.oninput=()=>{on.checked=true;sync();};
+hold.append(on,' 시점 고정',at,atV);
+const again=document.createElement('button');again.textContent='다시 재생';
+again.onclick=()=>{on.checked=false;scrub.set(null);restart();};
+body.append(hold,again,out);box.append(head,body);show();document.body.append(box);}
+if(!host)tunePanel('진입 모션',intro,[
+['dotAt','망점 시작',0,2,.05],['dotDur','망점 한 점 시간',.1,2,.05],['dotSweep','망점 앞→뒤 물결',0,2,.05],['dotRise','망점 상승 깊이',0,4,.1],
+['deviceAt','C-UAS 시작',0,3,.05],['deviceDur','C-UAS 시간',.1,2,.05],['deviceRise','C-UAS 상승 깊이',0,4,.1],
+['boxAt','C-UAS 박스 시작',0,3,.05],['boxX','박스 X선 시간',.05,1,.05],['boxY','박스 Y 펼침 시간',.05,1,.05],
+['plateAt','C-UAS 이름표 시작',0,3,.05],['plateDur','이름표 슬라이드 시간',.05,1,.05],['decodeDur','이름 디코드 시간',.05,1.5,.05],
+['ringAt','방위 시작',0,3,.05],['ringDur','방위 커지는 시간',.1,2,.05],['ringFrom','방위 시작 크기',0,1,.05],
+['turnAt','다이얼 회전 시작',0,4,.05],['turnDur','다이얼 회전 시간',.1,3,.05],['threatAt','위협 등장',0,5,.1]],
+()=>startIntro(performance.now()),{max:5,set:v=>{introFreeze=v;}});
 function frame(now){
 if(!root.isConnected)return;
 if(W&&H&&!(host&&!host.classList.contains('show'))){
+// Shown before the page could call __aegisReset (the frame was still loading).
+if(introStart===null)startIntro(now);
+if(introFreeze!==null){introStart=now-introFreeze*1000;loopStart=introStart+intro.threatAt*1000;}
 let t=(now-loopStart)/1000;
 if(t>=threat.loop){const others=threats.filter(o=>o!==threat);
 threat=others[Math.floor(Math.random()*others.length)];loopStart=now;t=0;}
-draw(threat,t);}
+draw(threat,t,(now-introStart)/1000);}
 requestAnimationFrame(frame);}
-function draw(th,t){
+function draw(th,t,it=Infinity){
 const dpr=renderer.getPixelRatio(),px=F/736*dpr;
 const targetYNow=updateTarget(th,t);
+// The opening moves the static layers, so the base is rebuilt every frame of it and
+// once more on the frame it ends, which leaves everything at rest.
+const playing=introStart!==null&&introStart!==-Infinity;
+if(playing){if(it>=introEnd()){it=Infinity;introStart=-Infinity;}applyIntro(it);baseDirty=true;}
 if(baseDirty){baseDirty=false;buildBase(px);}
+// The C-UAS mirror only shows once the C-UAS is above the glass.
+if(playing)for(const g of [deviceGroup,devicePlateGroup])fadeGroup(g,opening.device*opening.deviceGate);
 // Mirror through the glass, never lit. Grid lines lie on the glass itself, so the
 // object mirror is the two objects with their plates; the ground mirror is cached.
 world.scale.z=-1;world.updateMatrixWorld(true);
@@ -1729,7 +1849,14 @@ for(const c of clipPlanes)c.normal.z=1;
 renderGroups(mirrorObjectGroups,rtMirrorObj);
 for(const c of clipPlanes)c.normal.z=-1;
 world.scale.z=1;world.updateMatrixWorld(true);
+if(playing)for(const g of [deviceGroup,devicePlateGroup])fadeGroup(g,opening.device);
 blurInto(rtMirrorObj.texture,rtMirrorObj,rtMirrorScratch,reflectionBlur*px*reflectionScale,blurWide);
+// No threat on the glass (the opening, the gap between loops): its layer is empty,
+// so its glow and blur passes are skipped and the glass goes straight out.
+if(!target.group.visible){
+stackInto(rtMirrorGroundMasked.texture,rtMirrorObj.texture,rtLayer,groundReflectionOpacity,reflectionOpacity);
+stackInto(rtBaseBlur.texture,rtLayer.texture,rtScratch);
+present.u.tSrc.value=rtScratch.texture;present.run(null);return;}
 // The target layer: plate fill at its own glow with the names cut out of it, then
 // the lines and lit text over it.
 litLayer([targetPlateGroup],rtLitStatic,true,px,.4);
