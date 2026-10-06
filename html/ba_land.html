@@ -39,7 +39,7 @@
 /* HOW AEGIS WORKS 타이틀*/
 .aegis-sec .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
-  color: #000000;
+  color: #f0ede8;
 }
 .aegis-sec .sec-desc {
   color: #f0ede8;
@@ -48,9 +48,11 @@
 /* v13: ba_air.html와 동일 — 하단 패딩 0으로 CTA 박스가 섹션 바닥에 붙음.
    .sec 규칙(하단에서 나중에 정의됨)보다 우선하도록 .sec.aegis-sec로 specificity를 높임 */
 .sec.aegis-sec {
-  padding: max(20px, calc(60 * var(--u))) var(--pad) 0;
+  padding: max(20px, calc(60 * var(--u))) var(--pad) 0 var(--pad);
   border-top: none;
-  background: #BCB489;
+  background: #000 url('../assets/aegis-terrain-v2-poster.jpg') center / cover no-repeat;
+  position: relative;
+  isolation: isolate;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -210,6 +212,21 @@ h1.ht span{color:rgba(240,237,232,.25);}
 .sec{position:relative;}
 
 
+/* AEGIS 섹션 지형 영상 배경 — ba_air.html 과 동일 */
+.aegis-sec > .aegis-terrain {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: center; z-index: 0; pointer-events: none;
+  opacity: 0; transition: opacity .25s;
+}
+.aegis-sec > .aegis-terrain.is-ready { opacity: 1; }
+.aegis-sec > .aegis-terrain-shade {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0,0,0,.58), rgba(0,0,0,.18) 75%);
+}
+.aegis-sec > :not(.aegis-terrain):not(.aegis-terrain-shade) { position: relative; z-index: 2; }
+.aegis-sec > .sec-title, .aegis-sec > .sec-desc { text-shadow: 0 1px 8px #000; }
+@media (prefers-reduced-motion: reduce) { .aegis-sec > .aegis-terrain { display: none; } }
+
 </style>
 </head>
 <body>
@@ -311,6 +328,8 @@ h1.ht span{color:rgba(240,237,232,.25);}
 </section>
 
 <section class="sec aegis-sec" data-sec-label="AEGIS">
+  <video class="aegis-terrain" aria-hidden="true" tabindex="-1" muted loop playsinline preload="none" poster="../assets/aegis-terrain-v2-poster.jpg" data-src-desktop="../assets/aegis-terrain-v2-desktop.mp4" data-src-mobile="../assets/aegis-terrain-v2-mobile.mp4"></video>
+  <div class="aegis-terrain-shade" aria-hidden="true"></div>
   <h2 class="sec-title decode">HOW AEGIS WORKS</h2>
   <p class="sec-desc fade-in"><span lang="ko">모든 LAND POWER 플랫폼 뒤에는 AEGIS가 있습니다.<br>감지하고, 판단하고, 지휘한다.<br>클라우드 없이, 엣지에서 스스로.</span><span lang="en">The intelligence behind every LAND POWER platform.<br>AEGIS senses, decides, and commands.<br>Autonomously, at the edge, without cloud dependency.</span></p>
   <a href="aegis.html" style="text-decoration:none;display:block;">
@@ -867,5 +886,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
 </script>
 <script>
 </script>
+<script src="../assets/aegis-terrain-v2.js" defer></script>
 </body>
 </html>

@@ -1813,7 +1813,11 @@ hold.append(on,' 시점 고정',at,atV);
 const again=document.createElement('button');again.textContent='다시 재생';
 again.onclick=()=>{on.checked=false;scrub.set(null);restart();};
 body.append(hold,again,out);box.append(head,body);show();document.body.append(box);}
-if(!host)tunePanel('진입 모션',intro,[
+// Only a page opened on its own on this machine. Inside any frame it stays out: opened
+// from file://, the page's frame is another origin, frameElement reads null and host
+// alone would take the AEGIS page's COMMAND frame for the bare preview.
+const tuning=!host&&window.top===window&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname));
+if(tuning)tunePanel('진입 모션',intro,[
 ['dotAt','망점 시작',0,2,.05],['dotDur','망점 한 점 시간',.1,2,.05],['dotSweep','망점 앞→뒤 물결',0,2,.05],['dotRise','망점 상승 깊이',0,4,.1],
 ['deviceAt','C-UAS 시작',0,3,.05],['deviceDur','C-UAS 시간',.1,2,.05],['deviceRise','C-UAS 상승 깊이',0,4,.1],
 ['boxAt','C-UAS 박스 시작',0,3,.05],['boxX','박스 X선 시간',.05,1,.05],['boxY','박스 Y 펼침 시간',.05,1,.05],
