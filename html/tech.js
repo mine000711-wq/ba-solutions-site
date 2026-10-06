@@ -13,16 +13,16 @@ function ko(){return window.BA_LANG!=='en';}
 var topics={
   infrastructure:{ko:'인프라 설계·구축',en:'Infrastructure design & build'},
   security:{ko:'데이터·시스템 보안',en:'Data & system security'},
-  continuity:{ko:'이중화·재해복구·전환',en:'HA, DR & migration'},
+  continuity:{ko:'이중화·재해복구',en:'High availability & disaster recovery'},
   operations:{ko:'운영·개발·기술지원',en:'Operations, development & support'}
 };
 var prompts={
   infrastructure:{ko:['현재 서버·OS·스토리지 구성','주요 업무와 성능 병목','설치 장소·전력·냉각 조건','도입 일정과 예산 범위'],
                   en:['Current server, OS and storage configuration','Key workloads and performance bottlenecks','Installation site, power and cooling conditions','Timeline and budget range']},
-  security:{ko:['보호 대상 DB·데이터와 업무 범위','현재 보안 구성과 적용 목적','프로그램 수정·테스트 환경 유무','허용 가능한 성능 영향과 적용 일정'],
-            en:['Databases and data to protect, and the business scope','Current security setup and the goal of the project','Whether programs can be modified and a test environment exists','Acceptable performance impact and timeline']},
-  continuity:{ko:['대상 시스템과 업무 간 의존관계','목표 RTO·RPO 또는 허용 중단시간','데이터 용량·일일 변경량·회선 구성','전환 가능 시간과 원복 조건'],
-              en:['Target systems and business dependencies','Target RTO and RPO, or acceptable downtime','Data volume, daily change rate and network links','Available switchover window and rollback conditions']},
+  security:{ko:['보호 대상 DB·데이터와 업무 범위','DB 접근 경로와 파일 전송·공유 대상','프로그램 수정 가능 여부와 테스트 환경','데이터량·성능 요구사항·적용 일정'],
+              en:['Databases and data to protect, and the business scope','Database access paths and file transfer or sharing destinations','Whether programs can be modified and a test environment exists','Data volume, performance requirements and deployment timeline']},
+  continuity:{ko:['대상 서버·OS와 핵심 업무','장애·재해 시 허용 가능한 서비스 중단 범위','복제할 데이터·시스템 오브젝트와 데이터 변경량','현재 서버 간 연결과 이중화·재해복구 구성'],
+              en:['Target servers, operating systems and critical workloads','Acceptable service interruption during failures or disasters','Data and system objects to replicate, and data change volume','Current connectivity, high availability and disaster recovery configuration']},
   operations:{ko:['시스템·WAS·DB 버전과 구성','발생 증상·시각·빈도·영향 범위','최근 변경과 기존 점검 내용','희망 지원 범위와 원격 접근 가능 여부'],
               en:['System, WAS and DB versions and configuration','Symptoms, timing, frequency and impact','Recent changes and checks already made','Desired support scope and whether remote access is possible']}
 };

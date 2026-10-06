@@ -9,8 +9,8 @@
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <title data-en="Data &amp; System Security | BA Solutions">데이터·시스템 보안 | BA Solutions</title>
-<meta name="description" content="데이터가 저장되고, 사용되고, 이동하는 경로를 살펴봅니다. 업무 흐름과 성능 영향을 고려해 암호화·접근제어·위협 탐지의 적용 범위를 설계합니다.">
-<link rel="stylesheet" href="tech.css">
+<meta name="description" content="샤크라의 DB 접근제어, 업무 환경에 맞춘 DB 암호화 구축, GoAnywhere MFT의 보안 파일 전송으로 데이터의 접근·저장·이동을 보호합니다.">
+<link rel="stylesheet" href="tech.css?v=20261006">
 </head>
 <body>
 <a class="skip" href="#main"><span lang="ko">본문으로 바로가기</span><span lang="en">Skip to content</span></a>
@@ -23,11 +23,10 @@
 <span>/</span>
 <span>SECURITY</span>
 </div>
-<span class="eyebrow"><span lang="ko">02 / 데이터·시스템 보안</span><span lang="en">02 / DATA & SYSTEM SECURITY</span></span>
 <div class="hero-top">
 <h1>Protect data.<br>Preserve operations.</h1>
 <div class="hero-copy">
-<p><span lang="ko">데이터가 저장되고, 사용되고, 이동하는 경로를 살펴봅니다. 업무 흐름과 성능 영향을 고려해 암호화·접근제어·위협 탐지의 적용 범위를 설계합니다.</span><span lang="en">We trace where your data is stored, used and moved. With business workflows and performance impact in mind, we design where encryption, access control and threat detection should apply.</span></p>
+<p><span lang="ko">샤크라의 DB 접근제어, 업무 환경에 맞춘 DB 암호화 구축, GoAnywhere MFT의 보안 파일 전송으로 데이터의 접근·저장·이동을 보호합니다.</span><span lang="en">Protect data access, storage and transfer with Chakra DB access control, database encryption tailored to your environment, and secure file transfer through GoAnywhere MFT.</span></p>
 <a class="cta-arrow" href="#contact"><span class="cta-arrow-text" data-text="이 분야 문의하기 ↘" data-ko-data-text="이 분야 문의하기 ↘" data-en-data-text="Ask about this service ↘"><span><span lang="ko">이 분야 문의하기</span><span lang="en">Ask about this service</span> <span class="cta-arrow-glyph">↘</span></span></span><span class="cta-arrow-fill" aria-hidden="true"><span lang="ko">이 분야 문의하기</span><span lang="en">Ask about this service</span> <span class="cta-arrow-glyph">↘</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
 </div>
 </div>
@@ -35,7 +34,6 @@
 </header>
 <div class="detail-layout">
 <aside class="side-nav" aria-label="페이지 목차" data-ko-aria-label="페이지 목차" data-en-aria-label="On this page">
-<span class="eyebrow">ON THIS PAGE</span>
 <a href="#when"><span lang="ko">01 적용 상황</span><span lang="en">01 When to engage</span></a>
 <a href="#scope"><span lang="ko">02 서비스 범위</span><span lang="en">02 Service scope</span></a>
 <a href="#review"><span lang="ko">03 검토 조건</span><span lang="en">03 Considerations</span></a>
@@ -44,94 +42,37 @@
 </aside>
 <div>
 <section class="detail-section" id="when">
-<span class="eyebrow">01 / WHEN TO ENGAGE</span>
 <h2><span lang="ko">이런 과제를 검토하고 있다면.</span><span lang="en">If you are facing any of these.</span></h2>
-<ul class="case-list">
-<li><span lang="ko">운영 DB에 암호화·접근제어를 적용할 때</span><span lang="en">Applying encryption and access control to production databases</span></li>
-<li><span lang="ko">단말과 네트워크 내부의 위협 가시성이 필요할 때</span><span lang="en">You need visibility into threats on endpoints and inside the network</span></li>
-<li><span lang="ko">서버 간 파일 전송과 외부 공유를 통제할 때</span><span lang="en">Controlling file transfers between servers and external sharing</span></li>
-</ul>
+<ul class="case-list"><li><span lang="ko">DB 접속과 작업 이력을 감사하고 접근 권한을 통제할 때</span><span lang="en">Auditing database access and activity while controlling user permissions</span></li>
+<li><span lang="ko">업무·성능 영향을 고려해 DB 암호화를 구축할 때</span><span lang="en">Implementing database encryption with business and performance needs in mind</span></li>
+<li><span lang="ko">서버 간 파일 전송과 개인 간 파일 공유를 안전하게 관리할 때</span><span lang="en">Managing secure server-to-server transfers and person-to-person file sharing</span></li></ul>
 </section>
 <section class="detail-section" id="scope">
-<span class="eyebrow">02 / SERVICE SCOPE</span>
-<h2><span lang="ko">기술과 업무를 함께 살핍니다.</span><span lang="en">Technology and business, reviewed together.</span></h2>
-<table>
-<caption class="eyebrow" style="text-align:left"><span lang="ko">데이터·시스템 보안 — 범위와 검토 조건</span><span lang="en">Data & system security — scope and considerations</span></caption>
-<thead>
-<tr>
-<th scope="col"><span lang="ko">영역</span><span lang="en">Area</span></th>
-<th scope="col"><span lang="ko">수행·협의 범위</span><span lang="en">Delivery & agreed scope</span></th>
-<th scope="col"><span lang="ko">주요 검토 조건</span><span lang="en">Key considerations</span></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><span lang="ko">DB 암호화·접근제어</span><span lang="en">DB encryption & access control</span></td>
-<td><span lang="ko">보호 대상 데이터 분석, 적용 방식 비교, 접근 정책과 감사 범위 설계</span><span lang="en">Analysis of data to protect, comparison of approaches, design of access policies and audit scope</span></td>
-<td><span lang="ko">DB·애플리케이션 구조, 소스 수정 가능 여부, 성능 영향</span><span lang="en">DB and application structure, whether source can be modified, performance impact</span></td>
-</tr>
-<tr>
-<td><span lang="ko">단말·네트워크 탐지</span><span lang="en">Endpoint & network detection</span></td>
-<td><span lang="ko">EDR 및 네트워크 기반 위협 탐지 적용 범위 검토</span><span lang="en">Review of where EDR and network-based threat detection should apply</span></td>
-<td><span lang="ko">단말 OS, 네트워크 가시성, 기존 보안 도구와 운영 절차</span><span lang="en">Endpoint OS, network visibility, existing security tools and operating procedures</span></td>
-</tr>
-<tr>
-<td><span lang="ko">보안 파일 전송</span><span lang="en">Secure file transfer</span></td>
-<td><span lang="ko">파일 전송 자동화, 사용자 권한과 전송 이력 관리 구성</span><span lang="en">Automated file transfer, user permissions and transfer history management</span></td>
-<td><span lang="ko">전송 경로·프로토콜, 외부 연계, 인증·암호화 정책</span><span lang="en">Transfer paths and protocols, external integrations, authentication and encryption policies</span></td>
-</tr>
-</tbody>
+<h2><span lang="ko">세 가지 솔루션·서비스.</span><span lang="en">Three solutions and services.</span></h2>
+<table class="service-scope">
+<caption class="sr-only"><span lang="ko">솔루션·서비스와 검토 조건</span><span lang="en">Solutions, services and considerations</span></caption>
+<thead><tr><th scope="col"><span lang="ko">솔루션·서비스</span><span lang="en">Solution / service</span></th><th scope="col"><span lang="ko">주요 내용</span><span lang="en">Overview</span></th><th scope="col"><span lang="ko">주요 검토 조건</span><span lang="en">Key considerations</span></th></tr></thead>
+<tbody><tr><td><span lang="ko">샤크라 · DB 접근제어</span><span lang="en">Chakra · DB access control</span></td><td><span lang="ko">DB 접속·작업 감사와 로깅, 사용자 인증·결재, 데이터 마스킹을 지원합니다.</span><span lang="en">Supports database access auditing and logging, user authentication and approval, and data masking.</span></td><td><span lang="ko">Gateway·Sniffing·Hybrid 구성, 원격·내부 접속 경로</span><span lang="en">Gateway, sniffing or hybrid deployment; remote and local access paths</span></td></tr>
+<tr><td><span lang="ko">DB 암호화 구축서비스</span><span lang="en">DB encryption service</span></td><td><span lang="ko">대상 DB·애플리케이션·서버 영향을 분석하고, 구현 설계와 PoC/BMT를 거쳐 구축·테스트·적용합니다.</span><span lang="en">Analyzes target databases, applications and server impact, then proceeds through design, PoC/BMT, implementation, testing and deployment.</span></td><td><span lang="ko">소스 수정 가능 여부, API·Proxy 등 적용 방식, 테스트 환경</span><span lang="en">Source-code availability, approaches such as API or proxy, and the test environment</span></td></tr>
+<tr><td><span lang="ko">Secure File Transfer</span><span lang="en">Secure File Transfer</span></td><td><span lang="ko">GoAnywhere MFT로 전송 워크플로·스케줄을 자동화하고 암호화 통신, 활동 로그, 권한 기반 파일 공유를 구성합니다.</span><span lang="en">GoAnywhere MFT automates transfer workflows and schedules, with encrypted communications, activity logs and permission-based file sharing.</span></td><td><span lang="ko">연계 서버·프로토콜, 사용자·관리자 역할, 파일 공유 범위</span><span lang="en">Connected servers and protocols, user and administrator roles, and sharing scope</span></td></tr></tbody>
 </table>
 </section>
 <section class="detail-section" id="review">
-<span class="eyebrow">03 / DESIGN CONSIDERATIONS</span>
-<h2><span lang="ko">적용 전에 확인할 조건.</span><span lang="en">What to confirm before you start.</span></h2>
-<div class="check">
-<span class="mono">01</span>
-<div>
-<h3><span lang="ko">업무 영향</span><span lang="en">Business impact</span></h3>
-<p><span lang="ko">암호화 대상과 호출 경로를 분석하고, 적용 전후 응답시간과 처리량을 검증합니다.</span><span lang="en">Analyze what is encrypted and how it is called, then validate response time and throughput before and after.</span></p>
-</div>
-</div>
-<div class="check">
-<span class="mono">02</span>
-<div>
-<h3><span lang="ko">적용 방식</span><span lang="en">Implementation approach</span></h3>
-<p><span lang="ko">프로그램 수정 가능 여부와 외부 연계를 확인해 API·Proxy 등 적용 방식을 비교합니다.</span><span lang="en">Check whether programs can be modified and how external systems connect, then compare approaches such as API or proxy.</span></p>
-</div>
-</div>
-<div class="check">
-<span class="mono">03</span>
-<div>
-<h3><span lang="ko">운영 책임</span><span lang="en">Operational ownership</span></h3>
-<p><span lang="ko">정책 변경, 키 관리, 로그 확인과 탐지 후 대응의 담당 주체를 협의합니다.</span><span lang="en">Agree who owns policy changes, key management, log review and response after detection.</span></p>
-</div>
-</div>
-<div class="output">
-<span class="eyebrow">PROJECT DELIVERABLES</span>
-<p><span lang="ko">보호 범위 정의 / 적용 설계 / PoC·성능 검증 항목 / 전환·운영 절차</span><span lang="en">Protection scope / Implementation design / PoC & performance validation items / Cutover & operating procedures</span></p>
-<p class="hint"><span lang="ko">산출물의 종류와 상세 수준은 프로젝트 범위에 따라 협의합니다.</span><span lang="en">The type and level of detail of deliverables are agreed according to project scope.</span></p>
-</div>
-<details class="references">
-<summary><span lang="ko">관련 기술·기존 소개 자료 보기</span><span lang="en">Related technologies and existing materials</span></summary>
-<p><span lang="ko">DB 암호화·접근제어, EDR, 네트워크 위협 탐지, Managed File Transfer</span><span lang="en">DB encryption and access control, EDR, network threat detection, Managed File Transfer</span></p>
-<a href="https://basolutions.co.kr/?p=87" target="_blank" rel="noopener"><span lang="ko">DB 암호화 구축 서비스 ↗</span><span lang="en">DB encryption service ↗</span></a>
-<a href="https://basolutions.co.kr/?p=103" target="_blank" rel="noopener"><span lang="ko">Chakra 접근제어 ↗</span><span lang="en">Chakra access control ↗</span></a>
-<a href="https://basolutions.co.kr/?p=4363" target="_blank" rel="noopener">Cybereason EDR ↗</a>
-<a href="https://basolutions.co.kr/?p=3183" target="_blank" rel="noopener"><span lang="ko">Vectra 네트워크 보안 ↗</span><span lang="en">Vectra network security ↗</span></a>
-<a href="https://basolutions.co.kr/?p=4696" target="_blank" rel="noopener">GoAnywhere MFT ↗</a>
-<p><span lang="ko">기존 소개 자료입니다. 제품 버전·지원 환경·공급 가능 여부는 상담 시 확인합니다.</span><span lang="en">These are existing introductory materials (in Korean). Product versions, supported environments and availability are confirmed during consultation.</span></p>
-</details>
+<h2><span lang="ko">적용 환경에 맞춰 검토합니다.</span><span lang="en">Designed around your environment.</span></h2>
+<div class="check"><span class="mono">01</span><div><h3><span lang="ko">접근 경로에 맞춘 통제</span><span lang="en">Control based on access paths</span></h3><p><span lang="ko">샤크라는 Gateway를 통한 작업 통제와 Sniffing을 통한 감사 구성을 제공합니다. DB 사용자와 애플리케이션의 접속 경로에 맞춰 적용 방식을 검토합니다.</span><span lang="en">Chakra offers gateway-based controls and sniffing-based auditing. Deployment is reviewed against database user and application access paths.</span></p></div></div>
+<div class="check"><span class="mono">02</span><div><h3><span lang="ko">분석과 검증을 먼저 하는 암호화</span><span lang="en">Encryption shaped by analysis and testing</span></h3><p><span lang="ko">암호화 목적·대상정보·업무를 먼저 분석합니다. 속도와 부하, 외부 연계, 소스·테스트 환경을 확인하고 검증 결과에 따라 솔루션과 구현 방식을 정합니다.</span><span lang="en">Start with the encryption goals, target data and workloads. Review performance, load, external integrations, source code and test environments before selecting and validating an approach.</span></p></div></div>
+<div class="check"><span class="mono">03</span><div><h3><span lang="ko">전송 자동화와 공유 이력 관리</span><span lang="en">Transfer automation and sharing logs</span></h3><p><span lang="ko">GoAnywhere MFT는 웹 기반 관리와 API 연계를 지원합니다. 서버 간 전송을 자동화하고, 개인 간 공유에서는 권한과 사용자 활동 기록을 관리합니다.</span><span lang="en">GoAnywhere MFT supports web-based management and API integration. Automate server transfers and manage permissions and activity records for person-to-person sharing.</span></p></div></div><details class="references"><summary><span lang="ko">기존 소개 자료 보기</span><span lang="en">View existing materials</span></summary>
+<a href="https://basolutions.co.kr/?p=103" target="_blank" rel="noopener"><span lang="ko">샤크라 · DB 접근제어 ↗</span><span lang="en">Chakra · DB access control ↗</span></a>
+<a href="https://basolutions.co.kr/?p=87" target="_blank" rel="noopener"><span lang="ko">DB 암호화 구축서비스 ↗</span><span lang="en">DB encryption service ↗</span></a>
+<a href="https://basolutions.co.kr/?p=4696" target="_blank" rel="noopener"><span lang="ko">Secure File Transfer · GoAnywhere MFT ↗</span><span lang="en">Secure File Transfer · GoAnywhere MFT ↗</span></a>
+<p><span lang="ko">기존 소개 자료입니다. 제품 버전·지원 환경·공급 가능 여부는 상담 시 확인합니다.</span><span lang="en">These are existing introductory materials in Korean. Product versions, supported environments and availability are confirmed during consultation.</span></p></details>
 </section>
 <section class="detail-section" id="prepare">
-<span class="eyebrow">04 / BEFORE WE TALK</span>
 <h2><span lang="ko">이 정보를 알려주시면 좋습니다.</span><span lang="en">Helpful information to share.</span></h2>
-<ul class="case-list">
-<li><span lang="ko">보호 대상 DB·데이터와 업무 범위</span><span lang="en">Databases and data to protect, and the business scope</span></li>
-<li><span lang="ko">현재 보안 구성과 적용 목적</span><span lang="en">Current security setup and the goal of the project</span></li>
-<li><span lang="ko">프로그램 수정·테스트 환경 유무</span><span lang="en">Whether programs can be modified and a test environment exists</span></li>
-<li><span lang="ko">허용 가능한 성능 영향과 적용 일정</span><span lang="en">Acceptable performance impact and timeline</span></li>
-</ul>
+<ul class="case-list"><li><span lang="ko">보호 대상 DB·데이터와 업무 범위</span><span lang="en">Databases and data to protect, and the business scope</span></li>
+<li><span lang="ko">DB 접근 경로와 파일 전송·공유 대상</span><span lang="en">Database access paths and file transfer or sharing destinations</span></li>
+<li><span lang="ko">프로그램 수정 가능 여부와 테스트 환경</span><span lang="en">Whether programs can be modified and a test environment exists</span></li>
+<li><span lang="ko">데이터량·성능 요구사항·적용 일정</span><span lang="en">Data volume, performance requirements and deployment timeline</span></li></ul>
 <p class="hint"><span lang="ko">모든 항목이 준비되어 있지 않아도 괜찮습니다. 현재 파악한 내용부터 공유해 주세요.</span><span lang="en">You don't need every item ready. Start with what you know today.</span></p>
 </section>
 </div>
@@ -143,7 +84,6 @@
 </div>
 <section class="contact" id="contact">
 <div>
-<span class="eyebrow">START A CONVERSATION</span>
 <h2><span lang="ko">현재의 IT 과제부터<br>이야기해 주세요.</span><span lang="en">Start with your<br>current IT challenge.</span></h2>
 <p><span lang="ko">운영 환경과 필요한 지원을 알려주시면, 검토할 범위와 다음 단계를 함께 정리하겠습니다.</span><span lang="en">Tell us about your environment and the support you need, and we will work out the scope to review and the next steps with you.</span></p>
 <div class="contact-address">
@@ -157,7 +97,7 @@
 <select id="brief-topic" name="topic">
 <option value="infrastructure">인프라 설계·구축</option>
 <option value="security" selected>데이터·시스템 보안</option>
-<option value="continuity">이중화·재해복구·전환</option>
+<option value="continuity">이중화·재해복구</option>
 <option value="operations">운영·개발·기술지원</option>
 </select>
 <label for="brief-text"><span lang="ko">운영 환경과 요청 사항</span><span lang="en">Your environment and request</span></label>

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- aegis.html — 배포 보류본 v60 + 2026-10-01 DOMAIN 카드 호버 변경만 반영(원본 v63 해당 부분). 카드 하나로 효과 한정, 카드별 영상, 이름 박스 고정, 나가면 설명·제품 글자가 왼쪽부터 채워지며 복귀 -->
+<!-- aegis.html — v63 (2026-10-01): DOMAIN 카드 호버를 카드 하나로 한정 — 다른 카드 숨김·구분선 숨김·제목 문장 교체(ALL THREE→도메인명, S 지움) 제거, 영상은 섹션 배경 → 각 카드 안. 도메인 이름은 흰 박스가 채워진 채 검정 글자로 멈춤, 커서가 나가면 박스가 오른쪽으로 걷힘. 설명·제품 목록은 호버 시 박스가 지나가며 사라지고, 나가면 글자만 왼쪽→오른쪽으로 채워지며 다시 나타남(.dl-leave) -->
+<!-- aegis.html — v62 (2026-09-29): 한/영 병기(data-i18n) — 3NO 설명·FLOW 카드 설명·DOMAIN 설명·파트너 소개만 병기. 3NO·FLOW 제목(글자 단위 애니메이션)·HUD·제품명은 영문 유지. DOMAIN 제품 목록의 "Autonomous" 이름은 제품 상세와 맞춰 제거 -->
+<!-- aegis.html — v62 (2026-09-29): FLOW 카드 — 빠른 스크롤로 .flow-left가 다 들어오기 전에 아래로 지나치면 글자를 지우던 문제 → 아래로 벗어날 때(윗변이 화면 위)는 finishCopy로 완성 상태 표시. 위에서 들어오는 중에는 종전대로 초기화 후 타이핑 -->
+<!-- aegis.html — v61 (2026-09-29): COMMAND 시각물 교체 — aegis_command-raider.html(계층 방어 평면도, 휴지통으로) → aegis_command-hologram.html(Three.js 실시간 홀로그램, 원본은 시나리오/aegis/aegis-three-preview.html → 사이트반영.py로 생성). 표시 조건 .show·__aegisReset 계약은 그대로 -->
 <!-- aegis.html — v60 (2026-09-16): 우측 섹션 인디케이터 제거 — <body data-no-sec-ind> (footer.js v11 가드) -->
 <!-- aegis.html — v59 (2026-09-15): DECIDE 터미널 빨강 7곳 → 3곳 (HIGH / P(hostile_intent) / EXECUTE). UAS_SWARM·HARD-KILL은 약한 분류명 색으로 -->
 <!-- aegis.html — v58 (2026-09-15): DECIDE 터미널 주황 #ffb300 → #daab4e (채도 100% → 약 65%, 빨강·파랑과 맞춤) -->
@@ -26,12 +29,13 @@
 <!-- aegis.html — v40 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
 <!-- aegis.html — v39 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
 <!-- aegis.html — v32 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #000000 + color-scheme dark -->
-<html lang="en">
+<html lang="en" data-i18n>
 <head>
+<script src="lang.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
-<title>BA Solutions - AEGIS AI Platform</title>
+<title data-ko="BA Solutions - AEGIS AI 플랫폼">BA Solutions - AEGIS AI Platform</title>
 <style>
 
 /* DOMAIN 섹션 타이틀*/
@@ -54,16 +58,8 @@
   --accent:#fff;
   --pad:max(20px, calc(60 * var(--u)))
 }
-body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;overflow-x:hidden;}
+body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);border-bottom:0.5px solid rgba(255,255,255,.08);}
-.logo-wrap{display:flex;align-items:center;gap:8px;}
-.nav-links{display:flex;gap:32px;list-style:none;}
-.nav-links a{font-size:10px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-decoration:none;transition:color .3s;}
-.nav-links a:hover,.nav-links a.act{color:#fff;}
-.nav-about{background:transparent;border:0.5px solid rgba(255,255,255,.4);color:#fff;font-size:9px;letter-spacing:.2em;padding:8px 18px;cursor:pointer;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;transition:all .3s;text-decoration:none;display:inline-block;}
-.nav-about:hover{background:#fff;color:#000;}
 
 /* HERO */
 #hero{height:100vh;min-height:600px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
@@ -482,13 +478,6 @@ nav{position:fixed;top:0;left:0;right:0;height:56px;display:flex;align-items:cen
 }
 
 
-/* FOOTER */
-footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:72px var(--pad) 56px;display:flex;justify-content:space-between;align-items:start;}
-.foot-addr{font-size:11px;color:rgba(255,255,255,.35);line-height:2;letter-spacing:.04em;}
-.foot-copy{font-size:10px;color:rgba(255,255,255,.2);letter-spacing:.04em;margin-top:24px;line-height:1.8;}
-.flinks{display:flex;flex-direction:column;gap:12px;align-items:flex-end;}
-.flinks a{font-size:12px;letter-spacing:.12em;color:rgba(255,255,255,.45);text-decoration:none;transition:color .3s;}
-.flinks a:hover{color:#fff;}
 </style>
 </head>
 <body data-no-sec-ind>
@@ -513,7 +502,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     <span class="nw" aria-hidden="true"><span class="no-token"><span class="no-ink">NO</span></span> <span class="latency-word">LATENCY.</span></span>
     <span class="nw" aria-hidden="true"><span class="no-token"><span class="no-ink">NO</span></span> <span class="relay-word"><span class="rw-space">RELAY.</span><span class="rw-stack"><span class="rw-ch rw-r">RELAY.</span><span class="rw-ch rw-g">RELAY.</span><span class="rw-ch rw-b">RELAY.</span></span></span></span>
   </h2>
-  <p class="sec-desc fade-in">At the flashpoint, the slightest hesitation puts security to risk.</p>
+  <p class="sec-desc fade-in"><span lang="ko">결정적 순간, 찰나의 망설임이 안보를 흔듭니다.</span><span lang="en">At the flashpoint, the slightest hesitation puts security to risk.</span></p>
   </div>
 </section>
 
@@ -531,7 +520,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
           <div class="flow-term-log" id="decideLog"></div>
           <div class="flow-term-fade"></div>
         </div>
-        <iframe id="cmdMap" class="flow-cmd" src="aegis_command-raider.html" title="AEGIS Command" loading="lazy" aria-hidden="true"></iframe>
+        <iframe id="cmdMap" class="flow-cmd" src="aegis_command-hologram.html" title="AEGIS Command" loading="lazy" aria-hidden="true"></iframe>
         <div class="flow-num below" id="fn1">1</div>
         <div class="flow-num below" id="fn2">2</div>
         <div class="flow-num below" id="fn3">3</div>
@@ -543,19 +532,19 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
         <div class="flow-card below" id="fc1" data-function="SENSE" aria-hidden="true">
           <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
           <h2 class="fc-name" aria-label="SENSE: Seeing Threats Clearly"><span class="fc-title-line" aria-hidden="true">Seeing Threats</span><span class="fc-title-line" aria-hidden="true">Clearly</span></h2>
-          <p class="fc-desc">Radar, EO/IR, and RF feeds unite to classify and track each contact.</p>
+          <p class="fc-desc"><span lang="ko">레이더, EO/IR, RF 정보를 하나로 모아 표적마다 식별하고 추적합니다.</span><span lang="en">Radar, EO/IR, and RF feeds unite to classify and track each contact.</span></p>
         </div>
         <!-- DECIDE -->
         <div class="flow-card below" id="fc2" data-function="DECIDE" aria-hidden="true">
           <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
           <h2 class="fc-name" aria-label="DECIDE: Choosing the Right Response"><span class="fc-title-line" aria-hidden="true">Choosing the</span><span class="fc-title-line" aria-hidden="true">Right Response</span></h2>
-          <p class="fc-desc">On-device intelligence evaluates threats and selects a response within mission-defined rules.</p>
+          <p class="fc-desc"><span lang="ko">장비에 탑재된 인텔리전스가 위협을 평가하고, 임무가 정한 규칙 안에서 대응을 고릅니다.</span><span lang="en">On-device intelligence evaluates threats and selects a response within mission-defined rules.</span></p>
         </div>
         <!-- COMMAND -->
         <div class="flow-card below" id="fc3" data-function="COMMAND" aria-hidden="true">
           <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
           <h2 class="fc-name" aria-label="COMMAND: Bringing Every Platform Together"><span class="fc-title-line" aria-hidden="true">Bringing Every</span><span class="fc-title-line" aria-hidden="true">Platform Together</span></h2>
-          <p class="fc-desc">Drones, vehicles, and fixed-site systems receive coordinated tasking under operator supervision.</p>
+          <p class="fc-desc"><span lang="ko">운용자의 감독 아래 드론·차량·고정 시설 체계가 조율된 임무를 받습니다.</span><span lang="en">Drones, vehicles, and fixed-site systems receive coordinated tasking under operator supervision.</span></p>
         </div>
 
       </div>
@@ -576,7 +565,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     <a class="dl" href="ba_air.html" data-domain="air">
       <span class="dl-video" aria-hidden="true"><video src="../video/air-loop.mp4" muted loop playsinline preload="metadata"></video></span>
       <span class="dl-name" data-text="Air">Air</span>
-      <span class="dl-description"><span class="dl-description-text">Stop hostile drones with interceptor drones and net launchers.</span></span>
+      <span class="dl-description"><span class="dl-description-text"><span lang="ko">요격 드론과 그물포로 적대 드론을 막아냅니다.</span><span lang="en">Stop hostile drones with interceptor drones and net launchers.</span></span></span>
       <span class="dl-products">
         <span>AEGIS Interceptor</span>
         <span>AEGIS Spider</span>
@@ -585,7 +574,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     <a class="dl" href="ba_land.html" data-domain="land">
       <span class="dl-video" aria-hidden="true"><video src="../video/land-loop.mp4" muted loop playsinline preload="metadata"></video></span>
       <span class="dl-name" data-text="Land">Land</span>
-      <span class="dl-description"><span class="dl-description-text">Protect people and sites from hostile drones with counter-drone systems.</span></span>
+      <span class="dl-description"><span class="dl-description-text"><span lang="ko">대드론 체계로 사람과 시설을 적대 드론으로부터 지킵니다.</span><span lang="en">Protect people and sites from hostile drones with counter-drone systems.</span></span></span>
       <span class="dl-products">
         <span>AEGIS C-UAS</span>
         <span>AEGIS-V</span>
@@ -596,11 +585,11 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     <a class="dl" href="ba_sea.html" data-domain="sea">
       <span class="dl-video" aria-hidden="true"><video src="../video/sea-loop.mp4" muted loop playsinline preload="metadata"></video></span>
       <span class="dl-name" data-text="Sea">Sea</span>
-      <span class="dl-description"><span class="dl-description-text">Patrol waters and respond to threats with autonomous hovercraft.</span></span>
+      <span class="dl-description"><span class="dl-description-text"><span lang="ko">자율 호버크래프트로 수역을 순찰하고 위협에 대응합니다.</span><span lang="en">Patrol waters and respond to threats with autonomous hovercraft.</span></span></span>
       <span class="dl-products">
-        <span>Autonomous Hovercraft</span>
-        <span>Autonomous Jetboat</span>
-        <span>Autonomous Airboat</span>
+        <span>Hovercraft</span>
+        <span>Jetboat</span>
+        <span>Airboat</span>
       </span>
     </a>
   </div>
@@ -610,7 +599,7 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
 <!-- 협력사 로고 그리드 -->
 <section class="sec" id="partners" data-sec-label="PARTNERS">
   <h2 class="sec-title decode">Technology Partners</h2>
-  <p class="partner-intro">AEGIS is built on a network of specialized technology partners powering classification, edge inference, and autonomous decision logic across every BA Solutions platform.</p>
+  <p class="partner-intro"><span lang="ko">분류, 엣지 추론, 자율 판단 로직 — AEGIS는 이를 맡는 전문 기술 파트너들과 함께 만들어져 모든 BA Solutions 플랫폼에 흐릅니다.</span><span lang="en">AEGIS is built on a network of specialized technology partners powering classification, edge inference, and autonomous decision logic across every BA Solutions platform.</span></p>
 
   <!-- 협력사 추가 방법: .lw-item 블록을 하나 복사해 로고 경로/tag/role만 바꾸면 됩니다.
        빈 자리(placeholder)는 삭제하거나 실제 협력사로 교체하세요. -->
@@ -627,22 +616,22 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     </div>
 
     <div class="lw-item">
-      <img class="lw-logo is-seal" src="../images/djuniv_white.png" alt="Daejin University">
+      <img class="lw-logo is-seal" src="../images/djuniv_white.png" alt="Daejin University" data-ko-alt="대진대학교">
       <span class="lw-name">DAEJIN<br>UNIVERSITY</span>
     </div>
 
     <div class="lw-item">
-      <img class="lw-logo is-mark" src="../images/krit_white.png" alt="KRIT — Korea Research Institute for Defense Technology Planning and Advancement">
+      <img class="lw-logo is-mark" src="../images/krit_white.png" alt="KRIT — Korea Research Institute for Defense Technology Planning and Advancement" data-ko-alt="국방기술진흥연구소(KRIT)">
       <span class="lw-name">KRIT</span>
     </div>
 
     <div class="lw-item">
-      <img class="lw-logo is-wide" src="../images/ggd_white.png" alt="Gyeonggi Province">
+      <img class="lw-logo is-wide" src="../images/ggd_white.png" alt="Gyeonggi Province" data-ko-alt="경기도">
       <span class="lw-name">GYEONGGI<br>PROVINCE</span>
     </div>
 
     <div class="lw-item">
-      <img class="lw-logo" src="../images/gryphon_white.png" alt="Gryphon Dynamics">
+      <img class="lw-logo" src="../images/gryphon_white.png" alt="Gryphon Dynamics" data-ko-alt="그리폰다이나믹스">
       <span class="lw-name">GRYPHON<br>DYNAMICS</span>
     </div>
 
@@ -725,21 +714,26 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
       [...copyGlyphs[i].label, ...copyGlyphs[i].title].forEach(el => el.style.visibility = '');
     });
   }
+  const reveal = (chars, progress) => {
+    const count = Math.floor(chars.length * Math.max(0, Math.min(1, progress)));
+    chars.forEach((el, index) => el.style.visibility = index < count ? 'visible' : 'hidden');
+  };
+  // 카드를 완성 상태로 — 타이핑이 끝났을 때, 또는 타이핑 전·도중에 아래로 지나쳐 버렸을 때
+  function finishCopy(i){
+    if(copyPlayed[i]) return;
+    cancelAnimationFrame(copyFrame);
+    const card = cards[i], glyphs = copyGlyphs[i];
+    reveal(glyphs.label, 1); reveal(glyphs.title, 1);
+    const lastChar = glyphs.label[glyphs.label.length - 1];
+    card.querySelector('.fc-cursor').style.left = (lastChar ? lastChar.offsetLeft + lastChar.offsetWidth : 0) + 'px';
+    card.classList.remove('is-typing'); card.classList.add('copy-done');
+    if(!reducedMotion.matches) card.classList.add('cursor-blink');
+    copyPlayed[i] = true;
+  }
   function playCopy(i){
     resetCopy();
     const card = cards[i], glyphs = copyGlyphs[i];
-    const reveal = (chars, progress) => {
-      const count = Math.floor(chars.length * Math.max(0, Math.min(1, progress)));
-      chars.forEach((el, index) => el.style.visibility = index < count ? 'visible' : 'hidden');
-    };
-    const finish = () => {
-      reveal(glyphs.label, 1); reveal(glyphs.title, 1);
-      const lastChar = glyphs.label[glyphs.label.length - 1];
-      card.querySelector('.fc-cursor').style.left = (lastChar ? lastChar.offsetLeft + lastChar.offsetWidth : 0) + 'px';
-      card.classList.remove('is-typing'); card.classList.add('copy-done');
-      if(!reducedMotion.matches) card.classList.add('cursor-blink');
-      copyPlayed[i] = true;
-    };
+    const finish = () => finishCopy(i);
     if(copyPlayed[i]) return;
     if(reducedMotion.matches){finish();return;}
     card.classList.add('is-typing');
@@ -766,6 +760,9 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
     if(full === copyInView) return;
     copyInView = full;
     if(full) playCopy(currentCopyStep);
+    // 아래로 지나쳐 영역 윗변이 화면 위로 올라갔으면(빠른 스크롤) 지우지 않고 완성 상태로 둔다.
+    // 위에서 아직 들어오는 중이면 초기화 — 다 들어온 뒤 타이핑.
+    else if(r.top < 0) finishCopy(currentCopyStep);
     else resetCopy();
     syncVids();
   }
@@ -1350,6 +1347,8 @@ footer{background:#000000;border-top:0.5px solid rgba(255,255,255,.08);padding:7
   }
   var observer=new ResizeObserver(fitDescriptions);
   descriptions.forEach(function(description){ observer.observe(description); });
+  /* 한/영 전환 시 상자 크기는 그대로라 ResizeObserver 가 안 불림 → 언어 바뀌면 다시 맞춘다 */
+  document.addEventListener('ba:lang', fitDescriptions);
   document.fonts.ready.then(fitDescriptions);
 })();
 </script>

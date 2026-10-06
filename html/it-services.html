@@ -14,7 +14,16 @@
 <style>
 .hero h1 .kern-ty{letter-spacing:.02em}
 /* SERVICE DIRECTORY 펼침 상태: 닫힘 ↗, 열림 시 90° 회전해 ↘. */
-.service .arrow{justify-self:end;line-height:1;font-weight:100;transition:transform .28s cubic-bezier(.65,0,.35,1)}.service[open] .arrow{transform:rotate(90deg)}
+.service .arrow{justify-self:end;line-height:1;font-weight:100;transition:transform .3s cubic-bezier(.2,.8,.2,1)}.service[open] .arrow{transform:rotate(90deg)}
+/* SERVICE DIRECTORY 펼침 모션 (2026-10-06) — 높이는 스크립트가 펼침/접힘, 본문은 글자만 왼쪽부터 순서대로 채움(AEGIS dl-text-fill 재사용).
+   제목 디코드·흰 박스 와이프는 산만해 제외(사용자 요청). */
+/* 행 번호(01~04) 제거 (2026-10-06, 사용자 요청) — 번호 칸을 빼고, 펼친 본문은 제목과 구분되게 살짝만 들여씀 */
+.service summary{grid-template-columns:1.25fr 1fr 35px}.service-body{padding-left:max(20px,calc(32 * var(--u)))}
+@media(max-width:700px){.service summary{grid-template-columns:minmax(0,1fr) 22px}.summary-copy{grid-column:1;grid-row:2}.service .arrow{grid-column:2;grid-row:1}.service-body{padding-left:16px}}
+.service-body{overflow:hidden}.service.svc-closing .arrow{transform:none}
+.service.svc-in .service-body p,.service.svc-in .service-body li,.service.svc-in .cta-arrow{animation:svc-text-fill 520ms cubic-bezier(.2,.8,.2,1) var(--d,0ms) both}
+@keyframes svc-text-fill{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
+@media(prefers-reduced-motion:reduce){.service.svc-in .service-body p,.service.svc-in .service-body li,.service.svc-in .cta-arrow{animation:none}}
 </style>
 </head>
 <body>
@@ -23,7 +32,6 @@
 </script>
 <main class="wrap" id="main">
 <header class="hero" id="hero">
-<span class="eyebrow">BA SOLUTIONS / IT SOLUTIONS &amp; SERVICES</span>
 <div class="hero-top">
 <h1>Built for<br>
 <em>continui<span class="kern-ty">t</span>y.</em>
@@ -66,14 +74,12 @@
 <section class="section" id="services">
 <div class="section-head">
 <div>
-<span class="eyebrow">01 / SERVICE DIRECTORY</span>
 <h2>Your systems.<br>Our expertise.</h2>
 </div>
 <p><span lang="ko">분야를 펼쳐 적용 상황을 확인하고,<br>상세 페이지에서 기술 범위를 검토하세요.</span><span lang="en">Open an area to see when it applies,<br>then review the technical scope on its page.</span></p>
 </div>
 <details class="service" id="infrastructure">
 <summary>
-<span class="number mono">01</span>
 <h3>INFRASTRUCTURE</h3>
 <span class="summary-copy"><span lang="ko">워크로드에 맞는 서버와 데이터센터 환경.</span><span lang="en">Servers and data center environments built for your workload.</span></span>
 <span class="arrow" aria-hidden="true">↗</span>
@@ -93,47 +99,44 @@
 </details>
 <details class="service" id="security">
 <summary>
-<span class="number mono">02</span>
 <h3>SECURITY</h3>
-<span class="summary-copy"><span lang="ko">데이터 보호부터 접근 통제와 위협 탐지까지.</span><span lang="en">From data protection to access control and threat detection.</span></span>
+<span class="summary-copy"><span lang="ko">DB 접근제어·암호화·보안 파일 전송.</span><span lang="en">DB access control, encryption and secure file transfer.</span></span>
 <span class="arrow" aria-hidden="true">↗</span>
 </summary>
 <div class="service-body">
 <div>
-<p><span lang="ko">데이터가 저장되고, 사용되고, 이동하는 경로를 살펴봅니다. 업무 흐름과 성능 영향을 고려해 암호화·접근제어·위협 탐지의 적용 범위를 설계합니다.</span><span lang="en">We trace where your data is stored, used and moved. With business workflows and performance impact in mind, we design where encryption, access control and threat detection should apply.</span></p>
-<p class="tags mono">ENCRYPTION / ACCESS / DETECTION</p>
+<p><span lang="ko">샤크라의 DB 접근제어, 업무 환경에 맞춘 DB 암호화 구축, GoAnywhere MFT의 보안 파일 전송으로 데이터의 접근·저장·이동을 보호합니다.</span><span lang="en">Protect data access, storage and transfer with Chakra DB access control, database encryption tailored to your environment, and secure file transfer through GoAnywhere MFT.</span></p>
+<p class="tags mono">CHAKRA / DB ENCRYPTION / SECURE FILE TRANSFER</p>
 <a class="cta-arrow" href="it-security.html"><span class="cta-arrow-text" data-text="데이터·시스템 보안 자세히 보기 ↗" data-ko-data-text="데이터·시스템 보안 자세히 보기 ↗" data-en-data-text="Explore security ↗"><span><span lang="ko">데이터·시스템 보안 자세히 보기</span><span lang="en">Explore security</span> <span class="cta-arrow-glyph">↗</span></span></span><span class="cta-arrow-fill" aria-hidden="true"><span lang="ko">데이터·시스템 보안 자세히 보기</span><span lang="en">Explore security</span> <span class="cta-arrow-glyph">↗</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
 </div>
 <ul>
-<li><span lang="ko">운영 DB에 암호화·접근제어를 적용할 때</span><span lang="en">Applying encryption and access control to production databases</span></li>
-<li><span lang="ko">단말과 네트워크 내부의 위협 가시성이 필요할 때</span><span lang="en">You need visibility into threats on endpoints and inside the network</span></li>
-<li><span lang="ko">서버 간 파일 전송과 외부 공유를 통제할 때</span><span lang="en">Controlling file transfers between servers and external sharing</span></li>
+<li><span lang="ko">DB 접속과 작업 이력을 감사하고 접근 권한을 통제할 때</span><span lang="en">Auditing database access and activity while controlling user permissions</span></li>
+<li><span lang="ko">업무·성능 영향을 고려해 DB 암호화를 구축할 때</span><span lang="en">Implementing database encryption with business and performance needs in mind</span></li>
+<li><span lang="ko">서버 간 파일 전송과 개인 간 파일 공유를 안전하게 관리할 때</span><span lang="en">Managing secure server-to-server transfers and person-to-person file sharing</span></li>
 </ul>
 </div>
 </details>
 <details class="service" id="continuity">
 <summary>
-<span class="number mono">03</span>
 <h3>CONTINUITY</h3>
-<span class="summary-copy"><span lang="ko">복구 목표에 맞춘 이중화와 시스템 전환.</span><span lang="en">Redundancy and system transition built around your recovery targets.</span></span>
+<span class="summary-copy"><span lang="ko">데이터 복제와 서버 이중화·재해복구.</span><span lang="en">Data replication, server high availability and disaster recovery.</span></span>
 <span class="arrow" aria-hidden="true">↗</span>
 </summary>
 <div class="service-body">
 <div>
-<p><span lang="ko">서비스 중단의 허용 범위와 데이터 복구 목표를 먼저 정합니다. 이중화·재해복구와 서버 이전을 실제 업무의 우선순위에 맞춰 계획합니다.</span><span lang="en">We start by setting how much downtime is acceptable and what data must be recovered. High availability, disaster recovery and server migration are then planned around your actual business priorities.</span></p>
-<p class="tags mono">HA / DR / BCP / MIGRATION</p>
-<a class="cta-arrow" href="it-continuity.html"><span class="cta-arrow-text" data-text="이중화·재해복구·전환 자세히 보기 ↗" data-ko-data-text="이중화·재해복구·전환 자세히 보기 ↗" data-en-data-text="Explore continuity ↗"><span><span lang="ko">이중화·재해복구·전환 자세히 보기</span><span lang="en">Explore continuity</span> <span class="cta-arrow-glyph">↗</span></span></span><span class="cta-arrow-fill" aria-hidden="true"><span lang="ko">이중화·재해복구·전환 자세히 보기</span><span lang="en">Explore continuity</span> <span class="cta-arrow-glyph">↗</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
+<p><span lang="ko">MIMIX의 데이터 복제, Db2 Mirror for i의 동기식 미러링, 서버 이중화·재해복구 구축을 통해 장애와 재해에 대비한 업무 연속성을 준비합니다.</span><span lang="en">Prepare for business continuity through MIMIX replication, synchronous mirroring with Db2 Mirror for i, and server high availability and disaster recovery implementation.</span></p>
+<p class="tags mono">MIMIX / DB2 MIRROR / HA &amp; DR</p>
+<a class="cta-arrow" href="it-continuity.html"><span class="cta-arrow-text" data-text="이중화·재해복구 자세히 보기 ↗" data-ko-data-text="이중화·재해복구 자세히 보기 ↗" data-en-data-text="Explore continuity ↗"><span><span lang="ko">이중화·재해복구 자세히 보기</span><span lang="en">Explore continuity</span> <span class="cta-arrow-glyph">↗</span></span></span><span class="cta-arrow-fill" aria-hidden="true"><span lang="ko">이중화·재해복구 자세히 보기</span><span lang="en">Explore continuity</span> <span class="cta-arrow-glyph">↗</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
 </div>
 <ul>
-<li><span lang="ko">핵심 업무의 이중화·재해복구 체계를 준비할 때</span><span lang="en">Preparing high availability and disaster recovery for core business systems</span></li>
-<li><span lang="ko">IBM i 환경의 복제·전환 구성을 검토할 때</span><span lang="en">Reviewing replication and switchover for an IBM i environment</span></li>
-<li><span lang="ko">서비스 영향을 줄이며 서버·데이터를 이전할 때</span><span lang="en">Migrating servers and data with minimal service impact</span></li>
+<li><span lang="ko">IBM i 데이터와 시스템 오브젝트의 복제가 필요할 때</span><span lang="en">Replicating IBM i data and system objects</span></li>
+<li><span lang="ko">두 IBM i 노드 간 DB 동기식 미러링을 검토할 때</span><span lang="en">Considering synchronous database mirroring between two IBM i nodes</span></li>
+<li><span lang="ko">업무 특성에 맞는 서버 이중화·재해복구 체계를 구축할 때</span><span lang="en">Building server high availability and disaster recovery around business needs</span></li>
 </ul>
 </div>
 </details>
 <details class="service" id="operations">
 <summary>
-<span class="number mono">04</span>
 <h3>OPERATIONS</h3>
 <span class="summary-copy"><span lang="ko">업무 시스템의 운영과 장애 분석을 지원.</span><span lang="en">Support for running business systems and diagnosing failures.</span></span>
 <span class="arrow" aria-hidden="true">↗</span>
@@ -155,7 +158,6 @@
 <section class="section" id="approach">
 <div class="section-head">
 <div>
-<span class="eyebrow">02 / HOW WE WORK</span>
 <h2><span lang="ko">운영 조건에서 시작해,<br>적용 이후까지.</span><span lang="en">From your operating conditions<br>to life after go-live.</span></h2>
 </div>
 <p><span lang="ko">구축 범위와 검증 항목, 운영 지원 조건은<br>고객 환경에 맞춰 협의합니다.</span><span lang="en">Build scope, validation items and support terms<br>are agreed to fit your environment.</span></p>
@@ -185,7 +187,6 @@
 </section>
 <section class="contact" id="contact">
 <div>
-<span class="eyebrow">START A CONVERSATION</span>
 <h2><span lang="ko">현재의 IT 과제부터<br>이야기해 주세요.</span><span lang="en">Start with your<br>current IT challenge.</span></h2>
 <p><span lang="ko">운영 환경과 필요한 지원을 알려주시면, 검토할 범위와 다음 단계를 함께 정리하겠습니다.</span><span lang="en">Tell us about your environment and the support you need, and we will work out the scope to review and the next steps with you.</span></p>
 <div class="contact-address">
@@ -199,7 +200,7 @@
 <select id="brief-topic" name="topic">
 <option value="infrastructure" selected>인프라 설계·구축</option>
 <option value="security">데이터·시스템 보안</option>
-<option value="continuity">이중화·재해복구·전환</option>
+<option value="continuity">이중화·재해복구</option>
 <option value="operations">운영·개발·기술지원</option>
 </select>
 <label for="brief-text"><span lang="ko">운영 환경과 요청 사항</span><span lang="en">Your environment and request</span></label>
@@ -223,5 +224,34 @@
 </main>
 <script src="footer.js"></script>
 <script src="tech.js"></script>
+<script>
+/* SERVICE DIRECTORY 펼침 모션 — 높이 펼침/접힘 + 본문 글자 순차 채움(스타일은 head 참고). */
+(function(){
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var EASE='cubic-bezier(.2,.8,.2,1)', STEP=70; /* 시작부터 바로 움직이는 감속 곡선 — 느린 출발 곡선은 멈칫해 보임 */
+  Array.prototype.forEach.call(document.querySelectorAll('details.service'),function(d){
+    var summary=d.querySelector('summary'), body=d.querySelector('.service-body'), anim=null;
+    /* 위아래 여백까지 0으로 접어야 시작·끝에서 여백만큼 툭 튀지 않는다 */
+    function full(){ var cs=getComputedStyle(body); return {height:body.getBoundingClientRect().height+'px',paddingTop:cs.paddingTop,paddingBottom:cs.paddingBottom}; }
+    function shut(){ return {height:'0px',paddingTop:'0px',paddingBottom:'0px'}; }
+    /* 순서: 설명 → 태그 → 링크 → 목록 */
+    Array.prototype.forEach.call(body.querySelectorAll('p,.cta-arrow,li'),function(el,i){ el.style.setProperty('--d',(40+STEP*i)+'ms'); });
+    summary.addEventListener('click',function(e){
+      e.preventDefault();
+      if(anim)anim.cancel();
+      if(!d.open||d.classList.contains('svc-closing')){
+        d.classList.remove('svc-closing'); d.open=true;
+        d.classList.remove('svc-in'); void d.offsetWidth; d.classList.add('svc-in');
+        var a=anim=body.animate([shut(),full()],{duration:460,easing:EASE});
+        a.onfinish=function(){ if(anim===a)anim=null; };
+      }else{
+        d.classList.add('svc-closing');
+        var c=anim=body.animate([full(),shut()],{duration:300,easing:EASE});
+        c.onfinish=function(){ if(anim!==c)return; anim=null; d.open=false; d.classList.remove('svc-closing','svc-in'); };
+      }
+    });
+  });
+})();
+</script>
 </body>
 </html>

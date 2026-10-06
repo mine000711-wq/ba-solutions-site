@@ -8,9 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
-<title data-en="HA, DR &amp; Migration | BA Solutions">이중화·재해복구·전환 | BA Solutions</title>
-<meta name="description" content="서비스 중단의 허용 범위와 데이터 복구 목표를 먼저 정합니다. 이중화·재해복구와 서버 이전을 실제 업무의 우선순위에 맞춰 계획합니다.">
-<link rel="stylesheet" href="tech.css">
+<title data-en="High Availability &amp; Disaster Recovery | BA Solutions">이중화·재해복구 | BA Solutions</title>
+<meta name="description" content="MIMIX의 데이터 복제, Db2 Mirror for i의 동기식 미러링, 서버 이중화·재해복구 구축을 통해 장애와 재해에 대비한 업무 연속성을 준비합니다.">
+<link rel="stylesheet" href="tech.css?v=20261006">
 </head>
 <body>
 <a class="skip" href="#main"><span lang="ko">본문으로 바로가기</span><span lang="en">Skip to content</span></a>
@@ -23,11 +23,10 @@
 <span>/</span>
 <span>CONTINUITY</span>
 </div>
-<span class="eyebrow"><span lang="ko">03 / 이중화·재해복구·전환</span><span lang="en">03 / HA, DR & MIGRATION</span></span>
 <div class="hero-top">
-<h1>Plan for change.<br>Prepare for recovery.</h1>
+<h1>Keep systems ready.<br>Prepare for recovery.</h1>
 <div class="hero-copy">
-<p><span lang="ko">서비스 중단의 허용 범위와 데이터 복구 목표를 먼저 정합니다. 이중화·재해복구와 서버 이전을 실제 업무의 우선순위에 맞춰 계획합니다.</span><span lang="en">We start by setting how much downtime is acceptable and what data must be recovered. High availability, disaster recovery and server migration are then planned around your actual business priorities.</span></p>
+<p><span lang="ko">MIMIX의 데이터 복제, Db2 Mirror for i의 동기식 미러링, 서버 이중화·재해복구 구축을 통해 장애와 재해에 대비한 업무 연속성을 준비합니다.</span><span lang="en">Prepare for business continuity through MIMIX replication, synchronous mirroring with Db2 Mirror for i, and server high availability and disaster recovery implementation.</span></p>
 <a class="cta-arrow" href="#contact"><span class="cta-arrow-text" data-text="이 분야 문의하기 ↘" data-ko-data-text="이 분야 문의하기 ↘" data-en-data-text="Ask about this service ↘"><span><span lang="ko">이 분야 문의하기</span><span lang="en">Ask about this service</span> <span class="cta-arrow-glyph">↘</span></span></span><span class="cta-arrow-fill" aria-hidden="true"><span lang="ko">이 분야 문의하기</span><span lang="en">Ask about this service</span> <span class="cta-arrow-glyph">↘</span></span><span class="cta-arrow-line" aria-hidden="true"><span class="cta-arrow-shaft"><i class="cta-arrow-head"></i><i class="cta-arrow-head cta-arrow-head-b"></i></span></span></a>
 </div>
 </div>
@@ -35,7 +34,6 @@
 </header>
 <div class="detail-layout">
 <aside class="side-nav" aria-label="페이지 목차" data-ko-aria-label="페이지 목차" data-en-aria-label="On this page">
-<span class="eyebrow">ON THIS PAGE</span>
 <a href="#when"><span lang="ko">01 적용 상황</span><span lang="en">01 When to engage</span></a>
 <a href="#scope"><span lang="ko">02 서비스 범위</span><span lang="en">02 Service scope</span></a>
 <a href="#review"><span lang="ko">03 검토 조건</span><span lang="en">03 Considerations</span></a>
@@ -44,94 +42,37 @@
 </aside>
 <div>
 <section class="detail-section" id="when">
-<span class="eyebrow">01 / WHEN TO ENGAGE</span>
 <h2><span lang="ko">이런 과제를 검토하고 있다면.</span><span lang="en">If you are facing any of these.</span></h2>
-<ul class="case-list">
-<li><span lang="ko">핵심 업무의 이중화·재해복구 체계를 준비할 때</span><span lang="en">Preparing high availability and disaster recovery for core business systems</span></li>
-<li><span lang="ko">IBM i 환경의 복제·전환 구성을 검토할 때</span><span lang="en">Reviewing replication and switchover for an IBM i environment</span></li>
-<li><span lang="ko">서비스 영향을 줄이며 서버·데이터를 이전할 때</span><span lang="en">Migrating servers and data with minimal service impact</span></li>
-</ul>
+<ul class="case-list"><li><span lang="ko">IBM i 데이터와 시스템 오브젝트의 복제가 필요할 때</span><span lang="en">Replicating IBM i data and system objects</span></li>
+<li><span lang="ko">두 IBM i 노드 간 DB 동기식 미러링을 검토할 때</span><span lang="en">Considering synchronous database mirroring between two IBM i nodes</span></li>
+<li><span lang="ko">업무 특성에 맞는 서버 이중화·재해복구 체계를 구축할 때</span><span lang="en">Building server high availability and disaster recovery around business needs</span></li></ul>
 </section>
 <section class="detail-section" id="scope">
-<span class="eyebrow">02 / SERVICE SCOPE</span>
-<h2><span lang="ko">기술과 업무를 함께 살핍니다.</span><span lang="en">Technology and business, reviewed together.</span></h2>
-<table>
-<caption class="eyebrow" style="text-align:left"><span lang="ko">이중화·재해복구·전환 — 범위와 검토 조건</span><span lang="en">HA, DR & migration — scope and considerations</span></caption>
-<thead>
-<tr>
-<th scope="col"><span lang="ko">영역</span><span lang="en">Area</span></th>
-<th scope="col"><span lang="ko">수행·협의 범위</span><span lang="en">Delivery & agreed scope</span></th>
-<th scope="col"><span lang="ko">주요 검토 조건</span><span lang="en">Key considerations</span></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><span lang="ko">HA·DR 구성</span><span lang="en">HA / DR architecture</span></td>
-<td><span lang="ko">데이터 복제, 대기 시스템과 전환·복구 절차 설계</span><span lang="en">Design of data replication, standby systems, and switchover and recovery procedures</span></td>
-<td><span lang="ko">OS·DB, 복제 대상, 회선 대역폭·지연, 사이트 구성</span><span lang="en">OS and DB, replication targets, link bandwidth and latency, site layout</span></td>
-</tr>
-<tr>
-<td><span lang="ko">BCP 컨설팅</span><span lang="en">BCP consulting</span></td>
-<td><span lang="ko">업무 영향과 복구 우선순위 분석, 운영 절차 정리</span><span lang="en">Business impact and recovery priority analysis; operating procedures</span></td>
-<td><span lang="ko">핵심 업무, 의존 시스템, 담당 조직과 의사결정 기준</span><span lang="en">Core business functions, dependent systems, responsible teams and decision criteria</span></td>
-</tr>
-<tr>
-<td><span lang="ko">서버·데이터 이전</span><span lang="en">Server & data migration</span></td>
-<td><span lang="ko">현황 분석, 복제·이전 방식 검토, 리허설과 전환 계획</span><span lang="en">Current-state analysis, replication and migration method review, rehearsal and cutover planning</span></td>
-<td><span lang="ko">데이터 용량·변경량, 이전 창, 호환성, 원복 기준</span><span lang="en">Data volume and change rate, migration window, compatibility, rollback criteria</span></td>
-</tr>
-</tbody>
+<h2><span lang="ko">세 가지 솔루션·서비스.</span><span lang="en">Three solutions and services.</span></h2>
+<table class="service-scope">
+<caption class="sr-only"><span lang="ko">솔루션·서비스와 검토 조건</span><span lang="en">Solutions, services and considerations</span></caption>
+<thead><tr><th scope="col"><span lang="ko">솔루션·서비스</span><span lang="en">Solution / service</span></th><th scope="col"><span lang="ko">주요 내용</span><span lang="en">Overview</span></th><th scope="col"><span lang="ko">주요 검토 조건</span><span lang="en">Key considerations</span></th></tr></thead>
+<tbody><tr><td><span lang="ko">MIMIX HA &amp; DR</span><span lang="en">MIMIX HA &amp; DR</span></td><td><span lang="ko">IBM i Remote Journal 기반으로 변경 데이터를 레코드 단위로 복제합니다. 1:1·1:N 구성과 동기식·비동기식 방식을 제공합니다.</span><span lang="en">Replicates changed records using IBM i Remote Journal, with one-to-one or one-to-many configurations and synchronous or asynchronous replication.</span></td><td><span lang="ko">네트워크 환경, 데이터 변경량, 복제 대상</span><span lang="en">Network conditions, data change volume and replication scope</span></td></tr>
+<tr><td><span lang="ko">Db2 Mirror for i</span><span lang="en">Db2 Mirror for i</span></td><td><span lang="ko">RoCE 네트워크의 RDMA를 이용해 두 노드의 DB 변경을 동기식으로 미러링합니다. Active-Active 또는 Active-Passive 구성을 지원합니다.</span><span lang="en">Synchronously mirrors database updates between two nodes using RDMA over a RoCE network, with active-active or active-passive configurations.</span></td><td><span lang="ko">두 노드 구성, RoCE 네트워크, 애플리케이션 운영 방식</span><span lang="en">Two-node configuration, RoCE networking and application deployment mode</span></td></tr>
+<tr><td><span lang="ko">서버 이중화·재해복구 구축</span><span lang="en">Server HA &amp; DR implementation</span></td><td><span lang="ko">서버·업무 환경을 분석하고 MIMIX &amp; Double Take를 활용한 소프트웨어 기반 이중화·재해복구 구성을 검토합니다.</span><span lang="en">Reviews server and business environments for software-based high availability and disaster recovery using MIMIX &amp; Double Take.</span></td><td><span lang="ko">대상 OS·서버 환경, 핵심 업무, 장애·재해 대응 우선순위</span><span lang="en">Target OS and server environment, critical workloads, and recovery priorities</span></td></tr></tbody>
 </table>
 </section>
 <section class="detail-section" id="review">
-<span class="eyebrow">03 / DESIGN CONSIDERATIONS</span>
-<h2><span lang="ko">적용 전에 확인할 조건.</span><span lang="en">What to confirm before you start.</span></h2>
-<div class="check">
-<span class="mono">01</span>
-<div>
-<h3><span lang="ko">RTO · 복구시간 목표</span><span lang="en">RTO · Recovery time objective</span></h3>
-<p><span lang="ko">업무를 언제까지 재개해야 하는지 정합니다. 장비 전환뿐 아니라 애플리케이션 확인 시간도 포함해 검토합니다.</span><span lang="en">Define how soon the business must be running again — including time to verify applications, not just to switch equipment.</span></p>
-</div>
-</div>
-<div class="check">
-<span class="mono">02</span>
-<div>
-<h3><span lang="ko">RPO · 복구시점 목표</span><span lang="en">RPO · Recovery point objective</span></h3>
-<p><span lang="ko">어느 시점의 데이터까지 복구해야 하는지 정합니다. 복제 방식과 실제 변경량·회선 조건을 함께 살핍니다.</span><span lang="en">Define the point in time to which data must be recovered, taking the replication method, actual change volume and link conditions into account.</span></p>
-</div>
-</div>
-<div class="check">
-<span class="mono">03</span>
-<div>
-<h3><span lang="ko">전환·원복 검증</span><span lang="en">Switchover & rollback validation</span></h3>
-<p><span lang="ko">전환 승인, 데이터 정합성 확인, 원복 판단 기준과 담당자를 사전에 정하고 리허설 범위를 협의합니다.</span><span lang="en">Agree in advance on switchover approval, data integrity checks, rollback criteria and owners, and on the scope of rehearsals.</span></p>
-</div>
-</div>
-<div class="output">
-<span class="eyebrow">PROJECT DELIVERABLES</span>
-<p><span lang="ko">복구 요구사항 / 복제·전환 구성안 / 리허설 계획 / 전환·원복 절차</span><span lang="en">Recovery requirements / Replication & switchover design / Rehearsal plan / Switchover & rollback procedures</span></p>
-<p class="hint"><span lang="ko">산출물의 종류와 상세 수준은 프로젝트 범위에 따라 협의합니다.</span><span lang="en">The type and level of detail of deliverables are agreed according to project scope.</span></p>
-</div>
-<details class="references">
-<summary><span lang="ko">관련 기술·기존 소개 자료 보기</span><span lang="en">Related technologies and existing materials</span></summary>
-<p><span lang="ko">IBM i, MIMIX, Db2 Mirror for i, 서버·스토리지 기반 데이터 복제</span><span lang="en">IBM i, MIMIX, Db2 Mirror for i, server- and storage-based data replication</span></p>
-<a href="https://basolutions.co.kr/?p=4915" target="_blank" rel="noopener">MIMIX HA & DR ↗</a>
-<a href="https://basolutions.co.kr/?p=4804" target="_blank" rel="noopener">Db2 Mirror for i ↗</a>
-<a href="https://basolutions.co.kr/?p=188" target="_blank" rel="noopener"><span lang="ko">이중화·재해복구 소개 ↗</span><span lang="en">High availability & DR overview ↗</span></a>
-<a href="https://basolutions.co.kr/?p=184" target="_blank" rel="noopener"><span lang="ko">서버 마이그레이션 ↗</span><span lang="en">Server migration ↗</span></a>
-<a href="https://basolutions.co.kr/?p=182" target="_blank" rel="noopener"><span lang="ko">BCP 컨설팅 ↗</span><span lang="en">BCP consulting ↗</span></a>
-<p><span lang="ko">기존 소개 자료입니다. 제품 버전·지원 환경·공급 가능 여부는 상담 시 확인합니다.</span><span lang="en">These are existing introductory materials (in Korean). Product versions, supported environments and availability are confirmed during consultation.</span></p>
-</details>
+<h2><span lang="ko">적용 환경에 맞춰 검토합니다.</span><span lang="en">Designed around your environment.</span></h2>
+<div class="check"><span class="mono">01</span><div><h3><span lang="ko">데이터와 시스템 정보를 함께 복제</span><span lang="en">Replicate data and system information</span></h3><p><span lang="ko">MIMIX는 DB 데이터뿐 아니라 사용자 계정·프로그램·구성정보 등 시스템 오브젝트의 변경도 복제합니다. 복제 대상의 정합성을 확인하고 타깃 서버에서 데이터를 읽어 활용할 수 있습니다.</span><span lang="en">MIMIX replicates changes to database data and system objects such as user accounts, programs and configuration. Replicated information can be checked for consistency and read on the target server.</span></p></div></div>
+<div class="check"><span class="mono">02</span><div><h3><span lang="ko">동기식 미러링을 위한 연결</span><span lang="en">Connectivity for synchronous mirroring</span></h3><p><span lang="ko">Db2 Mirror for i는 RoCE를 통해 상대 노드의 메모리에 직접 접근하는 RDMA 기술을 사용합니다. DB 동기화와 애플리케이션 운영 구성을 함께 검토합니다.</span><span lang="en">Db2 Mirror for i uses RDMA over RoCE to access the peer node’s memory directly. Database synchronization and application deployment are reviewed together.</span></p></div></div>
+<div class="check"><span class="mono">03</span><div><h3><span lang="ko">업무에 맞춘 HA·DR 우선순위</span><span lang="en">HA and DR priorities by workload</span></h3><p><span lang="ko">장애·재해가 업무에 미치는 영향을 기준으로 보호 대상을 정합니다. 서버 이중화와 재해복구의 우선순위를 검토하고, 구축 과정에서 확인한 운영 이슈와 개선 방향을 함께 정리합니다.</span><span lang="en">Define protection scope around the business impact of failures and disasters. Review HA and DR priorities along with operational issues and improvements identified during implementation.</span></p></div></div><details class="references"><summary><span lang="ko">기존 소개 자료 보기</span><span lang="en">View existing materials</span></summary>
+<a href="https://basolutions.co.kr/?p=4915" target="_blank" rel="noopener"><span lang="ko">MIMIX HA &amp; DR ↗</span><span lang="en">MIMIX HA &amp; DR ↗</span></a>
+<a href="https://basolutions.co.kr/?p=4804" target="_blank" rel="noopener"><span lang="ko">Mirror for i ↗</span><span lang="en">Mirror for i ↗</span></a>
+<a href="https://basolutions.co.kr/?p=188" target="_blank" rel="noopener"><span lang="ko">서버 이중화/재해복구 · MIMIX &amp; Double Take ↗</span><span lang="en">Server HA/DR · MIMIX &amp; Double Take ↗</span></a>
+<p><span lang="ko">기존 소개 자료입니다. 제품 버전·지원 환경·공급 가능 여부는 상담 시 확인합니다.</span><span lang="en">These are existing introductory materials in Korean. Product versions, supported environments and availability are confirmed during consultation.</span></p></details>
 </section>
 <section class="detail-section" id="prepare">
-<span class="eyebrow">04 / BEFORE WE TALK</span>
 <h2><span lang="ko">이 정보를 알려주시면 좋습니다.</span><span lang="en">Helpful information to share.</span></h2>
-<ul class="case-list">
-<li><span lang="ko">대상 시스템과 업무 간 의존관계</span><span lang="en">Target systems and business dependencies</span></li>
-<li><span lang="ko">목표 RTO·RPO 또는 허용 중단시간</span><span lang="en">Target RTO and RPO, or acceptable downtime</span></li>
-<li><span lang="ko">데이터 용량·일일 변경량·회선 구성</span><span lang="en">Data volume, daily change rate and network links</span></li>
-<li><span lang="ko">전환 가능 시간과 원복 조건</span><span lang="en">Available switchover window and rollback conditions</span></li>
-</ul>
+<ul class="case-list"><li><span lang="ko">대상 서버·OS와 핵심 업무</span><span lang="en">Target servers, operating systems and critical workloads</span></li>
+<li><span lang="ko">장애·재해 시 허용 가능한 서비스 중단 범위</span><span lang="en">Acceptable service interruption during failures or disasters</span></li>
+<li><span lang="ko">복제할 데이터·시스템 오브젝트와 데이터 변경량</span><span lang="en">Data and system objects to replicate, and data change volume</span></li>
+<li><span lang="ko">현재 서버 간 연결과 이중화·재해복구 구성</span><span lang="en">Current connectivity, high availability and disaster recovery configuration</span></li></ul>
 <p class="hint"><span lang="ko">모든 항목이 준비되어 있지 않아도 괜찮습니다. 현재 파악한 내용부터 공유해 주세요.</span><span lang="en">You don't need every item ready. Start with what you know today.</span></p>
 </section>
 </div>
@@ -143,7 +84,6 @@
 </div>
 <section class="contact" id="contact">
 <div>
-<span class="eyebrow">START A CONVERSATION</span>
 <h2><span lang="ko">현재의 IT 과제부터<br>이야기해 주세요.</span><span lang="en">Start with your<br>current IT challenge.</span></h2>
 <p><span lang="ko">운영 환경과 필요한 지원을 알려주시면, 검토할 범위와 다음 단계를 함께 정리하겠습니다.</span><span lang="en">Tell us about your environment and the support you need, and we will work out the scope to review and the next steps with you.</span></p>
 <div class="contact-address">
@@ -157,7 +97,7 @@
 <select id="brief-topic" name="topic">
 <option value="infrastructure">인프라 설계·구축</option>
 <option value="security">데이터·시스템 보안</option>
-<option value="continuity" selected>이중화·재해복구·전환</option>
+<option value="continuity" selected>이중화·재해복구</option>
 <option value="operations">운영·개발·기술지원</option>
 </select>
 <label for="brief-text"><span lang="ko">운영 환경과 요청 사항</span><span lang="en">Your environment and request</span></label>
