@@ -1780,11 +1780,21 @@ let threat=threats[Math.floor(Math.random()*threats.length)],loopStart=performan
 // fades in only on that step. While it is hidden nothing is drawn, and the page calls
 // __aegisReset as it shows it, so every visit starts a fresh threat from the top.
 const host=(()=>{try{const f=window.frameElement;return f&&f.id==='cmdMap'?f:null;}catch(e){return null;}})();
+// In a frame it cannot see (the page opened from file:// is another origin, so
+// frameElement reads null) the page posts {aegisCommand} as the step changes instead,
+// and answers aegisReady with the current step for a frame that loaded late.
+const framed=!host&&window.top!==window;let remoteShown=false,remoteSeen=false;
+const shown=()=>host?host.classList.contains('show'):framed?remoteShown:true;
+if(framed){addEventListener('message',e=>{const d=e.data;if(e.source!==window.parent||!d||typeof d.aegisCommand!=='boolean')return;
+remoteSeen=true;if(d.aegisCommand&&!remoteShown)window.__aegisReset();remoteShown=d.aegisCommand;});
+window.parent.postMessage({aegisReady:true},'*');
+// Any other frame (no AEGIS page answering) runs on its own, as the bare preview does.
+setTimeout(()=>{if(!remoteSeen){remoteShown=true;startIntro(performance.now());}},1500);}
 function startIntro(now){introStart=now;loopStart=now+intro.threatAt*1000;}
 window.__aegisReset=()=>{const others=threats.filter(o=>o!==threat);
 threat=others[Math.floor(Math.random()*others.length)];startIntro(performance.now());};
 // On its own the preview opens straight away; in the page it waits to be shown.
-if(!host)startIntro(performance.now());
+if(!host&&!framed)startIntro(performance.now());
 // Timing panel: every value a motion's timing hangs on, live, in the preview alone (the
 // page's frame never shows it). A motion hands over its value object and its rows
 // [key, label, min, max, step]; each change restarts it, the scrub holds one moment,
@@ -1827,7 +1837,7 @@ if(tuning)tunePanel('진입 모션',intro,[
 ()=>startIntro(performance.now()),{max:5,set:v=>{introFreeze=v;}});
 function frame(now){
 if(!root.isConnected)return;
-if(W&&H&&!(host&&!host.classList.contains('show'))){
+if(W&&H&&shown()){
 // Shown before the page could call __aegisReset (the frame was still loading).
 if(introStart===null)startIntro(now);
 if(introFreeze!==null){introStart=now-introFreeze*1000;loopStart=introStart+intro.threatAt*1000;}
@@ -1884,10 +1894,10 @@ requestAnimationFrame(frame);
 // main thread the page shares with this iframe. Left to the moment the COMMAND step opens,
 // it froze the page's copy typing. So while hidden, once the airframes are in, draw each
 // threat through its approach, response and fall a frame at a time in idle moments.
-if(host){const models=[interceptor,spiderModel,...Object.values(threatModels).flat()];
+if(host||framed){const models=[interceptor,spiderModel,...Object.values(threatModels).flat()];
 const idle=window.requestIdleCallback?f=>requestIdleCallback(f,{timeout:1500}):f=>setTimeout(f,200);
 const queue=threats.flatMap(th=>[.5,th.resp.at+.3,(th.resp.at+th.arrive)/2,th.arrive+.6].map(t=>[th,t]));
-const warm=()=>{if(!root.isConnected||host.classList.contains('show')||!queue.length)return;
+const warm=()=>{if(!root.isConnected||shown()||!queue.length)return;
 if(!W||!H||!models.every(m=>m.ready)){setTimeout(()=>idle(warm),300);return;}
 draw(...queue.shift());idle(warm);};
 idle(warm);}

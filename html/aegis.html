@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
+<!-- aegis.html — v64 (2026-10-06): COMMAND 홀로그램 iframe에 단계 진입·이탈을 postMessage({aegisCommand})로도 알림 — file://로 열면 출처가 달라 __aegisReset 직접 호출이 막혀, 홀로그램이 로드 즉시 진입 모션을 다 재생해 버리던 문제. 늦게 로드된 iframe의 aegisReady에 현재 단계를 답함 -->
 <!-- aegis.html — v63 (2026-10-01): DOMAIN 카드 호버를 카드 하나로 한정 — 다른 카드 숨김·구분선 숨김·제목 문장 교체(ALL THREE→도메인명, S 지움) 제거, 영상은 섹션 배경 → 각 카드 안. 도메인 이름은 흰 박스가 채워진 채 검정 글자로 멈춤, 커서가 나가면 박스가 오른쪽으로 걷힘. 설명·제품 목록은 호버 시 박스가 지나가며 사라지고, 나가면 글자만 왼쪽→오른쪽으로 채워지며 다시 나타남(.dl-leave) -->
 <!-- aegis.html — v62 (2026-09-29): 한/영 병기(data-i18n) — 3NO 설명·FLOW 카드 설명·DOMAIN 설명·파트너 소개만 병기. 3NO·FLOW 제목(글자 단위 애니메이션)·HUD·제품명은 영문 유지. DOMAIN 제품 목록의 "Autonomous" 이름은 제품 상세와 맞춰 제거 -->
 <!-- aegis.html — v62 (2026-09-29): FLOW 카드 — 빠른 스크롤로 .flow-left가 다 들어오기 전에 아래로 지나치면 글자를 지우던 문제 → 아래로 벗어날 때(윗변이 화면 위)는 finishCopy로 완성 상태 표시. 위에서 들어오는 중에는 종전대로 초기화 후 타이핑 -->
@@ -1053,6 +1054,11 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     if(termTimer){cancelAnimationFrame(termTimer);termTimer=null;}
   }
 
+  // COMMAND 홀로그램이 다른 출처(file://)라 직접 못 부를 때: 늦게 로드된 iframe이 aegisReady를 보내면 현재 단계를 알려 준다(v64).
+  window.addEventListener('message', function(e){
+    var c=document.getElementById('cmdMap');
+    if(c&&e.data&&e.data.aegisReady&&e.source===c.contentWindow)c.contentWindow.postMessage({aegisCommand:currentCopyStep===2},'*');
+  });
   function setStep(i) {
     currentCopyStep = i;
     resetCopy();
@@ -1078,7 +1084,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
       v.classList.toggle('show', j === i);
     });
     syncVids();
-    var _cm=document.getElementById('cmdMap');if(_cm){_cm.classList.toggle('show', i===2);if(i===2){try{_cm.contentWindow&&_cm.contentWindow.__aegisReset&&_cm.contentWindow.__aegisReset();}catch(e){}}}
+    var _cm=document.getElementById('cmdMap');if(_cm){_cm.classList.toggle('show', i===2);if(i===2){try{_cm.contentWindow&&_cm.contentWindow.__aegisReset&&_cm.contentWindow.__aegisReset();}catch(e){}}try{_cm.contentWindow&&_cm.contentWindow.postMessage({aegisCommand:i===2},'*');}catch(e){}}
     // DECIDE(1) 터미널 제어
     if (i === 1) {
       decideTerm.classList.add('show');
