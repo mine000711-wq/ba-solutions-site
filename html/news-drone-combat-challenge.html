@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- news-drone-combat-challenge.html — v3 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- news-drone-combat-challenge.html — v2 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: 문서/가이드/반응형_단위가이드.md -->
-<!-- news-drone-combat-challenge.html — v1 (2026-09-09): news-dde-hardkill.html 을 최신 뉴스(ROK Army Drone Combat Challenge 2026)로 내용 교체·파일명 변경, RELATED→PREVIOUS(최신 3건) -->
-<!-- news-dde-hardkill.html — v9 (2026-09-03): 미사용 CSS 제거 (4블록/4줄) — .nav-logo, .art-image-ph, .fl, #ba-nav .nav-logo -->
-<!-- news-dde-hardkill.html — v8 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
-<!-- news-dde-hardkill.html — v9 (2026-09-04): 토글 버튼 선택자 변경 (#ba-nav .nav-toggle → #ba-toggle, nav.js v11 대응) -->
-<!-- news-dde-hardkill.html — v8 (2026-09-04): 우측 드로어 전환에 맞춰 스크림/패널 배경 분리 (nav.js v10 대응) -->
-<!-- news-dde-hardkill.html — v7 (2026-09-04): 햄버거 메뉴·전체화면 오버레이 밝은 테마 오버라이드 추가 (nav.js v9 대응) -->
-<!-- news-dde-hardkill.html — v6 (2026-09-02): 메뉴바 하단 구분선 제거 + 배경 불투명 처리(#fff) -->
-<!--   구분선을 없애자 rgba(255,255,255,.95) 의 5% 투명도로 스크롤 콘텐츠가 -->
-<!--   메뉴바를 비쳐 보이는 현상이 드러나 배경을 불투명으로 바꿈 -->
-<!-- news-dde-hardkill.html — v5 (2026-09-02): 메뉴바 ABOUT US 테두리 박스 제거 — 다른 메뉴 항목과 같은 텍스트 링크로 통일 -->
-<!-- news-dde-hardkill.html — v4 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #ffffff + color-scheme light -->
+
 <html lang="en">
 <head>
 <script src="lang.js"></script>
@@ -23,14 +11,13 @@
 <style>
 [hidden]{display:none!important}
 
-/* BACK TO NEWSROOM 폰트*/
 .back-link {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#000;color:#f0ede8;}
 :root{
-  --u:calc(min(100vw, 1440px) / 1440);   /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
+  --u:calc(min(100vw, 1440px) / 1440);
   --bg:#ffffff;
   --bg2:#f2f2f2;
   --ink:#111;
@@ -43,7 +30,6 @@
 }
 body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-/* ARTICLE HEADER */
 #article-header{padding:120px var(--pad) 48px;}
 .back-link{display:inline-flex;align-items:center;gap:8px;font-size:max(8px, calc(12 * var(--u)));letter-spacing:.25em;color:var(--ink3);text-decoration:none;margin-bottom:36px;transition:color .3s;}
 .back-link:hover{color:var(--ink);}
@@ -52,11 +38,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 #article-header h1{font-size:max(24px, calc(48 * var(--u)));font-weight:700;letter-spacing:-.01em;line-height:1.2;color:var(--ink);max-width:720px;margin-bottom:20px;}
 .art-date{font-size:13px;color:var(--ink3);letter-spacing:0;}
 
-/* HERO IMAGE */
 #art-image{width:100%;aspect-ratio:16/7;background:var(--bg2);border-top:none;border-bottom:none;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-/* TODO: 이미지 삽입 시 배경 제거하고 <img> 태그 추가 */
 
-/* ARTICLE BODY */
 #art-body{padding:60px var(--pad) 80px;border-bottom:0.5px solid var(--line);}
 .art-grid{display:grid;grid-template-columns:max(200px, calc(280 * var(--u))) 1fr;gap:80px;align-items:start;}
 .art-subtitle{font-size:15px;font-weight:600;line-height:1.5;color:var(--ink);letter-spacing:-.01em;}
@@ -64,13 +47,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 .art-content p{font-size:15px;color:var(--ink);line-height:1.5;letter-spacing:0;text-indent: 0.5em;}
 .art-content p strong{color:var(--ink);font-weight:600;}
 
-/* 반응형: 좁은 화면에서는 1단으로 접어 이미지 → 부제 → 본문 순으로 스택 */
 @media (max-width:860px){
   .art-grid{grid-template-columns:1fr;gap:28px;}
   #art-body{padding-top:40px;}
 }
 
-/* RELATED */
 #related{padding:max(20px, calc(40 * var(--u))) var(--pad) max(40px, calc(43.2 * var(--u)));}
 #related h2{font-size:14px;letter-spacing:0;color:var(--ink3);margin-bottom:32px;font-weight:500;}
 .related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);}
@@ -97,9 +78,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 </head>
 <body data-news-id="drone-combat-2026">
 
-<!-- NAVBAR -->
 <script src="nav.js"></script>
-<!-- 뉴스 기사 페이지 전용: 흰색 메뉴바 오버라이드 (공용 nav.js는 그대로 검정 유지) -->
+
 <style>
 #ba-nav{background:#fff;border-bottom:none;}
 #ba-nav .logo-wrap{color:#111;}
@@ -108,13 +88,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 #ba-nav .nav-links a:hover{color:#111;}
 #ba-nav .nav-about{border:none;background:transparent;color:rgba(0,0,0,.5);}
 #ba-nav .nav-about:hover{background:transparent;color:#111;}
-/* 햄버거·오버레이도 밝은 테마로 (nav.js v9) */
+
 #ba-toggle{color:#111;}
 #ba-menu{background:rgba(255,255,255,.45);}
 #ba-menu .panel{background:#fff;}
 #ba-menu a{color:rgba(0,0,0,.5);}
 #ba-menu a:hover,#ba-menu a:focus-visible{color:#111;}
-/* 언어 토글(nav.js v18)도 밝은 테마로 — 비선택 .5 검정, 선택·호버 #111 */
+
 </style>
 
 <div id="article-header">
@@ -138,7 +118,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
   </div>
 </div>
 
-<!-- FOOTER -->
 <nav class="news-pagination" aria-label="Article navigation" hidden></nav>
 <script src="footer.js"></script>
 

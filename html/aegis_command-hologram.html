@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- aegis_command-hologram.html — 자동 생성(2026-10-06): 시나리오/aegis/사이트반영.py가 aegis-three-preview.html로 만든다.
-     직접 고치지 말고 프리뷰를 고친 뒤 다시 생성할 것. aegis.html COMMAND 단계의 iframe #cmdMap이 싣는다.
-     3D 모델: 회전익·군집 쿼드콥터 — "Quad-copter drone" by tamescrawl2 (Sketchfab), CC BY 4.0, 로우폴리로 감량·변형.
-     고정익 UAV·요격체·Spider — 자체 제작 모델. -->
+
+<!-- Quad-copter drone by tamescrawl2 (Sketchfab), CC BY 4.0. Simplified and modified. -->
 <html lang="en"><head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AEGIS Command</title>
 <style>html,body{margin:0;height:100%;background:#000000;overflow:hidden;}</style>
 </head><body>
 <div id="aegis-three-preview">
-  <canvas role="img" aria-label="블렌더 카메라 구도의 Three.js 이식본. 왼쪽 앞 C-UAS를 향해 오른쪽 뒤 공중 타깃이 접근하고, 유리면 아래로 거울 반사가 보입니다."></canvas>
+  <canvas role="img" aria-label="C-UAS와 공중 위협의 대응 시나리오"></canvas>
 </div>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;700&display=swap');
-/* Same box as the AEGIS page FLOW left area (.flow-left): 50vw x 100vh, full width under 860px. */
+
 #aegis-three-preview { width:50vw; height:100vh; background:#000; overflow:hidden; }
 @media(max-width:860px){ #aegis-three-preview { width:100vw; } }
 #aegis-three-preview canvas { display:block; width:100%; height:100%; background:#000; }
@@ -32,159 +30,75 @@ import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
 import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 
-// ---------------------------------------------------------------------------
-// Stage 3 of the Three.js port: geometry, camera framing, motion, reflection,
-// per-layer glow and distance blur, plus every label - nameplates, bearing
-// letters, telemetry, altimeter - and the entrance sequence that reveals them.
-// Labels are world-space textured quads, so the GPU gives them true perspective.
-// World is Blender Z-up; every coordinate below matches aegis-motion-preview.html.
-// ---------------------------------------------------------------------------
 THREE.ColorManagement.enabled=false;
 const root=document.getElementById('aegis-three-preview'),canvas=root.querySelector('canvas');
 
-// Hologram layer heights above the glass (layerHeight scales them together).
 const glassZ=0,layerHeight=.8,dotZ=.119*layerHeight,boxZ=.7065*layerHeight,ringZ=(dotZ+boxZ)/2,cubeZ=boxZ+.378767;
 const deviceHalf=1.25,targetHalf=.75;
-// Ground lattice: grid every 6, dots every 1, offset so the C-UAS is off the crossing.
+
 const latticeOffset={x:2.3,y:3.8},gridStep=6,dotStep=1,xSpan=39;
 const bandLow=k=>-5.57+k*8.67,yMin=bandLow(0),yMax=bandLow(9);
-// --- grid coordinates: rows are letters, columns numbers, as in a spreadsheet ----
-// Anchored to world cells, not to what happens to be on screen, so a cell keeps its
-// name in every aspect: landscape shows columns 5-13, portrait the same rows from 7.
-// Lettering hangs off the C-UAS's own row, which reads R, and runs toward the viewer:
-// G at the back, R at the front. Numbers start at 5 and run toward +x. Neither starts
-// at A or 1, so the lattice reads as part of a larger grid running off frame.
+
 const cellX=(()=>{const v=[];for(let x=Math.ceil((-xSpan-latticeOffset.x)/gridStep)*gridStep+latticeOffset.x;x<=xSpan;x+=gridStep)v.push(x);return v;})();
 const cellY=(()=>{const v=[];for(let y=Math.ceil((yMin-latticeOffset.y)/gridStep)*gridStep+latticeOffset.y;y<yMax;y+=gridStep)v.push(y);return v;})();
 const cuasRow=Math.floor((0-cellY[0])/gridStep);
 const cellName=(i,j)=>String.fromCharCode(82-(j-cuasRow))+(5+i);
 const cellAt=(x,y)=>{const i=Math.floor((x-cellX[0])/gridStep),j=Math.floor((y-cellY[0])/gridStep);
 return i<0||j<0||i>cellX.length-2||j>cellY.length-2?null:{i,j,name:cellName(i,j)};};
-// A cell split 6x6, so a point can be named the way it is read off the map: rows
-// counted from the cell's far edge, columns from its -x edge, both starting at 1.
-// cellPoint('Q11') is the cell centre; cellPoint('Q11',2,3) is the sub-cell the
-// paths below are written in.
+
 const subDiv=6;
 function cellPoint(name,row=(subDiv+1)/2,col=(subDiv+1)/2){
 const j=cuasRow-(name.charCodeAt(0)-82),i=+name.slice(1)-5;
 return [cellX[i]+(col-.5)*gridStep/subDiv,cellY[j+1]-(row-.5)*gridStep/subDiv];}
 const groundFade=y=>Math.exp(-Math.pow(Math.max(0,(y+4)/29),1.8));
-// A point is a much smaller light source than a grid line. Applying the same
-// falloff made its energy disappear before the bearing ring at the same distance.
+
 const dotFade=y=>Math.exp(-Math.pow(Math.max(0,(y+4)/42),1.45));
-// Straight from the 2D pass, which authored them with the rings reflecting.
+
 const reflectionOpacity=.38,groundReflectionOpacity=.62;
-// Blur radii are authored for a 736 px wide 1x frame, so they scale with F and density.
-// The restored lines made the glass read too bright at these opacities. Dimming the
-// mirrors fixed that but flattened them away from the 2D original, so the strength
-// stays and the radii take the correction instead: a mirrored line's peak falls as
-// 1/sigma, so 1.48x radius buys back the third that .26/.42 did, and spreading it is
-// what a reflection in glass does anyway. 2.5 -> 3.7 and 8 -> 12, the same ratio on
-// both so the balance between the two mirrors is untouched.
+
 const reflectionBlur=12,groundReflectionBlur=3.7,groundReflectionLineBoost=2.2,groundReflectionDotBoost=2;
-// Keep the moving target's original depth cue, but make the static ground field
-// clearer so dots, grid and bearings do not read as a soft background layer.
+
 const groundDistanceBlur=.18,targetDistanceBlur=.26,band=8.67;
-// The mirrored dots sit closest to the glass: the 2D pass keeps them at full
-// resolution with a blur of 1 plus the band blur, and only the rings and bearings
-// take the wider radius. Blurring both together smears each mirrored dot into the
-// real dot above it and the lattice turns to mush. The dots are also the one part
-// of the mirror the restored lines did not brighten, so they keep the 2D radius.
+
 const dotReflectionBlur=1;
 let reflectionScale=.5;
-// Glow is rebuilt the way the 2D pass drew it: blur each layer and add it back with
-// that layer's own shadowBlur radius. One global bloom cannot do this - it either
-// smears the lattice or leaves the objects flat.
-// canvas shadowBlur b spreads like a gaussian of sigma b/2; glowPx(v)=v*glowSize*F/736*scale.
+
 const glowSize=1.275,glowSigma=v=>v*glowSize/2;
-// Objects paint twice (wide 12, tight 5); the lattice used 3 on lines and 2 on dots.
+
 const glowObjectWide=glowSigma(12),glowObjectTight=glowSigma(5),glowGround=glowSigma(2.5);
 const glowDotWide=glowSigma(7),glowDotTight=glowSigma(3.25);
 
-// Target paths. Each threat flies its own track, written in grid cells so a path can
-// be read straight off the lattice: the cell it enters from, the cell it is aimed at,
-// and the cell where the response reaches it. The fixed wing crosses the field and is
-// shot down short of the C-UAS, the rotary comes at the C-UAS and is netted just short
-// of it, and the swarm keeps Blender's original approach.
 const targetStart=[2.715909,23.160755,7.576042],targetEndXY=[0,2];
-// Readout scale: one world unit reads as this many metres.
+
 const worldMetres=15;
-// Blender's elliptical cylinder, drawn only until a threat's airframe has loaded. Its
-// per-threat scale still sizes the brackets and how far a wreck falls, and is kept
-// close to the airframe each threat now flies.
+
 const bodyDims={rx:.417581,ry:.510412,hz:.206487},maxCraft=4;
-// The swarm's three hold their slots exactly; only the descent differs. lift is each
-// drone's own height in the formation, sag how much further it dips mid-run, so the
-// three settle on slightly different curves without ever drifting sideways.
-// The slots are a shallow V across the track rather than along it. Depth collapses on
-// screen at this camera pitch - a unit along the track moves a drone less than half as
-// far across frame as a unit across it - so a formation spread down the track reads as
-// two drones with a third hidden behind them. Spread across, all three stay apart in
-// landscape and portrait alike.
+
 const swarmSlots=[[-1.25,.24],[0,-.3],[1.25,.24]];
 const swarmLift=[.3,-.16,-.1],swarmSag=[-.14,.1,.05];
-// craft: bodies in the formation. approach: seconds from the hold to being stopped.
-// start/aim: the two ends of the straight line the track is built on. stop: the cell
-// the response reaches it in, which is where the track ends. rise(u): how the descent
-// spreads over the whole line, so a threat cut short flies only its own part of it.
-// offset(i,u,t): a craft's [side, along, up] displacement from the track centre.
-// lean: a multirotor's nose-down tilt at cruise, in radians, in place of pitching to
-// the climb as a fixed wing does; it rights itself as the craft slows to a stop.
-// asset: the ground objective it is flying at - ext units past aim on its own line, its
-// ASSET plate on the dir side of the reticle (see updateAsset).
-// hold: seconds before a track starts moving. Nothing waits: a threat is already
-// under way while it resolves in (see pixelBlocks).
+
 const pointAlong=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];
 const hold=0,threats=[
-// Fast, heading for R12 - across the field rather than at the C-UAS - on a bow of about
-// 3% of its length toward +x. Its asset is on the ground on that same heading, .8 of the
-// way to R12: at R12 itself it fell off the right edge at the AEGIS page's 50vw x 100vh
-// and in portrait. It glides down onto it at a steady slope (about 19 degrees) instead
-// of holding height and dropping at the end. The interceptor takes it at Q11-2:3.
+
 {id:'FIXED_WING',craft:1,approach:5,model:'uav',
 start:cellPoint('O9'),aim:pointAlong(cellPoint('O9'),cellPoint('R12'),.8),stop:cellPoint('Q11',2,3),
 startZ:7.576042,endZ:boxZ,scale:[1.5,.6,.72],jitter:.1,
 asset:{ext:0,dir:-1},
-// Hit, it breaks up: shards scatter off the impact while the airframe goes down
-// nose-first and dissolves, and the readouts stay where it was hit (pin).
+
 resp:{tag:'KE-SHOT',flight:1.8,arc:3.2,fall:1.3,pin:true,hold:2,
 debris:{count:16,life:1.4,speed:[1,2.6],kick:.9,carry:.8,gravity:5,size:[.05,.14]}},
 rise:u=>u,offset:()=>[0,0,0]},
-// Slow and low, straight in at the C-UAS. The net takes it the moment it crosses out
-// of Q11 into Q10 - Q10-3:6 is the first sub-cell past that edge and lies exactly on
-// this line - so that point is simply where the track ends. The swarm is stopped on
-// the same row, one unit further in. The only motion off the line is the small
-// vertical bob a rotor keeps as it flies.
+
 {id:'ROTARY',craft:1,approach:6.5,
 start:cellPoint('P11',5,4),aim:cellPoint('Q10',3,6),
 model:'rotary',lean:.26,
 startZ:4.4,endZ:1.8,scale:[1,1,1],jitter:.1,
 asset:{ext:6,dir:-1},
-// The Spider comes up at the inner end of Q9 rather than its centre. The cell was
-// given as the launch point, but the centre (-6.7, 6.8) is a near point well left
-// of the frame: holding it costs 10% of the composition in portrait and 14% at
-// 414x900, and leaving it out has the Spider half cut off at the left edge. The
-// sub-cell Q9-3:6 is the furthest +x point of the same cell, and it is inside the
-// existing frame at every aspect measured (no change to framePoints).
-// It is a drone itself, so it does not throw from there: it unfolds, flies in and
-// takes station standoff short of the capture point, between the rotary and the
-// C-UAS it is covering. 1.5 units is about 23 m, which is the range a net gun
-// actually works at; from Q9 it would have been ninety. half is its own indicator
-// box, smaller than a track's both because it is a small airframe and because the
-// two boxes have to stand side by side without touching.
+
 resp:{tag:'NET-GUN',from:cellPoint('Q9',3,6),fromZ:2.7,standoff:1.5,rise:.35,half:.34,
 lead:5.4,open:.4,tagDelay:.15,tagRate:2.4,settle:.45,net:.3,wrap:.26,cinch:.35,fall:1,hold:2.2,pin:true},
 rise:u=>u*u,offset:(i,u,t)=>[0,0,Math.sin(t*1.8)*.12]},
-// Three flying a held formation on Blender's original approach. The slots do not
-// drift, so the three read as one object; half is the box that goes around all of
-// them, since a swarm is one engagement and gets one set of readouts.
-// Blender's corridor still, but jammed as it reaches Q10 rather than carried all the
-// way in to the device: Q10-3:5 is on the same row as the rotary's capture, one unit
-// further in, and sits within .12 of the original line, so the approach is the same
-// one turned .4 degrees.
-// pin (all three threats): the readouts stay where the threat was put down -
-// brackets, plate and box hold that spot - and only the airframes go down,
-// dissolving as they fall.
+
 {id:'UAS_SWARM',label:'UAS_SWARM x3',craft:3,approach:7,half:1.9,model:'swarm',lean:.26,
 start:[targetStart[0],targetStart[1]],aim:cellPoint('Q10',3,5),
 startZ:targetStart[2],endZ:3.6,scale:[.62,.62,.62],jitter:.3,
@@ -192,15 +106,11 @@ asset:{ext:10,dir:-1},
 resp:{tag:'RF-JAM',fronts:3,gap:.3,speed:11,reach:14,span:18,fall:1.2,hold:2.4,pin:true},
 rise:u=>u*u,offset:(i,u)=>{const slot=swarmSlots[i];
 return [slot[0],slot[1],swarmLift[i]+swarmSag[i]*4*u*(1-u)];}}];
-// Each track is solved once. axis is the straight line from start to aim; endU is how
-// far along it the threat gets; bow, for a threat whose path is cut short off the
-// line, is sized so the curve passes exactly through the stop cell. Move a cell and
-// the curve moves with it; nothing here is a hand-fitted constant.
+
 for(const th of threats){
 const dx=th.aim[0]-th.start[0],dy=th.aim[1]-th.start[1],L=Math.hypot(dx,dy);
 th.axis={along:[dx/L,dy/L],side:[-dy/L,dx/L],length:L};
-// The asset is what the threat is flying at: on the ground, ext units on along its own
-// line past the aim cell, so it lies wherever that threat happens to be heading.
+
 const e=th.asset;e.at=[th.start[0]+dx/L*(L+e.ext),th.start[1]+dy/L*(L+e.ext)];
 if(th.stop){const kx=th.stop[0]-th.start[0],ky=th.stop[1]-th.start[1];
 const u=th.endU=(kx*th.axis.along[0]+ky*th.axis.along[1])/L;
@@ -208,91 +118,68 @@ th.bow=(kx*th.axis.side[0]+ky*th.axis.side[1])/(4*u*(1-u));}
 else th.endU=1;
 if(th.half===undefined)th.half=targetHalf;
 th.move=th.approach;th.hz=bodyDims.hz*th.scale[2];
-// arrive is where the track ends, which is the cell the response stops the threat
-// in. The old two-second dwell after arrival is now the response itself: each one
-// declares how long it needs (hold) before the engagement fades.
+
 th.arrive=hold+th.approach;
-// A response that has to be in the air first starts early: the interceptor by its
-// flight time, the Spider by its lead. The jammer only answers once the swarm is in.
+
 const r=th.resp;r.at=th.arrive+(r.delay||0)-(r.flight||0)-(r.lead||0);
-// Every response connects the moment the track ends, so nothing is ever caught
-// standing still: the interceptor, the net and the jamming front are all timed to
-// arrive there. close is how long the entrance takes to play backwards afterwards.
+
 th.kill=th.arrive;th.close=1;
-// The suppression bracket goes a little outside the body it marks.
+
 th.markHalf=Math.max(bodyDims.rx*th.scale[0],bodyDims.ry*th.scale[1])*1.6+.09;
 th.fadeAt=th.arrive+r.hold;th.loop=th.fadeAt+2;}
-// u runs 0 -> endU over the moving part and then holds there.
+
 const threatU=(th,t)=>Math.min(1,Math.max(0,(t-hold)/th.move))*th.endU;
-// The track centre: what the location box, vertical guide and readouts follow.
+
 function trackAtU(th,u){const a=th.axis,d=a.length*u,w=th.bow?th.bow*4*u*(1-u):0;
 return [th.start[0]+a.along[0]*d+a.side[0]*w,th.start[1]+a.along[1]*d+a.side[1]*w,
 th.startZ-(th.startZ-th.endZ)*th.rise(u)];}
 const trackAt=(th,t)=>trackAtU(th,threatU(th,t));
-// The front leaves early enough to reach the formation exactly as the track ends.
-// Solved from the range of the stop point, so moving the stop moves the emission.
-// The Spider's station is solved the same way: standoff short of the capture point
-// along its own run in, so moving either cell moves the station with them. It
-// unfolds where it comes up, flies for whatever is left, and is settled before it
-// throws.
+
 for(const th of threats){const r=th.resp;
 if(r.fronts){const p=trackAtU(th,th.endU);r.at=th.arrive-Math.hypot(p[0],p[1])/r.speed;}
 if(r.from){const k=trackAtU(th,th.endU);
 const dx=k[0]-r.from[0],dy=k[1]-r.from[1],L=Math.hypot(dx,dy)||1;
 r.station=[k[0]-dx/L*r.standoff,k[1]-dy/L*r.standoff,k[2]+r.rise];
-// It is already flying while it prints in; its readout starts a little after.
+
 r.flyFrom=r.at;r.tagFrom=r.at+r.tagDelay;r.flyTo=th.arrive-r.net-r.settle;}}
 function craftAt(th,i,t){const c=trackAt(th,t),a=th.axis,[s,al,up]=th.offset(i,threatU(th,t),t);
 return [c[0]+a.side[0]*s+a.along[0]*al,c[1]+a.side[1]*s+a.along[1]*al,c[2]+up];}
-// Sequential acquisition, unchanged from the 2D pass: target -> X line -> XY box ->
-// vertical -> nameplate and altitude together. entranceRate 1.5 compresses every
-// start time and duration by 1/1.5, while the decode and the count-ups keep their
-// own length and only their start follows the sequence.
-// --- what the response does to the threat -----------------------------------
-// A kill is expressed as position, nothing more. Everything downstream - location
-// box, vertical guide, altimeter, altitude readout, the measured speed - reads the
-// centre through centreAt. With resp.pin (every threat now) that centre stays where
-// the kill was and only the airframes fall; wreckAt is the falling centre, for what
-// has to ride the wreck down (the net).
+
 const fallEase=p=>p*p;
-// When a craft starts falling: the moment it is hit or netted, or for each drone of
-// the swarm, as the first jamming front reaches it.
+
 function fallStart(th,i){const r=th.resp;
 if(!r.fronts)return th.arrive;
 const p=craftAt(th,i,th.arrive);return r.at+Math.hypot(p[0],p[1])/r.speed;}
 function craftDrop(th,i,t){const r=th.resp;
 if(r.fall===undefined)return 0;
 const p=clamp((t-fallStart(th,i))/r.fall);
-// Down to where the body touches the glass, so it lands on its own reflection.
+
 return p<=0?0:Math.max(0,craftAt(th,i,th.arrive)[2]-(th.hz+.02))*fallEase(p);}
 const centreDrop=(th,t)=>{let s=0;for(let i=0;i<th.craft;i++)s+=craftDrop(th,i,t);return s/th.craft;};
-// A pinned response leaves the centre, and so every readout, where the kill was.
+
 const wreckAt=(th,t)=>{const c=trackAt(th,t);return [c[0],c[1],c[2]-centreDrop(th,t)];};
 const centreAt=(th,t)=>th.resp.pin?trackAt(th,t):wreckAt(th,t);
 const craftPos=(th,i,t)=>{const p=craftAt(th,i,t);return [p[0],p[1],p[2]-craftDrop(th,i,t)];};
-// Where a craft's brackets go: on the wreck, or held where it was when the kill
-// landed if pinned (the rotary's bob would otherwise keep them moving).
+
 const markPos=(th,i,t)=>th.resp.pin?craftAt(th,i,Math.min(t,th.kill)):craftPos(th,i,t);
-// A falling craft dissolves over its own fall, gone as it reaches the glass.
+
 function bodyFade(th,i,t){const r=th.resp;
 return r.fall===undefined?1:1-clamp((t-fallStart(th,i))/r.fall);}
-// Nothing holds a netted rotor level any more.
+
 function tumble(th,t){const r=th.resp;
 if(r.net===undefined)return null;
 const p=t-th.arrive;return p>0?[p*3.7,p*2.3,p*5.1]:null;}
 
 const entranceRate=1.5,entrance={boxX:.55,boxY:.95,vertical:1.5,labels:2.25,decode:2.4,altitude:2.25,craft:0};
-// Where the sequence has finished, in et units - the point it is rewound from.
+
 const entranceSpan=2.8;
 const clamp=v=>Math.max(0,Math.min(1,v));
 const phase=(t,at,duration)=>clamp((t-at)/duration);
 const ease=p=>p*p*(3-2*p);
-// Opening timings, in seconds from its start (the sequence is described at applyIntro).
-// The preview's tuning panel edits this object live.
+
 const intro={dotAt:0,dotDur:.7,dotSweep:.6,dotRise:1.2,
 deviceAt:.6,deviceDur:.7,deviceRise:1.5,
-// The C-UAS indicator opens like the track's: X line, then the box in Y straight
-// after, then the plate slides in and its name decodes.
+
 boxAt:1,boxX:.2,boxY:.3,plateAt:1.45,plateDur:.3,decodeDur:.47,
 ringAt:1,ringDur:.8,ringFrom:.1,
 turnAt:2,turnDur:1,threatAt:2.6};
@@ -300,36 +187,26 @@ const introEnd=()=>Math.max(intro.dotAt+intro.dotSweep+intro.dotDur,intro.device
 intro.boxAt+intro.boxX+intro.boxY,intro.plateAt+Math.max(intro.plateDur,intro.decodeDur),
 intro.ringAt+intro.ringDur,intro.turnAt+intro.turnDur);
 const headingFrom=0,headingTo=320;
-// What buildBase and the object mirror read: C-UAS strength, and its mirror held back
-// while it is still under the glass.
+
 const opening={device:1,deviceGate:1};
-// Homepage indicator timing: .45s cubic-bezier(.2,.7,.2,1).
+
 function indicatorEase(p){if(p<=0)return 0;if(p>=1)return 1;
 let lo=0,hi=1;for(let i=0;i<16;i++){const u=(lo+hi)/2,x=3*(1-u)*(1-u)*u*.2+3*(1-u)*u*u*.2+u*u*u;if(x<p)lo=u;else hi=u;}
 const u=(lo+hi)/2;return 3*(1-u)*(1-u)*u*.7+3*(1-u)*u*u+u*u*u;}
 function decodedName(text,progress,t){
 const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',settled=Math.floor(progress*text.length),tick=Math.floor(t*24);
 return Array.from(text,(ch,i)=>i<settled?ch:alphabet[(tick*7+i*11)%alphabet.length]).join('');}
-// Fixed-width strings, so typing and counting never shift a row once it is typed.
+
 const telemetryRows=m=>{const pad=v=>v.toFixed(1).padStart(5,'0'),clock=v=>isFinite(v)?String(Math.floor(v/60)).padStart(2,'0')+':'+String(Math.floor(v%60)).padStart(2,'0'):'--:--';
 return [[pad(m.speed),'km/h'],[pad(m.distance),'m'],[clock(m.eta),''],[m.cell.padEnd(3),' GRID']];};
 const telemetryChars=telemetryRows({speed:0,distance:0,eta:0,cell:'R10'}).flat().join('').length,typingRate=45;
-// Flat nameplate right of a location square, sharing its lower edge and plane.
-// dir puts the plate on the other side of the box, which is the only way two
-// indicators can stand this close without their plates landing on each other.
+
 const nameplate=(x,y,half,dir=1)=>({z:boxZ,w:2.4,h:.75,x:x+dir*(half+.25+1.2),y:y-half+.375});
 
 let W=736,H=414,F=736,focal=1022,shiftX=0,shiftY=0;
 let cam=[12.8543749,-25.6993046,11.9423447],right=[.9501374,.3118315,.000000679],up=[-.0737112,.2245927,.9716609],back=[.3029943,-.9232113,.2363794];
 const cameraView={landscape:{yaw:18.2,pitch:13.7},portrait:{yaw:4,pitch:24},distance:38.4,margin:{x:.07,top:.1,bottom:.1},mobileLift:.1};
-// Points that must stay inside the margins: the C-UAS's box, plate and cube top, and
-// every threat's track sampled end to end. Sampling the whole track rather than its two
-// ends is what holds a bowed or weaving path in frame, since both bulge past their own
-// end points.
-// The threat's nameplate is deliberately NOT in here. It reaches 3.65 past the target
-// and portrait has only about 3 units of world either side of the device, so holding it
-// in frame would shrink the whole composition by a quarter. User's call (2026-09-21):
-// the plate stays on the +x side and is allowed to run off the edge.
+
 const framePoints=(()=>{const pts=[],box=(x0,x1,y0,y1,z)=>pts.push([x0,y0,z],[x1,y0,z],[x0,y1,z],[x1,y1,z]);
 box(-2.5,2.5,-2.5,2.5,boxZ);box(2.75,5.15,-2.5,-1.75,boxZ);pts.push([0,0,(1.133923-.378767)*layerHeight+.378767*2]);
 for(const th of threats)for(let k=0;k<=8;k++){const [x,y,z]=trackAtU(th,th.endU*k/8),top=z+th.hz;
@@ -349,65 +226,49 @@ let x0=1/0,x1=-1/0,y0=1/0,y1=-1/0;
 for(const p of framePoints){const d=p.map((v,i)=>v-cam[i]),z=-d.reduce((s,v,i)=>s+v*back[i],0);
 const nx=d.reduce((s,v,i)=>s+v*right[i],0)/z,ny=d.reduce((s,v,i)=>s+v*up[i],0)/z;
 x0=Math.min(x0,nx);x1=Math.max(x1,nx);y0=Math.min(y0,ny);y1=Math.max(y1,ny);}
-// On the AEGIS page's phone layout the copy sits over the bottom of this frame, so the
-// picture rides up by mobileLift of the height: the margins trade places, the scale holds.
+
 const onPhone=(()=>{try{const f=window.frameElement;return !!(f&&f.id==='cmdMap'&&parent.matchMedia('(max-width:860px)').matches);}catch(e){return false;}})();
 const m=onPhone?{...cameraView.margin,top:cameraView.margin.top-cameraView.mobileLift,bottom:cameraView.margin.bottom+cameraView.mobileLift}:cameraView.margin;focal=Math.min(W*(1-2*m.x)/(x1-x0),H*(1-m.top-m.bottom)/(y1-y0));
 shiftX=-focal*(x0+x1)/2;shiftY=focal*((y0+y1)/2)+H*(m.top-m.bottom)/2;F=focal*36/50;}
 
 function cssColor(token,fallback){const e=document.createElement('span');e.style.color='var('+token+', '+fallback+')';root.append(e);const c=getComputedStyle(e).color;e.remove();return new THREE.Color(c);}
 const groundColor=new THREE.Color('#87cefa');
-// The threat is a fixed red, not a theme token: it has to read as hostile on any host.
+
 let deviceColor=cssColor('--viz-series-1','#38bdf8'),targetColor=new THREE.Color('#ff3b3b');
-// Green is only ever the suppression marker, so it reads as an outcome, not a track.
+
 let killColor=cssColor('--viz-series-3','#4ade80');
-// The Spider is one system with the C-UAS - a node on its network, not a separate
-// friendly - so it wears the device's blue (2026-10-06; violet before).
+
 let spiderColor=deviceColor;
-// The asset a threat is flying at is ours to protect: green, but an emerald of its own
-// so it does not read as the NEUTRALIZED marker's green.
+
 const assetColor=new THREE.Color('#34d399');
-// The jammer is a white hologram of its own rather than the device's blue.
+
 const jamColor=new THREE.Color(1,1,1);
 
 const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
 renderer.outputColorSpace=THREE.LinearSRGBColorSpace;
 renderer.setClearColor(0x000000,0);
-// The Spider prints itself in with a clipping plane (see holoModel).
+
 renderer.localClippingEnabled=true;
 const scene=new THREE.Scene();
-// One group so the mirror pass is a single z flip through the glass plane.
+
 const world=new THREE.Group();scene.add(world);
-// Four groups, because the 2D pass treats them differently in two ways.
-// Grid lines keep their small single shadow. Dots have their own two-stage halo,
-// while rings, bearings and objects use the wider 12/5 treatment.
-// Mirror: grid lines lie on the glass and do not reflect; dots, rings and bearings
-// reflect brightly (.62), objects dimly (.38).
+
 const gridGroup=new THREE.Group(),dotGroup=new THREE.Group(),ringGroup=new THREE.Group();
 const deviceGroup=new THREE.Group(),targetGroup=new THREE.Group();
-// Opaque coverage is rendered only into a mask, never into the visible hologram.
-// It suppresses the ground seen through the translucent C-UAS cube, including its mirror.
+
 const deviceMaskGroup=new THREE.Group();
-// Nameplate fills are a layer of their own because the 2D pass glowed them at .4 of
-// the line glow: a solid bright box under the full 12/5 halo bleeds over the lattice.
+
 const devicePlateGroup=new THREE.Group(),targetPlateGroup=new THREE.Group();
-// Nameplate text is not drawn: it is a stencil. Each text group is rendered on its own
-// and its coverage cut out of the plate layer, halo and all, so the glass and the
-// lattice under the plate show through the letters (2026-10-06; black text before).
+
 const deviceTextGroup=new THREE.Group(),targetTextGroup=new THREE.Group();
-// The bearing ticks and labels turn as one dial during the opening (see applyIntro);
-// the heading line and its readout stay fixed to the C-UAS front.
+
 const dialGroup=new THREE.Group(),headingGroup=new THREE.Group();ringGroup.add(dialGroup,headingGroup);
 world.add(gridGroup,dotGroup,ringGroup,deviceMaskGroup,devicePlateGroup,deviceGroup,deviceTextGroup,targetPlateGroup,targetGroup,targetTextGroup);
-// The threat airframes sit in a group of their own inside the target layer, so they
-// can be rendered alone at low resolution while they resolve in (see frame).
+
 const threatBodyGroup=new THREE.Group();targetGroup.add(threatBodyGroup);
-// The text groups stay out of the mirror: they only cut holes, and the object mirror is
-// blurred far past the size of a letter anyway.
+
 const mirrorObjectGroups=[devicePlateGroup,deviceGroup,targetPlateGroup,targetGroup];
 
-// Custom projection: the fitted focal length and lens shift from frameCamera(),
-// so framing is identical to the Canvas 2D projection rather than a plain fov.
 const camera=new THREE.PerspectiveCamera();
 camera.matrixAutoUpdate=false;camera.matrixWorldAutoUpdate=false;
 function applyCamera(){
@@ -418,39 +279,21 @@ camera.projectionMatrix.set(2*focal/W,0,-2*shiftX/W,0,0,2*focal/H,2*shiftY/H,0,0
 camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();}
 
 const lineMaterials=[];
-// DoubleSide is what puts the lines in the mirror. A mirror pass flips world z, which
-// makes the matrix determinant negative and reverses the winding of every triangle;
-// LineMaterial builds each segment as a screen-space quad and defaults to FrontSide,
-// so every line was back-face culled and the reflections held only the dots, the
-// filled faces and the text. Meshes here are already DoubleSide, which is why they
-// never showed the fault.
+
 function lineMat(color,opacity,linewidth,minWidth=1.2){
 const m=new LineMaterial({color:0xffffff,vertexColors:true,linewidth:Math.max(minWidth,linewidth),transparent:true,opacity,depthWrite:false,side:THREE.DoubleSide});
 lineMaterials.push(m);return m;}
 function lineSegs(segments,colors,material){
 const g=new LineSegmentsGeometry();g.setPositions(segments);g.setColors(colors);
 const l=new LineSegments2(g,material);l.computeLineDistances();return l;}
-// Fade is baked into vertex colour: over black, dimming reads the same as lowering alpha.
+
 const fadedRGB=(color,f)=>[color.r*f,color.g*f,color.b*f];
 const hex=c=>'#'+c.getHexString();
-// Lines that change every frame: the opening location box, the growing vertical and
-// altimeter, the plate frame sliding in, the altitude frame.
+
 function dynLine(color,alpha,width,minWidth){
 const l=lineSegs([0,0,0,0,0,0],[color.r,color.g,color.b,color.r,color.g,color.b],lineMat(color,alpha,width,minWidth));
 l.visible=false;return l;}
-// Every dynamic line rebuilds its geometry each frame, and `setPositions` hands the
-// geometry a brand-new instanced buffer with the right `instanceCount`. But the
-// renderer draws `min(instanceCount, geometry._maxInstanceCount)`, and it fills that
-// ceiling in once, from whatever buffer happened to be bound the first time, then
-// only clears it in `dispose()`. So a line that ever grows past the segment count it
-// had on its first render is silently clipped for the life of the page - and which
-// count that is depends on when the first frame lands in the entrance. The location
-// box froze at the single segment of its opening X line and drew 1 edge of 4;
-// the nameplate and altitude frames lost an edge, the swarm brackets a craft.
-// Dropping the ceiling after every rebuild costs nothing: the buffers are new each
-// frame anyway, so the attributes are re-bound and the count recomputed there.
-// fades, when given, is one brightness per vertex - the way a jamming front dims
-// as it widens, or a trail dims as it ages, without a line per brightness.
+
 function setLine(l,pos,color,opacity,alpha,fades){
 if(!pos.length){l.visible=false;return;}
 const col=[];for(let i=0;i<pos.length/3;i++){const f=fades?fades[i]:1;col.push(color.r*f,color.g*f,color.b*f);}
@@ -458,12 +301,8 @@ l.geometry.setPositions(pos);l.geometry.setColors(col);
 delete l.geometry._maxInstanceCount;
 l.material.opacity=alpha*opacity;l.visible=true;}
 
-// --- text: glyph textures and world-space label quads ------------------------
-// Every label is a textured quad standing in the world, so the GPU interpolates it
-// with true perspective; the 2D pass had to fake that with a per-label transform.
 const uiFont='"Chakra Petch", system-ui';
-// Glyph surface, laid out like the 2D pass's 1024x384 (1024x512 when mipped) at half
-// the pixels - these labels land on screen at 10-40 px.
+
 const texW=512,texUnit=192;
 const maxAnisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
 const glyphCache=new Map();
@@ -472,32 +311,30 @@ const key=[text,color,weight,fontRatio,align,baseline,mip].join('|'),hit=glyphCa
 if(hit){glyphCache.delete(key);glyphCache.set(key,hit);return hit;}
 const h=mip?256:texUnit,c=document.createElement('canvas');c.width=texW;c.height=h;
 const g=c.getContext('2d');
-// A taller surface keeps the proportions of the 192-unit layout.
+
 g.setTransform(1,0,0,h/texUnit,0,0);
 g.font=weight+' '+(texUnit*fontRatio)+'px '+uiFont;
 g.fillStyle=color;g.textAlign=align;g.textBaseline=baseline;
 g.fillText(text,align==='left'?0:texW/2,texUnit/2,texW*.918);
 const tex=new THREE.CanvasTexture(c);
-// Straight alpha filters toward black at a glyph edge, so premultiply on upload and
-// let the material blend ONE / ONE_MINUS_SRC_ALPHA, as the 2D pass's GL layer did.
+
 tex.premultiplyAlpha=true;tex.generateMipmaps=mip;
 tex.minFilter=mip?THREE.LinearMipmapLinearFilter:THREE.LinearFilter;tex.magFilter=THREE.LinearFilter;
-// The bearing ring is seen at a grazing angle, so its labels minify anisotropically.
+
 if(mip)tex.anisotropy=maxAnisotropy;
 tex.needsUpdate=true;glyphCache.set(key,tex);
-// Counting telemetry and the decoding name make a new string almost every frame.
+
 if(glyphCache.size>48){const [old,dead]=glyphCache.entries().next().value;glyphCache.delete(old);dead.dispose();}
 return tex;}
 const measureCtx=document.createElement('canvas').getContext('2d');
-// Width as a fraction of the texture, which converts straight to a share of the quad.
+
 function textFraction(text,weight,fontRatio){measureCtx.font=weight+' '+(texUnit*fontRatio)+'px '+uiFont;return measureCtx.measureText(text).width/texW;}
-// The stacked buffers are premultiplied and so is the texture, so this material must
-// neither premultiply again nor let the blender scale colour by alpha.
+
 const textMaterial=()=>new THREE.ShaderMaterial({uniforms:{map:{value:null},opacity:{value:1}},
 vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
 fragmentShader:`uniform sampler2D map;uniform float opacity;varying vec2 vUv;void main(){gl_FragColor=texture2D(map,vUv)*opacity;}`,
 transparent:true,depthWrite:false,side:THREE.DoubleSide,premultipliedAlpha:true});
-// Label meshes are pooled per group: the count changes as telemetry types itself in.
+
 const textPools=new Map();
 function beginText(group){let p=textPools.get(group);if(!p){p={group,items:[],used:0};textPools.set(group,p);}p.used=0;return p;}
 function endText(p){for(let i=p.used;i<p.items.length;i++)p.items[i].visible=false;}
@@ -509,17 +346,14 @@ geo.setIndex([0,1,2,0,2,3]);
 m=new THREE.Mesh(geo,textMaterial());m.frustumCulled=false;m.renderOrder=1;
 p.items.push(m);p.group.add(m);}
 p.used++;m.visible=true;return m;}
-// Centre plus half-width and half-height vectors; u0 crops the texture when a label
-// is still sliding out from behind its own left edge.
+
 function setQuad(m,c,ax,ay,u0){
 const pos=m.geometry.attributes.position,uv=m.geometry.attributes.uv,a=pos.array;
 const put=(i,sx,sy)=>{a[i*3]=c[0]+ax[0]*sx+ay[0]*sy;a[i*3+1]=c[1]+ax[1]*sx+ay[1]*sy;a[i*3+2]=c[2]+ax[2]*sx+ay[2]*sy;};
 put(0,-1,1);put(1,1,1);put(2,1,-1);put(3,-1,-1);
 uv.array[0]=u0;uv.array[6]=u0;
 pos.needsUpdate=true;uv.needsUpdate=true;}
-// clipX cuts the quad at a world-x plane - the reveal edge a row slides out from.
-// Only quads whose width runs along world x can be clipped, which is every sliding
-// label; the bearing labels are angled but never slide.
+
 function placeText(p,text,centre,ax,ay,color,opacity,weight,fontRatio,align,baseline,mip,clipX){
 if(!text||opacity<=0)return;
 let c=centre,hx=ax,u0=0;
@@ -530,13 +364,7 @@ const m=takeText(p);
 m.material.uniforms.map.value=glyphTexture(text,color,weight,fontRatio,align,baseline||'middle',!!mip);
 m.material.uniforms.opacity.value=opacity;
 setQuad(m,c,hx,ay,u0);}
-// A grid tag shrinks to a couple of pixels, and there a mipmap averages the whole
-// quad. The 512x192 layout is mostly empty around two or three characters, so that
-// average comes out about 5% ink and the tag vanishes long before it is too small to
-// read. These get a surface cropped to the glyphs and a quad of the same proportions,
-// so what survives minification is the text rather than the space around it. They
-// never change, so they are kept for good: the LRU above disposes what it evicts,
-// which would blank a tag still standing in the world.
+
 const tightEm=48,tightGlyphs=new Map();
 function tightGlyph(text,color,weight){
 const key=[text,color,weight].join('|'),hit=tightGlyphs.get(key);
@@ -555,31 +383,28 @@ tex.minFilter=THREE.LinearMipmapLinearFilter;tex.magFilter=THREE.LinearFilter;
 tex.anisotropy=maxAnisotropy;tex.needsUpdate=true;
 const out={tex,w:c.width/tightEm,h:c.height/tightEm};
 tightGlyphs.set(key,out);return out;}
-// Places a texture that is already built, sized in world units by the caller.
+
 function placeTexture(p,tex,centre,ax,ay,opacity){
 if(opacity<=0)return;
 const m=takeText(p);
 m.material.uniforms.map.value=tex;m.material.uniforms.opacity.value=opacity;
 setQuad(m,centre,ax,ay,0);}
 
-// Flat label in the XY plane: nameplates and telemetry rows.
 const flatText=(p,text,cx,cy,z,w,h,color,opacity,weight,fontRatio,align,clipX)=>
 placeText(p,text,[cx,cy,z],[w/2,0,0],[0,h/2,0],color,opacity,weight,fontRatio,align,'middle',false,clipX);
 
-// --- ground: grid lines on the glass, dots just above it ---------------------
 function buildGround(){
 const pos=[],col=[],steps=18;
-// Lines across (constant y): one flat segment, faded by its own depth.
+
 for(let y=Math.ceil((yMin-latticeOffset.y)/gridStep)*gridStep+latticeOffset.y;y<yMax;y+=gridStep){
 const f=groundFade(y);pos.push(-xSpan,y,glassZ,xSpan,y,glassZ);col.push(...fadedRGB(groundColor,f),...fadedRGB(groundColor,f));}
-// Lines into depth (constant x): split so the fade is a gradient, not a flat tint.
+
 for(let x=Math.ceil((-xSpan-latticeOffset.x)/gridStep)*gridStep+latticeOffset.x;x<=xSpan;x+=gridStep){
 for(let i=0;i<steps;i++){const y0=yMin+(yMax-yMin)*i/steps,y1=yMin+(yMax-yMin)*(i+1)/steps;
 pos.push(x,y0,glassZ,x,y1,glassZ);col.push(...fadedRGB(groundColor,groundFade(y0)),...fadedRGB(groundColor,groundFade(y1)));}}
-// Glass-panel cross grid: 25% less light and screen-space thickness than before.
+
 const grid=lineSegs(pos,col,lineMat(groundColor,.36,.9,.9));gridGroup.add(grid);
 
-// Dots: size clamped in the shader the way the 2D pass clamped it (1.2-2.4 CSS px).
 const dots=[],fades=[];
 for(let iy=Math.ceil((yMin-latticeOffset.y)/dotStep);iy*dotStep+latticeOffset.y<yMax;iy++){
 const y=iy*dotStep+latticeOffset.y,f=dotFade(y);
@@ -589,15 +414,10 @@ dotGeo.setAttribute('position',new THREE.Float32BufferAttribute(dots,3));
 dotGeo.setAttribute('fade',new THREE.Float32BufferAttribute(fades,1));
 const dotMat=new THREE.ShaderMaterial({
 uniforms:{uColor:{value:groundColor},uF:{value:F},uPixelRatio:{value:1},uAlpha:{value:.95},uSizeBoost:{value:1},uResolution:{value:new THREE.Vector2(1,1)},
-// Opening (applyIntro): seconds since it began, when this row starts, how long a dot
-// takes, how deep under the glass it starts, and whether this is the mirror pass.
+
 uIntro:{value:1e4},uDotAt:{value:0},uDotDur:{value:1},uSweep:{value:0},uRise:{value:0},uYMin:{value:yMin},uMirror:{value:0}},
 transparent:true,depthWrite:false,
-// gl_PointSize cannot go below one pixel, but the 2D pass's dots are 0.98-1.47
-// device px and fillRect anti-aliases them - they fade with distance. Clamped to a
-// solid pixel they stay at full strength, pop on the pixel grid and the distance
-// blur then smears that speckle. So clamp the size and give back the lost area as
-// alpha, which is what partial coverage would have done.
+
 vertexShader:`attribute float fade;varying float vFade,vWant,vDrawn,vReveal;uniform float uF,uPixelRatio,uSizeBoost,uIntro,uDotAt,uDotDur,uSweep,uRise,uYMin,uMirror;uniform vec2 uResolution;
 void main(){
 // Rows come up from the front of the field to the back: each dot rises out of the
@@ -618,13 +438,7 @@ vec2 pixel=(clip.xy/clip.w*.5+.5)*uResolution;
 vec2 snapped=floor(pixel-vWant*.5+.5)+vWant*.5;
 clip.xy=((snapped/uResolution)*2.-1.)*clip.w;
 gl_Position=clip;}`,
-// A GL point is not anti-aliased: a 1.5 px point lands on one pixel at full
-// strength, while the 2D pass's fillRect spreads it across two at partial
-// coverage. So draw a slightly larger point and work out the box coverage here -
-// the same footprint fillRect would have produced.
-// The renderer is premultipliedAlpha (three's default), so NormalBlending is
-// ONE / ONE_MINUS_SRC_ALPHA: built-in materials premultiply in their own shader,
-// and a hand-written one must do it too or alpha stops dimming the colour.
+
 fragmentShader:`varying float vFade,vWant,vDrawn;uniform vec3 uColor;uniform float uAlpha;
 void main(){
 vec2 p=(gl_PointCoord-.5)*vDrawn;
@@ -634,49 +448,33 @@ gl_FragColor=vec4(uColor*a,a);}`});
 dotGroup.add(new THREE.Points(dotGeo,dotMat));
 return {dotMat};}
 
-// --- grid coordinates ---------------------------------------------------------
-// cellX/cellY/cellName/cellAt/cellPoint are defined up with the lattice constants,
-// because the threat paths are written in these coordinates.
-// Three quarters of a bearing number's glyph size in world units (its 1.1 quad at a
-// 68/192 font), one weight lighter, inset from the cell's top left corner and aligned
-// to it. The tags are the map's own lettering, so they sit under the readouts.
 const cellLabel={em:1.1*68/192*.75,inset:.25,weight:300};
 function cellQuad(name,color){const g=tightGlyph(name,color,cellLabel.weight);
 return {tex:g.tex,ax:[g.w*cellLabel.em/2,0,0],ay:[0,g.h*cellLabel.em/2,0]};}
 const cellLabelAt=(i,j,q)=>[cellX[i]+cellLabel.inset+q.ax[0],cellY[j+1]-cellLabel.inset-q.ay[1],glassZ+.002];
 
-// A tag on every cell, lying on the glass and fading with the same depth curve as the
-// lines. The glass is seen at a grazing angle, so a tag stands 4 px tall in the front
-// row and under a pixel by the ninth: only the first rows are legible and the rest
-// stay as the texture of a coordinate system. The value to read comes off the
-// nameplate instead. Past the ninth row the fade has taken the tag to nothing.
-// They are static, so they bake into the base once and cost nothing per frame.
 function buildGridText(){
 const p=beginText(gridGroup),color=hex(groundColor);
 for(let j=cellY.length-2;j>=0;j--){const alpha=.62*groundFade(cellY[j+1]);
-// Fainter than this and the glow swallows the tag whole.
+
 if(alpha<.02)continue;
 for(let i=0;i<cellX.length-1;i++){const q=cellQuad(cellName(i,j),color);
 placeTexture(p,q.tex,cellLabelAt(i,j,q),q.ax,q.ay,alpha);}}
 endText(p);}
 
-// --- rings and bearing ticks -------------------------------------------------
 function buildRings(){
 const ringSeg=(r,alpha,width,minWidth=1.2)=>{const pos=[],col=[],n=192;
 for(let i=0;i<n;i++){const a0=i/n*Math.PI*2,a1=(i+1)/n*Math.PI*2;
 pos.push(Math.cos(a0)*r,Math.sin(a0)*r,ringZ,Math.cos(a1)*r,Math.sin(a1)*r,ringZ);
 col.push(groundColor.r,groundColor.g,groundColor.b,groundColor.r,groundColor.g,groundColor.b);}
 ringGroup.add(lineSegs(pos,col,lineMat(groundColor,alpha,width,minWidth)));};
-// The inner two rings and the heading line that crosses them all sat on the 1.2 floor,
-// which is the same weight as the ring carrying the bearing ticks. At .9 they read as
-// the lightest ring on the ground bar the two faint outer ones, which are .82 and .68:
-// going under .82 would put the inner rings below the outer ones and invert the order.
+
 const thinWidth=.9;
 for(const [r,alpha,width,minWidth] of [
   [3.8,.49,.8,thinWidth],[7,.49,.8,thinWidth],[11.5,.49,1.35,1.2],
   [17,.25,.82,.82],[24,.15,.68,.68]
 ])ringSeg(r,alpha,width,minWidth);
-// Bearing ticks on the fourth ring; the C-UAS faces +Y at bearing 320, clockwise toward +X.
+
 const r=11.5,facing=320,wide=[],narrow=[],wideCol=[],narrowCol=[];
 for(let deg=0;deg<360;deg+=15){
 const a=(deg-facing)*Math.PI/180,s=Math.sin(a),c=Math.cos(a),named=deg%45===0;
@@ -684,15 +482,11 @@ const tick=deg%90===0?.5:named?.38:.25;
 (named?wide:narrow).push(s*(r-tick),c*(r-tick),ringZ,s*r,c*r,ringZ);
 (named?wideCol:narrowCol).push(groundColor.r,groundColor.g,groundColor.b,groundColor.r,groundColor.g,groundColor.b);}
 for(const [pos,col,width] of [[wide,wideCol,1],[narrow,narrowCol,.8]])dialGroup.add(lineSegs(pos,col,lineMat(groundColor,.7,width)));
-// Heading line from the C-UAS box front edge (+Y) out to the bearing ring, and the
-// current-bearing readout beside its top, just inside the ring and clear of the ticks.
+
 ringGroup.add(polyline([[0,deviceHalf,ringZ],[0,r,ringZ]],groundColor,.75,.8,thinWidth));
 const bx0=.2,bx1=1.1,by1=r-.65,by0=by1-.4;
 ringGroup.add(quadFace([[bx0,by0,ringZ],[bx1,by0,ringZ],[bx1,by1,ringZ],[bx0,by1,ringZ]],groundColor,.8,.7,.06));}
 
-// Bearing labels. Every one faces the ring centre and shares one baseline radius, so
-// their bottoms line up; north reads largest, then the other named points, then the
-// degree numbers. Rebuilt when the webfont arrives.
 function buildCompassText(){
 const r=11.5,base=r+.3,facing=320,names={0:'N',45:'NE',90:'E',135:'SE',180:'S',225:'SW',270:'W',315:'NW'};
 const p=beginText(dialGroup),color=hex(groundColor);
@@ -703,15 +497,13 @@ placeText(p,name||deg+'\u00b0',[s*base,c*base,ringZ+.002],
 [Math.cos(angle)*w/2,Math.sin(angle)*w/2,0],[-Math.sin(angle)*h/2,Math.cos(angle)*h/2,0],
 color,name?.95:.85,name?700:500,68/192,'center','alphabetic',true);}
 endText(p);drawHeading(headingShown);}
-// Current-bearing readout beside the top of the heading line. It counts during the
-// opening while the dial turns under it, so it is a pool of its own.
+
 let headingShown=320;
 function drawHeading(deg){headingShown=deg;
 const p=beginText(headingGroup);
 placeText(p,deg+'\u00b0',[.65,11.5-.85,ringZ+.002],[1.2,0,0],[0,.625,0],hex(groundColor),.95,300,68/192,'center','middle',true);
 endText(p);}
 
-// --- objects: location boxes, C-UAS cube, target body ------------------------
 function boxOutline(half,z,color,alpha,width,fill){
 const g=new THREE.Group();
 const p=[[-half,-half,z],[half,-half,z],[half,half,z],[-half,half,z]],pos=[],col=[];
@@ -722,7 +514,6 @@ new THREE.MeshBasicMaterial({color,transparent:true,opacity:fill,side:THREE.Doub
 m.position.z=z;g.add(m);}
 return g;}
 
-// One face of the cube: a closed outline plus its fill, exactly as line(...,closed,fill) drew it.
 function quadFace(pts,color,alpha,width,fill){
 const g=new THREE.Group(),pos=[],col=[];
 for(let i=0;i<4;i++){const a=pts[i],b=pts[(i+1)%4];pos.push(...a,...b);col.push(color.r,color.g,color.b,color.r,color.g,color.b);}
@@ -737,9 +528,7 @@ return lineSegs(pos,col,lineMat(color,alpha,width,minWidth));}
 
 function buildDevice(){
 const g=new THREE.Group();
-// Cube keeps its Blender size; its base sits on the C-UAS location box.
-// Only the three faces the camera can see are drawn. Hidden edges and the ground
-// behind the translucent faces otherwise read as a lattice inside the box.
+
 const x=.589902,y=.779906,z=cubeZ,h=.378767;
 const coverage=new THREE.Mesh(new THREE.BoxGeometry(x*2,y*2,h*2),
 new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide,depthTest:false,depthWrite:false}));
@@ -748,10 +537,6 @@ const v=[[-x,-y,z-h],[x,-y,z-h],[x,y,z-h],[-x,y,z-h],[-x,-y,z+h],[x,-y,z+h],[x,y
 for(const f of [[0,1,5,4],[1,2,6,5],[4,5,6,7]])g.add(quadFace(f.map(i=>v[i]),deviceColor,.85,1.1,.14));
 deviceGroup.add(g);return g;}
 
-// The C-UAS readout is the same indicator as the track's and the Spider's: location
-// box opening X then Y, plate sliding in, name decoding. It plays in the opening and
-// stays open after it. Its lines are rebuilt as it opens, so fadeGroup leaves them
-// alone (userData.live) and they take the C-UAS strength directly.
 let deviceInd=null,deviceIndAt=Infinity;
 function updateDeviceIndicator(it){
 if(!deviceInd){deviceInd=buildIndicator(deviceGroup,deviceColor);devicePlateGroup.add(deviceInd.plateFill);
@@ -763,21 +548,15 @@ updateNameplate(o,deviceColor,1,0,0,deviceHalf,decodedName('C-UAS',phase(it,i.pl
 op,indicatorEase(phase(it,i.plateAt,Math.max(.01,i.plateDur))),null,'','',p,null);
 endText(p);}
 
-// An indicator is the whole acquisition readout - location box, vertical guide,
-// altimeter, nameplate, altitude frame - and there are two of them now: the track's
-// in orange and the Spider's in violet. Everything that draws one takes the set it
-// is drawing into and the colour to draw it in, so the two never diverge.
 function buildIndicator(g,color){
-// The location box opens during the entrance and the nameplate slides in, so both
-// are rebuilt every frame rather than built once.
+
 const box=dynLine(color,.55,2.25);
 const boxFill=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color,transparent:true,opacity:.025,side:THREE.DoubleSide,depthWrite:false}));
-// Vertical guide, altimeter ticks, nameplate frame and altitude frame: all grow,
-// slide or move with the entrance sequence.
+
 const vert=dynLine(color,.38,.8),minors=dynLine(color,.32,.6),majors=dynLine(color,.5,.8);
 const plateLine=dynLine(color,1,.8),altFrame=dynLine(color,.6,.8);
 g.add(box,boxFill,vert,minors,majors,plateLine,altFrame);
-// The plate fill glows at .4, so it lives in its own layer outside this group.
+
 const plateFill=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color,transparent:true,opacity:1,side:THREE.DoubleSide,depthWrite:false}));
 plateFill.visible=false;targetPlateGroup.add(plateFill);
 return {box,boxFill,vert,minors,majors,plateLine,altFrame,plateFill};}
@@ -786,8 +565,7 @@ function hideIndicator(o){for(const k of ['box','boxFill','vert','minors','major
 function buildTarget(){
 const g=new THREE.Group();
 const ind=buildIndicator(g,targetColor);
-// One placeholder body per craft in the formation: a swarm shows four, the single
-// threats one. Each is a group so the per-threat scale carries its rim lines too.
+
 const {rx,ry,hz}=bodyDims;
 const geo=new THREE.CylinderGeometry(1,1,1,32,1,true);geo.rotateX(Math.PI/2);geo.scale(rx,ry,hz);
 const rim=[],rimCol=[];
@@ -802,48 +580,38 @@ for(let i=0;i<maxCraft;i++){const b=new THREE.Group();
 b.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:targetColor,transparent:true,opacity:.2,side:THREE.DoubleSide,depthWrite:false})),
 lineSegs(rim,rimCol,lineMat(targetColor,1,1.25)));
 b.visible=false;threatBodyGroup.add(b);bodies.push(b);}
-// Corner brackets on the individual craft of a formation.
+
 const marks=dynLine(targetColor,.7,1.1),debris=dynLine(targetColor,1,1);
-// The response, in the C-UAS's colour because it is our side answering: solid for
-// what is flying (interceptor, Spider, net), faint for what is only a wake (the
-// dotted trail, the jamming fronts). Both live here so the response glows, mirrors
-// and fades with the engagement it belongs to.
+
 const respMain=dynLine(spiderColor,.85,1.3),respFaint=dynLine(deviceColor,.7,1);
-// The net on its own, so it can fade out with the wreck it holds.
+
 const respNet=dynLine(spiderColor,.85,1.3);
-// The jamming sector: its fronts, and the two heavier lines that bound it.
+
 const respJam=dynLine(jamColor,1,.7,.7),respJamEdge=dynLine(jamColor,1,2.6);
-// The suppression bracket and its plate frame.
+
 const killMarks=dynLine(killColor,.9,1.3),killLine=dynLine(killColor,1,.8);
 g.add(marks,debris,respMain,respFaint,respNet,respJam,respJamEdge,killMarks,killLine);
-// The asset the threat is flying at: a green location box with its ASSET plate, the
-// red crosshair the threat has put on it, the pulse that sends while the threat is
-// still coming, and the dashed curve from the threat down onto it.
+
 const assetBox=dynLine(assetColor,.55,2.25),assetBoxFill=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:assetColor,transparent:true,opacity:.025,side:THREE.DoubleSide,depthWrite:false}));
 const assetMark=dynLine(targetColor,.9,1.2),assetPulse=dynLine(targetColor,.6,1),assetPath=dynLine(targetColor,.6,1),assetLine=dynLine(assetColor,1,.8);
 g.add(assetBox,assetBoxFill,assetMark,assetPulse,assetPath,assetLine);
-// The C-UAS's data link to the Spider: one thin straight line (minWidth lowered so it
-// can go under the usual 1.2 px floor).
+
 const linkLine=dynLine(deviceColor,.5,.55,.55);
 g.add(linkLine);
 const assetFill=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:assetColor,transparent:true,opacity:1,side:THREE.DoubleSide,depthWrite:false}));
 assetFill.visible=false;targetPlateGroup.add(assetFill);
 const killFill=new THREE.Mesh(new THREE.PlaneGeometry(1,1),new THREE.MeshBasicMaterial({color:killColor,transparent:true,opacity:1,side:THREE.DoubleSide,depthWrite:false}));
 killFill.visible=false;targetPlateGroup.add(killFill);
-// The Spider's own readout, in the same group so it glows, mirrors and goes with
-// the engagement it belongs to.
+
 const spider=buildIndicator(g,spiderColor);
 targetGroup.add(g);
 return {group:g,...ind,spider,bodies,debris,marks,respMain,respFaint,respNet,respJam,respJamEdge,killMarks,killLine,killFill,assetBox,assetBoxFill,assetMark,assetPulse,assetPath,assetLine,assetFill,linkLine};}
 
-// Clip one plate edge at the reveal plane. Plate edges are axis aligned, so an edge
-// is kept, dropped or shortened - never cut on a diagonal.
 function clipSegX(a,b,minX){
 let x0=a[0],x1=b[0];
 if(x0<minX&&x1<minX)return null;
 return [Math.max(x0,minX),a[1],Math.max(x1,minX),b[1]];}
 
-// Location box: the X line comes first, then the box opens in Y.
 function updateLocationBox(o,color,x,y,half,growX,growY,opacity){
 const hx=half*growX,hy=half*growY;
 if(growX<=0){o.box.visible=false;o.boxFill.visible=false;return;}
@@ -854,8 +622,6 @@ setLine(o.box,pos,color,opacity,.55);
 o.boxFill.visible=true;o.boxFill.material.opacity=.025*opacity;
 o.boxFill.position.set(x,y,boxZ);o.boxFill.scale.set(hx*2,hy*2,1);}
 
-// Altimeter on the vertical guide: a tick every 10 ft, longer every 50. Ticks sit
-// left of the line (the current altitude reads on the right) and appear as it grows.
 function updateAltimeter(o,color,x,y,topZ,progress,opacity){
 if(progress<=0){o.minors.visible=false;o.majors.visible=false;return;}
 const top=boxZ+(topZ-boxZ)*progress,ftToZ=.3048/worldMetres,minor=[],major=[];
@@ -864,9 +630,6 @@ for(let ft=Math.ceil(boxZ/ftToZ/10)*10;ft*ftToZ<=top;ft+=10){const z=ft*ftToZ,bi
 setLine(o.minors,minor,color,opacity,.32);
 setLine(o.majors,major,color,opacity,.5);}
 
-// Nameplate. Fill, frame and the name slide in together from behind the plate's left
-// edge (the 2D pass clipped them to the plate's final bounds); the telemetry under it
-// types itself in instead, then counts up.
 function updateNameplate(o,plateColor,dir,x,y,half,text,opacity,reveal,telemetry,label,resp,platePool,textPool){
 const {z,w,h,x:cx,y:cy}=nameplate(x,y,half,dir),left=cx-w/2,color=hex(plateColor);
 if(reveal<=0||opacity<=0){o.plateLine.visible=false;o.plateFill.visible=false;return;}
@@ -878,22 +641,12 @@ for(let i=0;i<4;i++){const seg=clipSegX(c[i],c[(i+1)%4],left);
 if(seg)pos.push(seg[0],seg[1],z,seg[2],seg[3],z);}
 setLine(o.plateLine,pos,plateColor,opacity,1);
 flatText(platePool,text,sx,cy,z,1.65,h,'#ffffff',opacity,700,.8,'center',left);
-// The threat class sits directly under the plate: the identification the response is
-// chosen from. The next stage appends that response (KE-SHOT / NET-GUN / RF-JAM).
-// The threat class, then the response appended to it in the C-UAS's colour. The
-// two are separate quads rather than one string: each glyph surface is 512 wide, and
-// a string long enough to overflow it is squeezed narrower than every other row.
-// A friendly's plate (no telemetry) can still carry this row - the Spider's TASKED.
-// Rows fade with the plate's own reveal. On the way in that is already 1 by the time
-// the first row types, so this only shows on the way out - where it is what keeps the
-// numbers from sitting on the glass after the plate has gone.
+
 const rowOpacity=opacity*reveal;
 if(label){flatText(textPool,label,cx,cy-h/2-.41,z,w,.75,color,rowOpacity,500,.373,'left');
 if(resp)flatText(textPool,' > '+resp,cx+textFraction(label,500,.373)*w,cy-h/2-.41,z,w,.75,hex(deviceColor),rowOpacity,500,.373,'left');}
 if(!telemetry)return;
-// Typed in order: speed and range values (no names) at the nameplate's left edge,
-// then ETA (digits only, slightly larger) right of the plate, bottom-aligned with it.
-// Numbers are bold, units regular, and the unit starts where the number's width ends.
+
 const rows=telemetryRows(telemetry);let typed=telemetry.typed;
 const typeRow=(row,rx,ry,fontRatio)=>{const value=row[0],unit=row[1],full=value+unit;
 const n=Math.max(0,Math.min(full.length,Math.floor(typed)));typed-=full.length;
@@ -906,21 +659,18 @@ flatText(textPool,shownUnit+cursor,rx+textFraction(value,700,fontRatio)*w,ry,z,w
 typeRow(rows[0],cx,cy-h/2-.75,.373);
 typeRow(rows[1],cx,cy-h/2-1.09,.373);
 typeRow(rows[2],cx+w+.15,cy-h/2+.14,.43);
-// The grid cell types in last, under the two counters. It is the one row that never
-// counts up, so it reads as a place rather than a measurement.
+
 typeRow(rows[3],cx,cy-h/2-1.43,.373);}
 
-// Altitude beside the target, in the world XZ plane. The 2D pass drew it in text
-// units where 100 units is one em; the same units place the frame and the quad here.
 const altEm=.25,altUnits=altEm/100,altFontRatio=.25;
 const altQuadW=.6667/altFontRatio,altQuadH=altEm/altFontRatio,altQuadHalf=altQuadW/2/altUnits;
 function updateAltitude(o,color,x,y,topZ,ft,opacity,slide,pool){
 if(slide<=0||opacity<=0){o.altFrame.visible=false;return;}
 const ax=x+.12,az=(boxZ+topZ)/2,text=ft.toFixed(1)+' ft';
-// Sized from all-zero digits so the frame holds still while the value counts up.
+
 measureCtx.font='300 100px '+uiFont;
 const boxW=measureCtx.measureText(text.replace(/\d/g,'0')).width+56,shift=-(boxW+2)*(1-slide);
-// Text units to world: +x follows the nameplate, -y follows height.
+
 const at=(tx,tz)=>[ax+tx*altUnits,y,az-tz*altUnits];
 const rect=[[shift,-72],[shift+boxW,-72],[shift+boxW,62],[shift,62]],pos=[];
 for(let i=0;i<4;i++){const a=rect[i],b=rect[(i+1)%4];
@@ -928,26 +678,16 @@ if(a[0]<0&&b[0]<0)continue;
 const p0=at(Math.max(a[0],0),a[1]),p1=at(Math.max(b[0],0),b[1]);
 pos.push(p0[0],p0[1],p0[2],p1[0],p1[1],p1[2]);}
 setLine(o.altFrame,pos,color,opacity,.6);
-// The glyph origin sits 28 units in from the frame's left edge.
+
 placeText(pool,text,at(28+shift+altQuadHalf,0),[altQuadW/2,0,0],[0,0,altQuadH/2],
 hex(color),opacity,300,altFontRatio,'left','middle',false,ax);}
 
-// A formation is one engagement, so it keeps one location box, one vertical and one
-// nameplate, sized to go round the whole of it. What each drone gets instead is a
-// corner bracket and a two-digit tag - enough to see three tracks inside the one
-// contact without writing the same telemetry out three times. The brackets open with
-// the bodies themselves, a fraction of a second apart, so the formation arrives
-// already resolved into its parts.
 const craftMark={half:.56,corner:.21,em:1.3*68/192*.62,weight:500,gap:.13,step:.14};
-// Two digits land a few pixels tall, which is the case tightGlyph exists for: on the
-// shared 512x192 layout the mipmap averages that much empty space in and the tag
-// disappears. Same path the grid coordinates take.
+
 function craftTagQuad(text,color){const g=tightGlyph(text,color,craftMark.weight);
 return {tex:g.tex,ax:[g.w*craftMark.em/2,0,0],ay:[0,g.h*craftMark.em/2,0]};}
 function updateCraftMarks(th,t,et,opacity,pool){
-// The green suppression bracket lands on the same craft at almost the same size, so
-// this one leaves as soon as the threat is down rather than waiting its turn in the
-// reverse cascade. Two brackets on one drone read as one thick smear.
+
 opacity*=1-clamp((t-th.kill)/.3);
 if(th.craft<2||opacity<=0){target.marks.visible=false;return;}
 const pos=[],color=hex(targetColor),r=craftMark.half;
@@ -959,63 +699,33 @@ for(const sx of [-1,1])for(const sy of [-1,1]){
 pos.push(p[0]+sx*r,p[1]+sy*r,p[2],p[0]+sx*(r-c),p[1]+sy*r,p[2]);
 pos.push(p[0]+sx*r,p[1]+sy*r,p[2],p[0]+sx*r,p[1]+sy*(r-c),p[2]);}
 const q=craftTagQuad(String(i+1).padStart(2,'0'),color);
-// The tag hangs from the bracket's right edge, not under the craft's centre: the
-// quad is placed by its centre, so pull it in by its own half width.
+
 placeTexture(pool,q.tex,[p[0]+r-q.ax[0],p[1]-r-craftMark.gap-q.ay[1],p[2]],q.ax,q.ay,opacity*grow);}
 if(!pos.length){target.marks.visible=false;return;}
 setLine(target.marks,pos,targetColor,opacity,.7);}
 
-// --- airframes ---------------------------------------------------------------
-// The glb files live in 모델링/ but are carried inside this fragment, at the bottom,
-// as base64 (모델링/embed.py puts them there): the fragment is dropped into other
-// pages and opened from disk, and a relative fetch works in neither.
-// A glb is authored Y-up in metres with the rotors as children of the body, so the
-// airframe tilts and they go with it. Whatever hangs directly off the body is taken
-// for a rotor, whatever it is called. Nothing else in it is used: the view has no
-// lights, so materials, textures and normals are dropped and the mesh becomes a
-// translucent skin plus its own hard edges, in the colour of whoever owns it.
-// Size is not taken from the file. A real 0.3 m quadrotor at this scale would be
-// two pixels across, so it is normalised to a span that reads, exactly as the
-// placeholder bodies are drawn far larger than the aircraft they stand for.
-// edgeAngle is what the outline costs: a smooth-shaded curve has no crease for
-// EdgesGeometry to find, so a low angle draws every quad of the tube and a high one
-// draws none of it. The value here is the one that leaves the hard surfaces - arms,
-// motor caps, blades - and lets the curved shells read as skin.
 const modelLoader=new GLTFLoader();
 const modelEdge=24,rotorRate=6,interceptorSpan=.78,spiderSpan=1.8,uavSpan=1.4,quadSpan=1.1,swarmSpan=.65;
-// The colour is asked for rather than handed over, so a theme change reaches the
-// airframe the way it reaches every line rebuilt each frame.
-// Every airframe carries a clipping plane that keeps what is below it, so it can be
-// built up from the bottom like a print; place() leaves it out of the way unless
-// asked. The mirror pass flips it with the world (see frame).
+
 const clipPlanes=[];
-// Every rotor in the scene gets its own starting angle, a golden angle on from the
-// last, so no two blades - on one airframe or across a formation - sweep in step.
-// A phase alone still turns them as one - same rate, fixed offsets, the formation
-// reads as geared together - so each also gets its own rate, spread +-18% about
-// rotorRate so the average is unchanged, and a slow surge of its own on top, the
-// way a flight controller trims each motor. The surge never outruns the rate, so
-// no blade ever stops or backs up.
+
 let rotorCount=0;
 const rotorSpread=.18,rotorSurge=.6,rotorSurgeRate=1.3;
 const rotorAngle=(r,t)=>{const u=r.userData;
 return u.spin*(t*u.rate+rotorSurge*Math.sin(t*u.surgeRate+u.surgePhase))+u.phase;};
 function holoModel(id,colorOf,span,edgeAngle,parent=targetGroup){
-// Three nodes: heading, then attitude, then the model's own Y-up-to-Z-up turn. The
-// tilt has to sit above that turn so it is a pitch of the aircraft and not of the
-// file's axes.
+
 const g=new THREE.Group(),tilt=new THREE.Group();
 g.add(tilt);g.visible=false;parent.add(g);
 const plane=new THREE.Plane(new THREE.Vector3(0,0,-1),1e9);clipPlanes.push(plane);
 const h={group:g,ready:false,rotors:[],fill:null,line:null,unit:1,below:0,box:null,
 hide(){g.visible=false;},
-// cut: world height above which nothing is drawn yet; Infinity for the whole thing.
-// roll: about the airframe's own fore-and-aft axis, for a craft tumbling out of the sky.
+
 place(p,yaw,pitch,t,opacity,grow=1,cut=Infinity,roll=0){
 if(!h.ready)return false;
 plane.constant=Math.min(cut,1e9);
 g.visible=true;g.position.set(p[0],p[1],p[2]);g.scale.setScalar(Math.max(grow,1e-3));
-// The model looks down its own -Z, which the Z-up turn sends to +y here.
+
 g.rotation.z=yaw-Math.PI/2;tilt.rotation.set(pitch,roll,0);
 for(const r of h.rotors)r.rotation[r.userData.axis]=rotorAngle(r,t);
 const c=colorOf();h.fill.color.copy(c);h.line.color.copy(c);
@@ -1027,15 +737,13 @@ const bytes=Uint8Array.from(atob(data.textContent.trim()),c=>c.charCodeAt(0));
 modelLoader.parse(bytes.buffer,'',gltf=>{
 const src=gltf.scene;src.rotation.x=Math.PI/2;
 const size=new THREE.Vector3();new THREE.Box3().setFromObject(src).getSize(size);
-// unit turns the file's metres into scene units, for anything placed on the airframe.
+
 h.unit=span/Math.max(size.x,size.y,size.z);src.scale.setScalar(h.unit);
-// below: how far the airframe hangs under its origin, for guides that end at its belly.
-// box: its extent in its own frame (x across, y forward, z up), in scene units.
+
 src.updateMatrixWorld(true);h.box=new THREE.Box3().setFromObject(src);h.below=-h.box.min.z;
 h.fill=new THREE.MeshBasicMaterial({color:colorOf(),transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false,clippingPlanes:[plane]});
 h.line=lineMat(colorOf(),.9,1.1);h.line.clippingPlanes=[plane];
-// Collected before anything is added: LineSegments2 is itself a Mesh, so hanging
-// the outline on the mesh while walking the tree would walk straight into it.
+
 const meshes=[];src.traverse(o=>{if(o.isMesh)meshes.push(o);});
 for(const o of meshes){
 o.material=h.fill;
@@ -1043,10 +751,7 @@ const e=new THREE.EdgesGeometry(o.geometry,edgeAngle),a=e.attributes.position.ar
 for(let i=0;i<a.length;i+=3)c.push(1,1,1);
 o.add(lineSegs(Array.from(a),c,h.line));e.dispose();
 if(o.parent&&o.parent.isMesh)h.rotors.push(o);}
-// Which way a rotor turns is read off where it sits, not its name: diagonal pairs
-// turn together, and on a coaxial arm the upper and lower run against each other.
-// It turns about its own thinnest dimension - up for a lifting rotor, along the
-// fuselage for a pusher prop.
+
 for(const r of h.rotors){const x=r.position.x,z=r.position.z;
 r.geometry.computeBoundingBox();const e=r.geometry.boundingBox.getSize(new THREE.Vector3());
 r.userData.axis=e.x<=e.y&&e.x<=e.z?'x':e.y<=e.z?'y':'z';
@@ -1059,26 +764,12 @@ tilt.add(src);h.ready=true;markBaseDirty();},()=>{});
 return h;}
 const interceptor=holoModel('interceptor',()=>deviceColor,interceptorSpan,modelEdge);
 const spiderModel=holoModel('spider',()=>spiderColor,spiderSpan,modelEdge);
-// Threat airframes, by the threat's model key: one per craft, since a model is a single
-// standing object. The rotary and the swarm fly the same quadrotor, the swarm's smaller.
+
 const threatModel=(id,span,n=1)=>Array.from({length:n},()=>holoModel(id,()=>targetColor,span,modelEdge,threatBodyGroup));
 const threatModels={uav:threatModel('uav',uavSpan),rotary:threatModel('quad',quadSpan),swarm:threatModel('quad',swarmSpan,3)};
-// The Spider's net launchers are the two tubes on its flanks, on the file's +-x,
-// running fore and aft. It fires out of the front end of the +x one: x .27 (the
-// tube's middle), y .083 (its middle height), z -.302 (its front face; the file's
-// forward is -z), in the file's metres.
+
 const spiderLauncher={side:.27,up:.083,fwd:.302};
 
-// --- the response ------------------------------------------------------------
-// KE-SHOT: the interceptor leaves the C-UAS early enough to meet the fixed wing
-//   exactly where its track ends, on a lobbed arc, leaving a dotted trail. No
-//   debris: at impact the body simply goes out.
-// NET-GUN: the Spider comes up at Q9, unfolds and flies in to take station just
-//   short of the capture point; from there it throws a net that closes on the
-//   rotary, and the target tumbles down onto the glass.
-// RF-JAM: fronts leave the C-UAS toward the formation and each drone drops straight
-//   down as the first one reaches it.
-// Where the interceptor is v of the way along its lob.
 function keShotAt(th,v){const r=th.resp,impact=trackAtU(th,th.endU),from=[0,0,cubeZ+.38];
 return [from[0]+(impact[0]-from[0])*v,from[1]+(impact[1]-from[1])*v,
 from[2]+(impact[2]-from[2])*v+r.arc*4*v*(1-v)];}
@@ -1086,20 +777,17 @@ function keShot(th,t,main,faint,fade,opacity){
 const r=th.resp,impact=trackAtU(th,th.endU),from=[0,0,cubeZ+.38];
 const at=v=>keShotAt(th,v);
 const u=clamp((t-r.at)/r.flight);
-// The trail is all that is left of the shot: dashes over the part already flown,
-// held a beat past impact and then gone.
+
 const f=1-clamp((t-th.arrive-.5)/.7);
 if(f>0)for(let v=0;v<u;v+=.058){const a=at(v),b=at(Math.min(u,v+.032));
 faint.push(...a,...b);fade.push(f,f);}
 if(u>=1)return;
-// The tangent of the arc, taken from its derivative so it is defined at launch too.
+
 const p=at(u),d=[impact[0]-from[0],impact[1]-from[1],impact[2]-from[2]+r.arc*4*(1-2*u)];
-// It is built like a missile, nose up in the file, so it flies nose-first: stood on
-// its tail off the launcher, level at the top of the arc, nose down onto the target.
-// A pitch of climb-90deg lays the model's up along a path climbing at that angle.
+
 const yaw=Math.atan2(d[1],d[0]),climb=Math.atan2(d[2],Math.hypot(d[0],d[1]));
 if(interceptor.place(p,yaw,climb-Math.PI/2,t,opacity))return;
-// Until the model is there, the dart: a body along the flight, two fins off the tail.
+
 const L=Math.hypot(d[0],d[1],d[2])||1,e=[d[0]/L,d[1]/L,d[2]/L];
 const tail=[p[0]-e[0]*.55,p[1]-e[1]*.55,p[2]-e[2]*.55];
 const sL=Math.hypot(e[0],e[1])||1,side=[-e[1]/sL,e[0]/sL,0];
@@ -1107,8 +795,6 @@ main.push(...tail,...p);
 for(const k of [-1,1])main.push(tail[0],tail[1],tail[2],
 tail[0]-e[0]*.2+side[0]*.17*k,tail[1]-e[1]*.2+side[1]*.17*k,tail[2]-e[2]*.2);}
 
-// Where the Spider is: it comes up already under way and slows into its station,
-// where it hovers. Nothing else needs to know how it got there.
 const spiderBody={arm:.3,rotor:.12,core:.1};
 function spiderAt(th,t){const r=th.resp,a=[r.from[0],r.from[1],r.fromZ],b=r.station;
 const u=clamp((t-r.flyFrom)/(r.flyTo-r.flyFrom)),p=1-(1-u)*(1-u);
@@ -1118,15 +804,11 @@ function netGun(th,t,main,net,opacity,pool){
 const r=th.resp,open=ease(clamp((t-r.at)/r.open));
 if(open<=0)return;
 const p=spiderAt(th,t);
-// It faces what it is there for: the capture point while the rotary is still
-// flying, the wreck once it has it. The airframe is built on that direction, so the
-// launcher always points at the target.
+
 const tgt=t<th.arrive?trackAtU(th,th.endU):wreckAt(th,t);
 const dx=tgt[0]-p[0],dy=tgt[1]-p[1],L=Math.hypot(dx,dy)||1,e=[dx/L,dy/L],sd=[-e[1],e[0]];
 const at=(a,b,c=0)=>[p[0]+e[0]*a+sd[0]*b,p[1]+e[1]*a+sd[1]*b,p[2]+c];
-// It prints in: built up from the skids to the rotor tips over open. The launcher
-// tubes point forward, so it faces the target nose-on and fires out of the front of
-// the right-hand tube.
+
 const core=spiderBody.core*open;
 let muzzle=at(core*2.4,0,-core*1.1);
 const box=spiderModel.box;
@@ -1134,8 +816,7 @@ const cut=box&&open<1?p[2]+box.min.z+(box.max.z-box.min.z)*open:Infinity;
 if(spiderModel.place(p,Math.atan2(e[1],e[0]),0,t,opacity,1,cut)){
 const u=spiderModel.unit;muzzle=at(spiderLauncher.fwd*u,-spiderLauncher.side*u,spiderLauncher.up*u);}
 else{
-// Until the model is there: four arms out of the centre, a rotor disc on each, a
-// small body and the launcher below the nose.
+
 const arm=spiderBody.arm*open,rot=spiderBody.rotor*open;
 const diag=arm*Math.SQRT1_2,hub=at(0,0);
 for(const sa of [-1,1])for(const sb of [-1,1]){const c=at(sa*diag,sb*diag);
@@ -1146,12 +827,7 @@ c[0]+Math.cos(a1)*rot,c[1]+Math.sin(a1)*rot,c[2]);}}
 const q=[at(core,core),at(core,-core),at(-core,-core),at(-core,core)];
 for(let i=0;i<4;i++)main.push(...q[i],...q[(i+1)%4]);
 main.push(...hub,...muzzle);}
-// Thrown from the muzzle and led onto the point the track ends at, so it closes on
-// a rotary that is still flying; afterwards it rides the wreck down. At this range
-// the mouth is wide against the run - a throw, not a shot - and once it has it, it
-// cinches down to wrap (a mouth smaller than the airframe, drawn tight round it)
-// over cinch seconds. It goes into net, its own line, so it can fade out with the
-// wreck it holds.
+
 const fly=clamp((t-(th.arrive-r.net))/r.net);
 if(fly<=0)return;
 const src=muzzle,dst=t<th.arrive?trackAtU(th,th.endU):wreckAt(th,t);
@@ -1170,14 +846,6 @@ for(let i=0;i<8;i++){net.push(...outer[i],...outer[(i+1)%8]);
 net.push(...inner[i],...inner[(i+1)%8]);
 if(i%2===0)net.push(...outer[i],...inner[i]);}}
 
-// Two heavier lines on the floor bound the sector; they reach out with the first
-// front, and are wiped from the emitter behind the last one and dim with it, so
-// the sector and its last front are gone together.
-// Each front is one thinner line in the same white, a noise trace standing on the
-// floor: nothing at the two bounds, rising over a gentle hill (a half sine, round at
-// the top) to jamPeak at the centre. It breaks into pieces that drop in and out,
-// grows to full height by 3 units out and only fades over the last quarter of its
-// reach.
 const jamPeak=2.5;
 const jamHash=n=>{const s=Math.sin(n*127.1)*43758.5453;return s-Math.floor(s);};
 function rfJam(th,t,jam,jamFade,edge,edgeFade){
@@ -1197,18 +865,10 @@ for(let p=0;p<n/piece;p++){
 if(jamHash(p*13+k*7+flick)<.3)continue;
 for(let i=p*piece;i<(p+1)*piece;i++){jam.push(...pt(i),...pt(i+1));jamFade.push(f,f);}}}}
 
-// Once the threat is down the orange track closes itself out (the entrance run
-// backwards) and this takes over: a green bracket a little wider than the body it
-// marks, and one plate of the same build as the location nameplate. The word is long
-// enough that it needs a smaller face - at .45 it is condensed the same 82% the other
-// plates are, which is what makes it read as one of them.
 const killMark={arm:.3,grow:.3,plateAt:.25,slide:.45,fontRatio:.45,text:'NEUTRALIZED'};
 const killSpan=killMark.plateAt+killMark.slide;
 function updateKillMark(th,t,opacity,platePool,textPool){
-// The marker runs on its own clock so it can leave the way it came in: at the end
-// of the engagement the same sequence plays backwards - the plate slides out of the
-// place it slid into, then the bracket folds shut - rather than the whole thing
-// dimming where it stands.
+
 const kt=t<th.fadeAt?t-th.kill:killSpan*Math.max(0,1-(t-th.fadeAt)/th.close);
 const shown=t>=th.kill&&kt>0&&opacity>0;
 if(!shown){target.killMarks.visible=false;target.killLine.visible=false;target.killFill.visible=false;return;}
@@ -1219,15 +879,10 @@ for(const sx of [-1,1])for(const sy of [-1,1]){
 pos.push(p[0]+sx*r,p[1]+sy*r,p[2],p[0]+sx*(r-arm),p[1]+sy*r,p[2]);
 pos.push(p[0]+sx*r,p[1]+sy*r,p[2],p[0]+sx*r,p[1]+sy*(r-arm),p[2]);}}
 setLine(target.killMarks,pos,killColor,opacity,.9);
-// The plate waits for the orange one to finish sliding out of the same place, then
-// comes in the same way it did - the readout is handed over, not doubled up.
+
 const c0=centreAt(th,t),reveal=indicatorEase(clamp((kt-killMark.plateAt)/killMark.slide));
 if(reveal<=0){target.killLine.visible=false;target.killFill.visible=false;return;}
-// Beside the bracket, not on the ground: the vertical guide that tied the location
-// plate to a target in the air has just retracted, so a plate left down on the glass
-// would float away from the thing it labels. Same offsets as nameplate(), taken from
-// the marker's own half and its height, and never below the location plane.
-// A formation is labelled off its whole box; a single craft off its bracket.
+
 const half=th.craft>1?th.half:th.markHalf,w=2.4,h=.75;
 const z=Math.max(boxZ,c0[2]),cx=c0[0]+half+.25+w/2,cy=c0[1]-half+h/2,left=cx-w/2;
 const sx=cx-w*(1-reveal),vis0=Math.max(sx-w/2,left),vis1=sx+w/2;
@@ -1239,16 +894,6 @@ if(seg)frame.push(seg[0],seg[1],z,seg[2],seg[3],z);}
 setLine(target.killLine,frame,killColor,opacity,1);
 flatText(platePool,killMark.text,sx,cy,z,1.65,h,'#ffffff',opacity,700,killMark.fontRatio,'center',left);}
 
-// The asset: where the threat is going. A green location box opens on the glass the
-// way a track's does (X line, then Y), a red crosshair drops onto it and locks - the
-// threat has it targeted - and its ASSET plate slides in. While the threat is still
-// coming a ring pulses off the crosshair and a dashed line runs from the threat itself
-// down onto the box, flowing toward it: the rest of its own track, then on past the aim
-// cell to the asset. The moment the response stops the threat, the line pulls back into it
-// and the pulse dies, so what is left is the asset it never reached; box, crosshair and
-// plate go with the engagement at the end.
-// half is kept well inside the crosshair (ring .5, ticks out to .65) so the mark reads
-// as sitting over the box rather than inside it.
 const assetSpec={half:.32,boxAt:.3,r:.5,gap:.13,tick:[.62,1.3],lock:.45,lockAt:.9,lockFrom:2.2,
 plateAt:1.2,slide:.45,w:1.7,h:.75,dash:.3,space:.2,flow:1.1,pulse:1.4,pulseReach:1.6,
 pathAt:1.1,pathGrow:.9,pathOut:.6,trackSteps:32,extSteps:24};
@@ -1259,8 +904,7 @@ const at=t-A.boxAt;
 if(at<=0||opacity<=0){hideAll();return;}
 updateLocationBox({box:o.assetBox,boxFill:o.assetBoxFill},assetColor,ax,ay,A.half,
 ease(phase(at,0,.3)),ease(phase(at,.3,.45)),opacity);
-// Crosshair: a ring broken at the four quarters, ticks reaching in across the breaks,
-// and a small diamond at the centre. It comes in large and contracts onto the box.
+
 const lock=ease(phase(t,A.lockAt,A.lock)),n=48;
 if(lock>0){const r=A.r*(1+(A.lockFrom-1)*(1-lock)),mark=[];
 for(let i=0;i<n;i++){const a0=i/n*Math.PI*2,a1=(i+1)/n*Math.PI*2,mid=(a0+a1)/2;
@@ -1271,20 +915,14 @@ mark.push(ax+c*r*A.tick[0],ay+sn*r*A.tick[0],z,ax+c*r*A.tick[1],ay+sn*r*A.tick[1
 const dm=r*.14;mark.push(ax+dm,ay,z,ax,ay+dm,z,ax,ay+dm,z,ax-dm,ay,z,ax-dm,ay,z,ax,ay-dm,z,ax,ay-dm,z,ax+dm,ay,z);
 setLine(o.assetMark,mark,targetColor,opacity*lock,.9);}
 else o.assetMark.visible=false;
-// Threat still inbound: 1 up to the stop, then falling to 0 over pathOut.
+
 const live=t<th.kill?1:Math.max(0,1-(t-th.kill)/A.pathOut);
 if(live>0&&lock>=1){const p=((t-A.lockAt-A.lock)%A.pulse)/A.pulse,pr=A.r*(1+(A.pulseReach-1)*ease(p)),ring=[];
 for(let i=0;i<n;i++){const a0=i/n*Math.PI*2,a1=(i+1)/n*Math.PI*2;
 ring.push(ax+Math.cos(a0)*pr,ay+Math.sin(a0)*pr,z,ax+Math.cos(a1)*pr,ay+Math.sin(a1)*pr,z);}
 setLine(o.assetPulse,ring,targetColor,opacity*(1-p)*live,.6);}
 else o.assetPulse.visible=false;
-// Dashed line along where the threat is actually going: its own track from where it is
-// now to the aim cell - the same bow and descent the airframe flies, so the line
-// leaves along its heading and climb - then, for an asset past the aim, straight on
-// along the track's line, coming down to the glass as (1-s)^a. a is set so that
-// stretch leaves at the track's own end slope, and the power keeps it from ever
-// dipping below the glass however steep the track ends. Measured by arc length, drawn
-// outward from the threat, flowing toward the asset, pulled back into it once stopped.
+
 const pts=[],u0=threatU(th,t);
 for(let k=0;k<=A.trackSteps;k++)pts.push(trackAtU(th,u0+(1-u0)*k/A.trackSteps));
 const ext=th.asset.ext,end=trackAtU(th,1),drop=end[2]-z;
@@ -1300,12 +938,11 @@ return pts[k-1].map((c,i)=>c+(pts[k][i]-c)*f);};
 if(reach>.05){const per=A.dash+A.space,path=[];
 for(let d=t*A.flow%per-per;d<reach;d+=per){const d0=Math.max(0,d),d1=Math.min(reach,d+A.dash);
 if(d1-d0<.01)continue;
-// Each dash is split at the curve's own samples so it bends with it.
+
 let a=d0;while(a<d1){const b=Math.min(d1,a+.1);path.push(...at2(a),...at2(b));a=b;}}
 setLine(o.assetPath,path,targetColor,opacity,.6);}
 else o.assetPath.visible=false;
-// ASSET plate beside the crosshair (now the widest thing there), on the dir side,
-// level with its centre, sliding in like every other plate.
+
 const reveal=indicatorEase(phase(t,A.plateAt,A.slide));
 if(reveal<=0){o.assetLine.visible=false;o.assetFill.visible=false;return;}
 const w=A.w,hh=A.h,cx=ax+th.asset.dir*(Math.max(A.half,A.r*A.tick[1])+.2+w/2),cy=ay,left=cx-w/2;
@@ -1324,22 +961,14 @@ if(t>=r.at&&opacity>0){
 if(r.flight!==undefined)keShot(th,t,main,faint,fade,opacity);
 if(r.from)netGun(th,t,main,net,opacity,pool);
 if(r.fronts)rfJam(th,t,jam,jamFade,edge,edgeFade);}
-// What flies is drawn in whose it is: the Spider is its own aircraft, the
-// interceptor and the jamming fronts are the C-UAS's.
+
 setLine(target.respMain,main,r.from?spiderColor:deviceColor,opacity,.85);
-// The net goes with the rotary it caught, dissolving over the same fall.
+
 setLine(target.respNet,net,spiderColor,opacity*bodyFade(th,0,t),.85);
 setLine(target.respFaint,faint,deviceColor,opacity,.7,fade);
 setLine(target.respJam,jam,jamColor,opacity,1,jamFade);
 setLine(target.respJamEdge,edge,jamColor,opacity,1,edgeFade);}
 
-// The data link: the Spider is a node on the C-UAS's network, so it is tied back to it
-// by one thin straight line from the top of the C-UAS - no packets, no arc (user's
-// call, 2026-10-06; the interceptor and jammer had links too and lost them). It
-// reaches out as the Spider comes up and then stays as long as the Spider does, fading
-// out with its airframe at the end of the engagement (it used to pull back .6 s after
-// the capture, well before the Spider went). The plate reads CONNECTED the moment it
-// arrives, then TASKED > cell.
 const linkSpec={grow:.5,taskedAfter:.5};
 function linkPlan(th){if(th.link)return th.link;const r=th.resp,S=linkSpec;
 const k=trackAtU(th,th.endU),c=cellAt(k[0],k[1]);
@@ -1354,18 +983,10 @@ if(f<=0){o.linkLine.visible=false;return;}
 const a=[0,0,cubeZ+.38],b=spiderAt(th,t),at=v=>[0,1,2].map(i=>a[i]+(b[i]-a[i])*v);
 setLine(o.linkLine,[...a,...at(f)],deviceColor,opacity,.5);}
 
-// The Spider carries the same indicator a track does, cut to what a friendly asset
-// needs: where it is and how high. No speed, range or ETA - nothing is closing on
-// us - and no grid row, so the readout stays a quarter the size of a threat's. Its
-// plate goes on the -x side: the two indicators stand about 1.5 units apart, and
-// two plates on the same side would land on top of each other.
-// The sequence runs from the moment it starts flying and plays backwards at the end
-// of the engagement, the same way the track's does when it is put down.
 function updateSpider(th,t,opacity,platePool,textPool){
 const r=th.resp,o=target.spider;
 if(!r.from||t<r.tagFrom||opacity<=0){hideIndicator(o);return;}
-// Its readout runs on its own, quicker clock (tagRate against the track's entranceRate):
-// it is ours and already known, so there is nothing to acquire.
+
 const rate=r.tagRate||entranceRate;
 const st=t<th.fadeAt?(t-r.tagFrom)*rate:entranceSpan*Math.max(0,1-(t-th.fadeAt)/th.close);
 const [x,y,z]=spiderAt(th,t),topZ=z-(spiderModel.ready?spiderModel.below:spiderBody.core);
@@ -1374,8 +995,7 @@ const vertical=ease(phase(st,entrance.vertical,.65));
 if(vertical>0&&(topZ-boxZ)*vertical>.02)setLine(o.vert,[x,y,boxZ,x,y,boxZ+(topZ-boxZ)*vertical],spiderColor,opacity,.38);
 else o.vert.visible=false;
 updateAltimeter(o,spiderColor,x,y,topZ,vertical,opacity);
-// Under the plate: CONNECTED once the C-UAS link reaches it, then TASKED > cell on the
-// row below, each decoding in like the track's class row.
+
 const L=linkPlan(th),reveal=indicatorEase(phase(st,entrance.labels,.45));
 updateNameplate(o,spiderColor,-1,x,y,r.half,decodedName('SPIDER',phase(t,r.tagFrom+entrance.decode/rate,.7),t),
 opacity,reveal,null,t>=L.connected?decodedName('CONNECTED',phase(t,L.connected,.5),t):'','',platePool,textPool);
@@ -1389,48 +1009,35 @@ const {dotMat:dotMaterial}=buildGround();
 buildRings();buildCompassText();buildGridText();
 buildDevice();updateDeviceIndicator(Infinity);
 const target=buildTarget();
-// Chakra Petch may arrive after the first frames; every glyph cached against the
-// fallback face, and the static layers built from them, are rebuilt once it lands.
+
 Promise.all(['300','400','500','700'].map(w=>document.fonts.load(w+' 64px "Chakra Petch"')))
 .then(()=>{for(const tex of glyphCache.values())tex.dispose();glyphCache.clear();
 for(const g of tightGlyphs.values())g.tex.dispose();tightGlyphs.clear();
 buildCompassText();buildGridText();updateDeviceIndicator(deviceIndAt);markBaseDirty();}).catch(()=>{});
 
-// --- render pipeline ---------------------------------------------------------
-// No depth buffer anywhere: these are translucent hologram lines, so nothing
-// writes depth and a depth-driven blur would read every pixel as infinitely far.
-// The 2D pass does not use depth either - it blurs the ground per depth band and
-// the target by its own y - so the distance blur is derived the same way here:
-//   ground, rings, C-UAS : the ground point under each pixel (ray vs the glass plane)
-//   target               : one radius per frame from its world y
-// Per layer: render -> glow halo(s) -> compose -> distance blur -> stack.
 const ringMats=[];ringGroup.traverse(o=>{if(o.isLineSegments2)ringMats.push([o.material,o.material.linewidth]);});
 function groundMirrorBoost(on){
 for(const [m,base] of ringMats)m.linewidth=base*(on?groundReflectionLineBoost:1);
 dotMaterial.uniforms.uSizeBoost.value=on?groundReflectionDotBoost:1;dotMaterial.uniforms.uMirror.value=on?1:0;}
 
 const rt=(samples=0)=>new THREE.WebGLRenderTarget(1,1,{samples});
-// rtAccA/rtAccB stack one lit layer onto the next; a stack cannot read the buffer it
-// writes, so the two take turns.
+
 const rtLayer=rt(4),rtHalo=rt(),rtScratch=rt(),rtAccA=rt(),rtAccB=rt(),rtLitStatic=rt(),rtBaseBlur=rt(),rtLitTarget=rt(),rtTargetBlur=rt();
 const rtMask=rt(4),rtMaskBlur=rt();
-// The wide halo is built at half resolution to keep the denser blur affordable.
+
 const rtHalf=rt(),rtHalfScratch=rt(),rtHaloWide=rt();
 const rtMirrorDots=rt(),rtMirrorRings=rt(4),rtMirrorGround=rt(),rtMirrorGroundMasked=rt();
 const rtMirrorObj=rt(4),rtMirrorScratch=rt();
-// The threat airframes at low resolution, read back square pixel by square pixel.
+
 const rtPix=new THREE.WebGLRenderTarget(1,1,{minFilter:THREE.NearestFilter,magFilter:THREE.NearestFilter});
-// Drawn inside the target layer so it takes that layer's glow like the airframe it
-// stands in for. Buffers are premultiplied, so it blends as one.
+
 const pixQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),new THREE.ShaderMaterial({
 uniforms:{tPix:{value:rtPix.texture},uRes:{value:new THREE.Vector2(1,1)}},
 vertexShader:`void main(){gl_Position=vec4(position.xy,0.,1.);}`,
 fragmentShader:`uniform sampler2D tPix;uniform vec2 uRes;void main(){gl_FragColor=texture2D(tPix,gl_FragCoord.xy/uRes);}`,
 transparent:true,premultipliedAlpha:true,depthTest:false,depthWrite:false}));
 pixQuad.frustumCulled=false;pixQuad.visible=false;targetGroup.add(pixQuad);
-// Render the threat airframes alone at 1/block resolution. Line widths are in
-// screen pixels, so they are told the screen is that small too, and come out as
-// thick as a block rather than vanishing between samples.
+
 function renderPixelated(blockCss){
 const vis=targetGroup.children.map(c=>c.visible);
 for(const c of targetGroup.children)c.visible=c===threatBodyGroup;
@@ -1446,9 +1053,7 @@ const fullRes=[rtLayer,rtHalo,rtScratch,rtAccA,rtAccB,rtLitStatic,rtBaseBlur,rtL
 
 const quadCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const quadVertex=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`;
-// Buffers are premultiplied (cleared to alpha 0), so layers stack with 'over' -
-// the 2D pass painted source-over, and adding instead would saturate a channel
-// and shift the hue.
+
 const overGLSL=`vec4 over(vec4 top,vec4 under){return vec4(top.rgb+under.rgb*(1.-top.a),top.a+under.a*(1.-top.a));}`;
 function fullscreen(shader){const sc=new THREE.Scene(),m=new THREE.ShaderMaterial(shader);
 sc.add(new THREE.Mesh(new THREE.PlaneGeometry(2,2),m));
@@ -1456,12 +1061,7 @@ return {u:m.uniforms,run(target){renderer.setRenderTarget(target);renderer.clear
 
 const copy=fullscreen({uniforms:{tSrc:{value:null}},vertexShader:quadVertex,
 fragmentShader:`uniform sampler2D tSrc;varying vec2 vUv;void main(){gl_FragColor=texture2D(tSrc,vUv);}`});
-// Separable gaussian. The old 13-tap kernel stepped
-// 0.4 sigma at a time, so a large halo sampled isolated copies several pixels
-// apart. Horizontal and vertical passes made those copies read as a square grid.
-// Adjacent weighted samples are combined into one bilinear lookup, preserving the
-// dense kernel at half the texture-read cost. Small-radius passes use 17 samples;
-// only the wide halo needs 33.
+
 const gaussianFragment=pairs=>`
 uniform sampler2D tSrc;uniform vec2 uDir;uniform float uSigma;varying vec2 vUv;
 void main(){if(uSigma<.05){gl_FragColor=texture2D(tSrc,vUv);return;}
@@ -1478,13 +1078,6 @@ pass.u.uSigma.value=sigma;
 pass.u.tSrc.value=srcTexture;pass.u.uDir.value.set(1/out.width,0);pass.run(scratch);
 pass.u.tSrc.value=scratch.texture;pass.u.uDir.value.set(0,1/out.height);pass.run(out);}
 
-// Distance blur for everything standing on the glass: shoot the pixel's ray at the
-// plane, take that point's world y, and use the 2D pass's own band formula
-// (bands of 8.67 from -5.57, radius max(0,k-1)*0.26 at a 736 px 1x frame).
-// Above the horizon there is no ground, so those pixels stay sharp.
-// Separable: one 5x5 gather only reached 1.2 sigma and read as a boxy, grainy
-// smear. A dense 17-sample kernel avoids turning distant lines into spaced copies.
-// The radius varies smoothly down the screen, so treating it as separable holds.
 const planeBlur=fullscreen({uniforms:{tSrc:{value:null},uProjInv:{value:new THREE.Matrix4()},uCamWorld:{value:new THREE.Matrix4()},uDir:{value:new THREE.Vector2()},uScale:{value:0},uBase:{value:0},uBandLow0:{value:bandLow(0)},uBand:{value:band}},vertexShader:quadVertex,fragmentShader:`
 uniform sampler2D tSrc;uniform mat4 uProjInv,uCamWorld;uniform vec2 uDir;uniform float uScale,uBandLow0,uBand,uBase;varying vec2 vUv;
 void main(){
@@ -1507,8 +1100,6 @@ u.uProjInv.value.copy(camera.projectionMatrixInverse);u.uCamWorld.value.copy(cam
 u.tSrc.value=srcTexture;u.uDir.value.set(1/out.width,0);planeBlur.run(scratch);
 u.tSrc.value=scratch.texture;u.uDir.value.set(0,1/out.height);planeBlur.run(out);}
 
-// The lattice was painted once under a small shadow; rings and objects went through
-// withGlow, which paints the shape twice - under the wide shadow, then the tight one.
 const composeOnce=fullscreen({uniforms:{tLayer:{value:null},tHalo:{value:null}},vertexShader:quadVertex,
 fragmentShader:`uniform sampler2D tLayer,tHalo;varying vec2 vUv;${overGLSL}
 void main(){gl_FragColor=over(texture2D(tLayer,vUv),texture2D(tHalo,vUv));}`});
@@ -1523,8 +1114,7 @@ const maskGround=fullscreen({uniforms:{tGround:{value:null},tMask:{value:null},u
 fragmentShader:`uniform sampler2D tGround,tMask;uniform float uStrength;varying vec2 vUv;
 void main(){float keep=1.-clamp(texture2D(tMask,vUv).a*uStrength,0.,1.);
 gl_FragColor=texture2D(tGround,vUv)*keep;}`});
-// Knock nameplate letters out of a lit plate layer: premultiplied, so scaling all four
-// channels by what the letters leave makes the hole see-through rather than black.
+
 const cutText=fullscreen({uniforms:{tSrc:{value:null},tMask:{value:null}},vertexShader:quadVertex,
 fragmentShader:`uniform sampler2D tSrc,tMask;varying vec2 vUv;
 void main(){gl_FragColor=texture2D(tSrc,vUv)*(1.-clamp(texture2D(tMask,vUv).a,0.,1.));}`});
@@ -1541,8 +1131,7 @@ stack.u.tTop.value=top;stack.u.tUnder.value=under;stack.u.uTop.value=topScale;st
 function maskGroundInto(ground,mask,out,strength=.95){
 maskGround.u.tGround.value=ground;maskGround.u.tMask.value=mask;
 maskGround.u.uStrength.value=strength;maskGround.run(out);}
-// Render a layer and give it the glow the 2D pass gave it.
-// size is withGlow's own multiplier: the nameplate fill asked for .4.
+
 function litLayer(groups,out,twice,px,size=1,wide=glowObjectWide,tight=glowObjectTight){
 renderGroups(groups,rtLayer);
 if(!twice){blurInto(rtLayer.texture,rtHalo,rtScratch,glowGround*px*size);
@@ -1553,13 +1142,10 @@ blurInto(rtHalf.texture,rtHaloWide,rtHalfScratch,wide*px*size/2,blurWide);
 composeTwice.u.tLayer.value=rtLayer.texture;composeTwice.u.tWide.value=rtHaloWide.texture;composeTwice.u.tTight.value=rtHalo.texture;
 composeTwice.run(out);}
 
-// Everything except the target holds still, so the whole glass stack and the ground
-// mirror are built once per size, colour or webfont change instead of per frame.
 let baseDirty=true;
 function markBaseDirty(){baseDirty=true;}
 function buildBase(px){
-// The grid stays restrained, while dots get a compact and a wide halo. This keeps
-// their small core but gives the far field comparable energy to the bearing rings.
+
 litLayer([gridGroup],rtAccA,false,px);
 litLayer([dotGroup],rtLitStatic,true,px,1,glowDotWide,glowDotTight);
 stackInto(rtLitStatic.texture,rtAccA.texture,rtAccB);
@@ -1574,9 +1160,7 @@ stackInto(rtScratch.texture,rtAccB.texture,rtAccA);
 litLayer([deviceGroup],rtLitStatic,true,px);
 stackInto(rtLitStatic.texture,rtAccA.texture,rtAccB);
 planeBlurInto(rtAccB.texture,rtBaseBlur,rtScratch,groundDistanceBlur*px);
-// The ground mirror is static too: dots and rings, each with its own blur.
-// Both mirror blurs run on the wide kernel: the 9-tap one reaches 8 px, which the
-// raised radii pass, and a truncated gaussian stops spreading and turns boxy.
+
 world.scale.z=-1;world.updateMatrixWorld(true);
 groundMirrorBoost(true);
 renderGroups([dotGroup],rtMirrorDots);
@@ -1605,8 +1189,7 @@ for(const t of fullRes)t.setSize(w,h);
 
 const hw=Math.max(1,Math.round(w/2)),hh=Math.max(1,Math.round(h/2));
 for(const t of [rtHalf,rtHalfScratch,rtHaloWide])t.setSize(hw,hh);
-// The object mirror is blurred so hard it can live on a small buffer; the 2D pass
-// picks its size the same way, from the blur radius.
+
 reflectionScale=Math.min(.5,Math.max(.25,4/(reflectionBlur*F/736*dpr)));
 const mw=Math.max(1,Math.round(w*reflectionScale)),mh=Math.max(1,Math.round(h*reflectionScale));
 for(const t of [rtMirrorObj,rtMirrorScratch])t.setSize(mw,mh);
@@ -1617,10 +1200,7 @@ new MutationObserver(()=>{deviceColor=cssColor('--viz-series-1','#38bdf8');killC
 resize();
 
 const pixelBlocks=[14,10,7,5,3,2],pixelStep=.24;let pixelBlock=1;
-// Shards off a hard kill. Each is a small ragged triangle thrown from the impact:
-// outward at its own speed, a kick upward, carrying some of the craft's own run,
-// then gravity, spinning as it goes and stopping on the glass. Seeded per shard so
-// every loop breaks up the same way.
+
 function updateDebris(th,t,opacity){
 const d=th.resp.debris,age=t-th.kill;
 if(!d||age<=0||age>=d.life||opacity<=0){target.debris.visible=false;return;}
@@ -1631,7 +1211,7 @@ for(let k=0;k<d.count;k++){
 const az=rnd(k,1)*Math.PI*2,el=(rnd(k,2)-.35)*1.2,sp=d.speed[0]+(d.speed[1]-d.speed[0])*rnd(k,3);
 const v=[Math.cos(az)*Math.cos(el)*sp+al[0]*d.carry,Math.sin(az)*Math.cos(el)*sp+al[1]*d.carry,Math.sin(el)*sp+d.kick];
 let tt=age;
-// Where it lands it stays: solve the fall for the time it reaches the glass.
+
 const a=d.gravity/2,disc=v[2]*v[2]+4*a*(c[2]-floor),land=(v[2]+Math.sqrt(disc))/(2*a);
 tt=Math.min(tt,land);
 const q=[c[0]+v[0]*tt,c[1]+v[1]*tt,c[2]+v[2]*tt-a*tt*tt];
@@ -1644,55 +1224,44 @@ for(let j=0;j<3;j++){pos.push(...pts[j],...pts[(j+1)%3]);fades.push(f,f);}}
 setLine(target.debris,pos,targetColor,opacity,1,fades);}
 
 function updateTarget(th,t){
-// The airframes are standing objects rather than line lists rebuilt each frame, so
-// they are put away at the top and only the engagement that owns it brings it back.
+
 interceptor.hide();spiderModel.hide();for(const k in threatModels)for(const m of threatModels[k])m.hide();
 for(const b of target.bodies)b.visible=false;
-// Threat airframes resolve in: drawn in blocks that shrink every .24 s, from 14 CSS
-// pixels down to full resolution about a second and a half after it appears.
+
 const step=Math.floor(t/pixelStep);pixelBlock=step>=0&&step<pixelBlocks.length?pixelBlocks[step]:1;
-// Pools are reset every frame: telemetry grows a row at a time as it types itself in.
+
 const textPool=beginText(targetGroup),platePool=beginText(targetTextGroup);
 const models=th.model&&threatModels[th.model]||[],lead=models[0];
 const [x,y,z]=centreAt(th,t),topZ=z-(lead&&lead.ready?lead.below:th.hz);
-// The acquisition sequence is the only thing driving box, guide, altimeter, plate
-// and brackets, so putting the threat down is a matter of running its clock
-// backwards: same phases, same order, played out. The counters are on absolute time
-// and so do not count back down - they simply go with the plate that carries them.
+
 const et=t>=th.kill?entranceSpan*Math.max(0,1-(t-th.kill)/th.close):t*entranceRate;
 const opacity=t>th.fadeAt?Math.max(0,1-(t-th.fadeAt)/1.1):Math.min(1,t*entranceRate*2);
 target.group.visible=opacity>.01;
 if(!target.group.visible){target.plateFill.visible=false;target.killFill.visible=false;target.spider.plateFill.visible=false;target.assetFill.visible=false;endText(textPool);endText(platePool);return y;}
-// What plays out backwards keeps its brightness while it does: the retreat is the
-// effect, and dimming it at the same time would only blur the order it leaves in.
+
 const solid=t>=th.fadeAt?1:opacity;
 updateLocationBox(target,targetColor,x,y,th.half,ease(phase(et,entrance.boxX,.3)),ease(phase(et,entrance.boxY,.45)),opacity);
-// The cell the target stands in, for the nameplate's GRID row. The lattice's own tag
-// is left alone: the coordinates are a fixed map, not a readout that reacts.
+
 const cell=cellAt(x,y);
-// A wreck on the glass sits below the location plane, and the guide has nothing
-// left to measure: it is clamped at the plane rather than drawn downward.
+
 const vertical=ease(phase(et,entrance.vertical,.65)),vTop=Math.max(boxZ,topZ);
 if(vertical>0&&(vTop-boxZ)*vertical>.02)setLine(target.vert,[x,y,boxZ,x,y,boxZ+(vTop-boxZ)*vertical],targetColor,opacity,.38);
 else target.vert.visible=false;
 updateAltimeter(target,targetColor,x,y,vTop,vertical,opacity);
-// One body per craft in the formation; the spare bodies stay hidden.
+
 const rot=tumble(th,t);
 target.bodies.forEach((b,i)=>{if(i>=th.craft){b.visible=false;return;}
 const bodyOpacity=opacity*bodyFade(th,i,t);b.visible=bodyOpacity>.01;if(!b.visible)return;
 const p=craftPos(th,i,t),model=models[i];
-// A threat with its own airframe flies it nose-first along the track: heading and
-// climb off the track either side of now, held at the last heading once it stops.
-// A netted one keeps that heading and tumbles about it.
+
 if(model){const tt=Math.min(t,th.arrive-.06),a=craftPos(th,i,tt-.05),c=craftPos(th,i,tt+.05);
 let dx=c[0]-a[0],dy=c[1]-a[1];const dz=c[2]-a[2];
 if(Math.hypot(dx,dy)<1e-4){dx=th.axis.along[0];dy=th.axis.along[1];}
-// Once hit it noses over as it goes down.
+
 const dive=th.resp.fall?fallEase(clamp((t-fallStart(th,i))/th.resp.fall))*1.1:0;
 const spin=rot?[rot[0]+i,rot[1],rot[2]]:[0,0,0];
 let pitch=Math.atan2(dz,Math.hypot(dx,dy));
-// Speed is taken over +-.3 s so the lean eases off across the stop instead of
-// snapping level on the frame the track ends.
+
 if(th.lean){const hs=u=>{const e=craftAt(th,i,u-.3),f=craftAt(th,i,u+.3);return Math.hypot(f[0]-e[0],f[1]-e[1])/.6;};
 if(th.cruise===undefined)th.cruise=hs(th.arrive/2)||1;
 pitch=-th.lean*Math.min(1,hs(t)/th.cruise);}
@@ -1701,22 +1270,18 @@ if(rot)b.rotation.set(rot[0]+i,rot[1],rot[2]);else b.rotation.set(0,0,0);
 b.traverse(n=>{if(n.material&&'opacity' in n.material){
 if(n.userData.baseOpacity===undefined)n.userData.baseOpacity=n.material.opacity;
 n.material.opacity=n.userData.baseOpacity*bodyOpacity;}});});
-// Readouts are staged: the plate slides in, the rows type, then the values count up.
-// Sensor-like jitter: a deterministic offset every .3 s, wider on a swarm track.
+
 const tick=Math.floor(t/.3),jitter=(Math.floor(Math.abs(Math.sin(tick*12.9898)*43758.5453)%3)-1)*th.jitter;
-// Speed is measured off the track itself, so each threat's own pace, weave and hover
-// read out of the same numbers instead of being written twice.
-// Measured off the centre, which now includes a fall, so a wreck reads its own
-// descent rate instead of standing at zero all the way down.
+
 const dt=.05,pA=centreAt(th,t-dt),pB=centreAt(th,t+dt);
 const raw=Math.hypot(pB[0]-pA[0],pB[1]-pA[1],pB[2]-pA[2])/(2*dt)*worldMetres*3.6;
 const speed=raw>1?raw+jitter:0;
 const range=Math.hypot(x,y)*worldMetres;
 const typeStart=(entrance.labels+.45)/entranceRate,typed=(t-typeStart)*typingRate;
 const count=ease(phase(t,typeStart+telemetryChars/typingRate+.1,.9));
-// The class decodes just after the name does.
+
 const labelAt=(entrance.decode+.3)/entranceRate;
-// ETA only means something on the way in; once the response has it, the row stops.
+
 const closing=t<th.arrive&&speed>0;
 updateNameplate(target,targetColor,1,x,y,th.half,decodedName('TARGET',phase(t,entrance.decode/entranceRate,.7),t),
 opacity,indicatorEase(phase(et,entrance.labels,.45)),
@@ -1735,16 +1300,6 @@ updateAltitude(target,targetColor,x,y,topZ,z*worldMetres/.3048*altitudeCount,opa
 endText(textPool);endText(platePool);
 return y;}
 
-// --- opening: the hologram switching on over the bare glass ------------------------
-// Every visit opens on the glass grid alone. The dot field rises out of the glass from
-// the front rows back, the C-UAS follows it up, then the bearing ring grows out of the
-// C-UAS small to full size with its ticks, letters and numbers at once - its dial set
-// to the C-UAS front as 0. Once it is all out, the dial turns under the fixed heading
-// line until that line reads the bearing the C-UAS actually faces. While it rises the
-// C-UAS indicator opens like a track's (updateDeviceIndicator). The first threat
-// comes in at threatAt. All timings are in `intro`, up with the entrance constants.
-
-// Fades a whole static group by its materials, each against the opacity it was built with.
 const builtOpacity=new WeakMap();
 function fadeGroup(g,f){g.traverse(o=>{const m=o.material;if(!m||o.userData.live)return;
 const u=m.uniforms&&m.uniforms.opacity;
@@ -1761,84 +1316,39 @@ opening.device=d;opening.deviceGate=clamp((boxZ+dz)/boxZ);
 fadeGroup(deviceGroup,d);fadeGroup(devicePlateGroup,d);updateDeviceIndicator(it);
 const r=phase(it,intro.ringAt,Math.max(.01,intro.ringDur)),s=intro.ringFrom+(1-intro.ringFrom)*easeOut(r);
 ringGroup.scale.set(s,s,1);
-// Shortest way round from the front-as-zero dial to the real bearing.
+
 const turn=((headingTo-headingFrom)%360+540)%360-180;
 const heading=headingFrom+turn*ease(phase(it,intro.turnAt,Math.max(.01,intro.turnDur)));
 dialGroup.rotation.z=(heading-headingTo)*Math.PI/180;
 const shown=Math.round((heading%360+360)%360)%360;
 if(shown!==headingShown)drawHeading(shown);
 fadeGroup(ringGroup,clamp(r*2));}
-// ms; null while it waits for the page to show this frame, -Infinity once played.
+
 let introStart=null;
-// Tuning panel's scrub: holds the opening at this second (null = play).
+
 let introFreeze=null;
 
-// One threat per loop, drawn at random and never the same one twice in a row. Each
-// threat sets its own loop length, since they do not take equally long to arrive.
 let threat=threats[Math.floor(Math.random()*threats.length)],loopStart=performance.now();
-// On the AEGIS page this runs inside the COMMAND step's iframe (#cmdMap), which the page
-// fades in only on that step. While it is hidden nothing is drawn, and the page calls
-// __aegisReset as it shows it, so every visit starts a fresh threat from the top.
+
 const host=(()=>{try{const f=window.frameElement;return f&&f.id==='cmdMap'?f:null;}catch(e){return null;}})();
-// In a frame it cannot see (the page opened from file:// is another origin, so
-// frameElement reads null) the page posts {aegisCommand} as the step changes instead,
-// and answers aegisReady with the current step for a frame that loaded late.
+
 const framed=!host&&window.top!==window;let remoteShown=false,remoteSeen=false;
 const shown=()=>host?host.classList.contains('show'):framed?remoteShown:true;
 if(framed){addEventListener('message',e=>{const d=e.data;if(e.source!==window.parent||!d||typeof d.aegisCommand!=='boolean')return;
 remoteSeen=true;if(d.aegisCommand&&!remoteShown)window.__aegisReset();remoteShown=d.aegisCommand;});
 window.parent.postMessage({aegisReady:true},'*');
-// Any other frame (no AEGIS page answering) runs on its own, as the bare preview does.
+
 setTimeout(()=>{if(!remoteSeen){remoteShown=true;startIntro(performance.now());}},1500);}
 function startIntro(now){introStart=now;loopStart=now+intro.threatAt*1000;}
 window.__aegisReset=()=>{const others=threats.filter(o=>o!==threat);
 threat=others[Math.floor(Math.random()*others.length)];startIntro(performance.now());};
-// On its own the preview opens straight away; in the page it waits to be shown.
+
 if(!host&&!framed)startIntro(performance.now());
-// Timing panel: every value a motion's timing hangs on, live, in the preview alone (the
-// page's frame never shows it). A motion hands over its value object and its rows
-// [key, label, min, max, step]; each change restarts it, the scrub holds one moment,
-// and the line at the bottom is the object to paste back into the source.
-// Keep timing-critical motion tunable this way rather than hard-coding guesses.
-function tunePanel(title,values,rows,restart,scrub){
-const box=document.createElement('div');
-box.style.cssText='position:fixed;top:8px;right:8px;z-index:9;background:rgba(0,0,0,.78);color:#cfe8ff;font:11px/1.3 monospace;padding:8px 10px;border:1px solid #2a4a66;max-height:96vh;overflow:auto;width:300px;box-sizing:border-box';
-const head=document.createElement('div');head.style.cssText='cursor:pointer;color:#fff;margin-bottom:4px';
-const body=document.createElement('div');head.textContent=title+' \u25be';
-head.onclick=()=>{const open=body.style.display==='none';body.style.display=open?'':'none';head.textContent=title+(open?' \u25be':' \u25b8');};
-const slider=(min,max,step,value)=>{const r=document.createElement('input');Object.assign(r,{type:'range',min,max,step,value});
-r.style.cssText='width:110px;vertical-align:middle;margin:0 6px';return r;};
-const out=document.createElement('div');out.style.cssText='margin-top:6px;white-space:pre-wrap;word-break:break-all;user-select:all;color:#8fb';
-const show=()=>{out.textContent=JSON.stringify(values);};
-for(const [k,label,min,max,step] of rows){const row=document.createElement('label');row.style.cssText='display:block;margin:2px 0';
-const v=document.createElement('span');v.textContent=values[k];const r=slider(min,max,step,values[k]);
-r.oninput=()=>{values[k]=+r.value;v.textContent=r.value;show();restart();};
-row.append(label,r,v);body.append(row);}
-const hold=document.createElement('label');hold.style.cssText='display:block;margin:6px 0 4px;color:#fd8';
-const on=document.createElement('input');on.type='checkbox';
-const at=slider(0,scrub.max,.05,0),atV=document.createElement('span');atV.textContent='0';
-const sync=()=>{atV.textContent=at.value;scrub.set(on.checked?+at.value:null);if(!on.checked)restart();};
-on.onchange=sync;at.oninput=()=>{on.checked=true;sync();};
-hold.append(on,' 시점 고정',at,atV);
-const again=document.createElement('button');again.textContent='다시 재생';
-again.onclick=()=>{on.checked=false;scrub.set(null);restart();};
-body.append(hold,again,out);box.append(head,body);show();document.body.append(box);}
-// Only a page opened on its own on this machine. Inside any frame it stays out: opened
-// from file://, the page's frame is another origin, frameElement reads null and host
-// alone would take the AEGIS page's COMMAND frame for the bare preview.
-const tuning=!host&&window.top===window&&(location.protocol==='file:'||/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname));
-if(tuning)tunePanel('진입 모션',intro,[
-['dotAt','망점 시작',0,2,.05],['dotDur','망점 한 점 시간',.1,2,.05],['dotSweep','망점 앞→뒤 물결',0,2,.05],['dotRise','망점 상승 깊이',0,4,.1],
-['deviceAt','C-UAS 시작',0,3,.05],['deviceDur','C-UAS 시간',.1,2,.05],['deviceRise','C-UAS 상승 깊이',0,4,.1],
-['boxAt','C-UAS 박스 시작',0,3,.05],['boxX','박스 X선 시간',.05,1,.05],['boxY','박스 Y 펼침 시간',.05,1,.05],
-['plateAt','C-UAS 이름표 시작',0,3,.05],['plateDur','이름표 슬라이드 시간',.05,1,.05],['decodeDur','이름 디코드 시간',.05,1.5,.05],
-['ringAt','방위 시작',0,3,.05],['ringDur','방위 커지는 시간',.1,2,.05],['ringFrom','방위 시작 크기',0,1,.05],
-['turnAt','다이얼 회전 시작',0,4,.05],['turnDur','다이얼 회전 시간',.1,3,.05],['threatAt','위협 등장',0,5,.1]],
-()=>startIntro(performance.now()),{max:5,set:v=>{introFreeze=v;}});
+
 function frame(now){
 if(!root.isConnected)return;
 if(W&&H&&shown()){
-// Shown before the page could call __aegisReset (the frame was still loading).
+
 if(introStart===null)startIntro(now);
 if(introFreeze!==null){introStart=now-introFreeze*1000;loopStart=introStart+intro.threatAt*1000;}
 let t=(now-loopStart)/1000;
@@ -1849,15 +1359,13 @@ requestAnimationFrame(frame);}
 function draw(th,t,it=Infinity){
 const dpr=renderer.getPixelRatio(),px=F/736*dpr;
 const targetYNow=updateTarget(th,t);
-// The opening moves the static layers, so the base is rebuilt every frame of it and
-// once more on the frame it ends, which leaves everything at rest.
+
 const playing=introStart!==null&&introStart!==-Infinity;
 if(playing){if(it>=introEnd()){it=Infinity;introStart=-Infinity;}applyIntro(it);baseDirty=true;}
 if(baseDirty){baseDirty=false;buildBase(px);}
-// The C-UAS mirror only shows once the C-UAS is above the glass.
+
 if(playing)for(const g of [deviceGroup,devicePlateGroup])fadeGroup(g,opening.device*opening.deviceGate);
-// Mirror through the glass, never lit. Grid lines lie on the glass itself, so the
-// object mirror is the two objects with their plates; the ground mirror is cached.
+
 world.scale.z=-1;world.updateMatrixWorld(true);
 for(const c of clipPlanes)c.normal.z=1;
 renderGroups(mirrorObjectGroups,rtMirrorObj);
@@ -1865,14 +1373,12 @@ for(const c of clipPlanes)c.normal.z=-1;
 world.scale.z=1;world.updateMatrixWorld(true);
 if(playing)for(const g of [deviceGroup,devicePlateGroup])fadeGroup(g,opening.device);
 blurInto(rtMirrorObj.texture,rtMirrorObj,rtMirrorScratch,reflectionBlur*px*reflectionScale,blurWide);
-// No threat on the glass (the opening, the gap between loops): its layer is empty,
-// so its glow and blur passes are skipped and the glass goes straight out.
+
 if(!target.group.visible){
 stackInto(rtMirrorGroundMasked.texture,rtMirrorObj.texture,rtLayer,groundReflectionOpacity,reflectionOpacity);
 stackInto(rtBaseBlur.texture,rtLayer.texture,rtScratch);
 present.u.tSrc.value=rtScratch.texture;present.run(null);return;}
-// The target layer: plate fill at its own glow with the names cut out of it, then
-// the lines and lit text over it.
+
 litLayer([targetPlateGroup],rtLitStatic,true,px,.4);
 renderGroups([targetTextGroup],rtLayer);
 cutTextInto(rtLitStatic.texture,rtLayer.texture,rtAccB);
@@ -1880,20 +1386,17 @@ if(pixelBlock>1)renderPixelated(pixelBlock);
 litLayer([targetGroup],rtLitTarget,true,px);
 threatBodyGroup.visible=true;pixQuad.visible=false;
 stackInto(rtLitTarget.texture,rtAccB.texture,rtAccA);
-// The target carries one radius, from its own world y, exactly as drawTargetBlurred did.
+
 const k=Math.min(8,Math.max(0,(targetYNow-bandLow(0))/band-.5)),targetSigma=Math.max(0,k-1)*targetDistanceBlur*px;
 if(targetSigma<.05){copy.u.tSrc.value=rtAccA.texture;copy.run(rtTargetBlur);}
 else blurInto(rtAccA.texture,rtTargetBlur,rtScratch,targetSigma);
-// Stack: object mirror, ground mirror, glass layers, target.
+
 stackInto(rtMirrorGroundMasked.texture,rtMirrorObj.texture,rtLayer,groundReflectionOpacity,reflectionOpacity);
 stackInto(rtBaseBlur.texture,rtLayer.texture,rtScratch);
 stackInto(rtTargetBlur.texture,rtScratch.texture,rtAccA);
 present.u.tSrc.value=rtAccA.texture;present.run(null);}
 requestAnimationFrame(frame);
-// The first frame compiles every shader and builds the ground - a few hundred ms, on the
-// main thread the page shares with this iframe. Left to the moment the COMMAND step opens,
-// it froze the page's copy typing. So while hidden, once the airframes are in, draw each
-// threat through its approach, response and fall a frame at a time in idle moments.
+
 if(host||framed){const models=[interceptor,spiderModel,...Object.values(threatModels).flat()];
 const idle=window.requestIdleCallback?f=>requestIdleCallback(f,{timeout:1500}):f=>setTimeout(f,200);
 const queue=threats.flatMap(th=>[.5,th.resp.at+.3,(th.resp.at+th.arrive)/2,th.arrive+.6].map(t=>[th,t]));

@@ -1,20 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- ba_land.html — v27 (2026-09-29): 한/영 병기(data-i18n). 소개·섹션 설명·카드 설명·AEGIS 문단만 병기, 대제목 슬로건·제품명·View More 버튼·대문자 CTA는 영문 유지 -->
-<!-- ba_land.html — v26 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
-<!-- ba_land.html — v25 (2026-09-15): 제품 VIEW DETAILS → ba_air Interceptor 의 View More 버튼(CSS·마크업 동일)으로 교체, 링크를 각 제품 상세 페이지로 -->
-<!-- ba_land.html — v24 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- ba_land.html — v23 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: 문서/가이드/반응형_단위가이드.md -->
-<!-- ba_land.html — v22 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A+B형) -->
-<!-- ba_land.html — v21 (2026-09-04): 섹션 십자의 중심이 sec-title 시작선(--pad)을 따라가도록 — left/right를 calc(var(--pad) - 15px)로. 별도 --pad2 불필요 -->
-<!-- ba_land.html — v20 (2026-09-03): CTA 흰색 계열 → #f0ede8 통일 / 640px 이하 CTA 좌우 여백이 고정 28px로 덮여 어긋나던 문제 수정 / .hero-products 폭 계산 누락(*2) 보정 -->
-<!-- ba_land.html — v19 (2026-09-03): CTA 구분선(.aegis-cta-rule) 호버 색상 미적용 버그 수정 — color → background -->
-<!-- ba_land.html — v18 (2026-09-03): 미사용 CSS/JS 제거 — THREAT·레이더·SOLUTIONS(.sc)·DEPLOYMENT·SPECS표·구CTA·구히어로 잔재 -->
-<!-- ba_land.html — v17 (2026-09-03): 잔여 유사검정 배경 → #000000 (.sc:hover #0d0d10→#000000) -->
-<!-- ba_land.html — v16 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
-<!-- ba_land.html — v15 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
-<!-- ba_land.html — v14 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
-<!-- ba_land.html — v15 (2026-09-03): AEGIS 섹션 텍스트 색상도 ba_air.html와 동일하게 — sec-title #000000, sec-desc #fff -->
+
 <html lang="en" data-i18n>
 <head>
 <script src="lang.js"></script>
@@ -22,21 +8,19 @@
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <title>BA Solutions — LAND POWER</title>
-<!-- AEGIS CTA 블록 공용 스타일 (ba_air/ba_sea 와 공유). 페이지 자체 스타일보다 먼저 로드할 것 -->
+
 <link rel="stylesheet" href="aegis-cta.css">
 
 <style>
-  /* PRODUCT LINEUP 섹션 타이틀 */
+
 .product-section .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-/* 제품 카드 이름 4개 (AEGIS C-UAS, AEGIS-V, AEGIS-F, AEGIS-B) */
 .pcard-name {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-/* HOW AEGIS WORKS 타이틀*/
 .aegis-sec .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
   color: #f0ede8;
@@ -44,9 +28,7 @@
 .aegis-sec .sec-desc {
   color: #f0ede8;
 }
-/* .aegis-cta-tag 의 Michroma 지정은 aegis-cta.css 로 이관됨 */
-/* v13: ba_air.html와 동일 — 하단 패딩 0으로 CTA 박스가 섹션 바닥에 붙음.
-   .sec 규칙(하단에서 나중에 정의됨)보다 우선하도록 .sec.aegis-sec로 specificity를 높임 */
+
 .sec.aegis-sec {
   padding: max(20px, calc(60 * var(--u))) var(--pad) 0 var(--pad);
   border-top: none;
@@ -57,11 +39,10 @@
 
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#f0ede8;color:#000;}
-/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
+
 :root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)))}
 body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-/* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
 html{scrollbar-width:none;}
 html::-webkit-scrollbar{display:none;}
 body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
@@ -83,32 +64,19 @@ h1.ht span{color:rgba(240,237,232,.25);}
 .decode{opacity:0;transition:opacity .1s;}
 .decode.visible{opacity:1;}
 
-
-/* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_air/ba_sea 와 공유) ── */
-
-
-
-/* ── 대문 제품 박스 (가로 4개, 흰색 채우기 + decode) ── */
-/* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (ba_air 의 AEGIS Spider 버튼 기준).
-   부모 .hero-content 가 shrink-to-fit 이라 컨테이너 폭은 트랙 합으로 정해진다:
-     air  2×203 + 1×14 = 420px
-     sea  3×203 + 2×14 = 637px
-     land 4×203 + 3×14 = 854px
-   이름이 203-32(라벨 좌우 패딩)=171px 를 넘으면 그때부터 내용이 폭을 늘린다. */
 .hero-products{display:grid;grid-template-columns:repeat(4,minmax(203px,1fr));gap:14px;margin-top:8px;}
-.hp-btn{position:relative;height:48px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}/* v8: 호버 테두리 제거 — 대신 제품명에 밑줄이 그어짐 (.hp-name 참고) */
+.hp-btn{position:relative;height:42px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}
 .hp-fill{position:absolute;inset:0;background:#f0ede8;transform-origin:left center;transform:scaleX(0);transition:transform .55s cubic-bezier(.2,.7,.2,1);}
 .hp-btn.hp-filled{border-color:transparent;}
 .hp-btn.hp-filled .hp-fill{transform:scaleX(1);}
 .hp-label{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;height:100%;padding:0 16px;text-align:left;opacity:0;transition:opacity .25s;}
 .hp-btn.hp-revealed .hp-label{opacity:1;}
 .hp-tag{display:none;}
-.hp-name{font-size:13px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
+.hp-name{font-size:15px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
 .hp-btn.hp-revealed:hover .hp-name{background-size:100% 1.5px;}
 .hp-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#000;opacity:0;transition:opacity .3s,right .3s;z-index:2;}
 .hp-btn.hp-revealed:hover .hp-arrow{opacity:.7;right:10px;}
 
-/* ── 큰 제품 카드 (이미지 + 텍스트 좌우 분할) ── */
 .product-section{padding:140px var(--pad);border-top:none;overflow:hidden;}
 .product-section .sec-title{margin-bottom:16px;}
 .product-list{display:flex;flex-direction:column;gap:0;margin-top:80px;}
@@ -126,40 +94,21 @@ h1.ht span{color:rgba(240,237,232,.25);}
 .pcard-num::after{content:'';flex:1;height:0.5px;background:rgba(255,255,255,.1);max-width:80px;}
 .pcard-tag{display:none;}
 .pcard-name{font-size:max(28px, calc(44 * var(--u)));font-weight:700;letter-spacing:.02em;line-height:1.05;margin-bottom:22px;}
-/* v6: 제품 타이틀 → 상세 페이지 링크. 색/크기는 그대로, 호버 시 밑줄만 슬라이드 */
+
 .pcard-name-link{color:inherit;text-decoration:none;}
 
 .pcard-desc{font-size:20px;color:rgba(240,237,232,.9);line-height:1.3;font-weight:400;}
 
-
-/* View More 링크 (전 제품 공통 — ba_air/ba_land/ba_sea 동일) — hover 시 박스가 아래에서 차오르고 글씨는 검정·굵게.
-   끊김 방지 구조: 박스+검정 글씨를 한 겹(.plf-cover)에 함께 그려두고 clip-path 하나만 움직인다.
-   · 이전 방식(scaleY + color/font-weight 전환)은 끝날 때 합성 레이어가 풀리며 박스 가장자리·글자 렌더링이
-     한 번 바뀌었고, font-weight 는 중간 굵기가 없는 폰트라 도중에 굵기가 툭 바뀌었다.
-   · 이제 바탕 글씨는 그대로 두고 덮개만 드러나므로, 박스와 검정 글씨가 같은 선으로 함께 차오른다.
-   채움 박스는 좌우 8px 까지만 확장: .pcard-text 의 clip-path 가 padding(8px) 밖을 잘라내기 때문
-   위치: 텍스트 영역 우측 끝 (block + fit-content + margin-left:auto) */
 .pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(13px, calc(18 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
-/* 덮개: 바탕 글씨와 같은 자리에 글자가 오도록 top/left 음수만큼 padding 으로 되돌린다.
-   상하 여백(.42em / .3em)은 대문자 윗선~기준선 중앙과 박스 중앙이 일치하는 값 (Helvetica Neue 기준, "View More ↘"는 하강부 없음)
-   덮개는 화살표를 따로 움직이려고 ::before 대신 실제 요소(.plf-cover)로 둔다 */
+
 .plf-cover{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:#f0ede8;color:#000;font-weight:var(--plf-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none;}
 .pcard-link-fill:hover .plf-cover,.pcard-link-fill:focus-visible .plf-cover{clip-path:inset(0 0 0 0);}
-/* 2026-10-08 사용자 요청: TECH CTA(.cta-arrow)와 같은 값 — 글자 15→18(최소 10→13px, 사용자 요청), 자간 0, 흰 박스는 글자 높이로 자르고 화살표 오른쪽만 띄어쓰기 한 칸(.28em), 키보드 포커스에도 같은 효과 */
+
 .pcard-link-fill{letter-spacing:0;clip-path:inset(0 -.28em 0 0);}
-/* 굵은 글자 폭을 미리 확보 — 덮개 글씨가 박스 밖으로 넘치지 않게 */
+
 .plf-txt{display:inline-grid;}
 .plf-txt::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--plf-weight);height:0;overflow:hidden;visibility:hidden;}
-/* 밑줄 → 화살표 — hover 시 밑줄(.plf-draw)이 ↘ 로 접힌다. 순서:
-   ① 밑줄이 ↘ 글자의 가로 범위(폭 .68em)로 줄어듦  ② 박스 위 화살표 높이로 올라와 "-"
-   ③ 45° 돌며 대각선 길이(.87em)로 늘어나 "\"  ④ 끝에서 두 선이 돋아나 ↘
-   hover 해제 시에는 역순. 속성마다 transition-delay 가 하나뿐이라, 줄어듦/상승은 바깥(.plf-draw),
-   회전/길이는 안쪽(.plf-shaft), 화살촉은 .plf-head 가 나눠 맡는다.
-   치수는 Helvetica Neue ↘ 글리프 실측(em): 잉크 x .03~.71, 대각선 중심 기준선 위 .415em, 화살촉 길이 .25em.
-   덮개(굵기 400)의 ↘ 는 x0 = 100% − .638em 에서 시작 — 덮개 글씨가 바탕(300)보다 .17em 넓어 링크 오른쪽 밖으로 나가 있음. 기준선은 콘텐츠 바닥 위 .13em.
-   진짜 ↘ 글자는 항상 숨기고 자리만 남긴다 — 박스 너비(링크 폭)를 그대로 유지하기 위해.
-   평소 밑줄은 "More" 끝까지만: 오른쪽에서 ↘ 칸(.808em) + 앞 공백(.327em) = 1.135em 을 뺀다 (바탕 굵기 300 실측).
-   두께: 밑줄 1.5px → 줄어드는 동안 화살표 1px 로 가늘어짐 */
+
 .plf-arr{visibility:hidden;}
 .plf-draw{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:#f0ede8;pointer-events:none;
   transition:bottom .2s var(--plf-e) .3s,left .2s var(--plf-e) .48s,width .2s var(--plf-e) .48s,height .2s var(--plf-e) .48s,color .15s linear .08s;}
@@ -176,15 +125,13 @@ h1.ht span{color:rgba(240,237,232,.25);}
 @media (prefers-reduced-motion:reduce){.plf-draw,.plf-shaft,.plf-head,.pcard-link-fill:hover .plf-draw,.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:hover .plf-head,.pcard-link-fill:focus-visible .plf-draw,.pcard-link-fill:focus-visible .plf-shaft,.pcard-link-fill:focus-visible .plf-head{transition:none;}}
 
 @media (max-width:760px){
-  /* 760px 이하: 203px 최소값은 데스크톱 모듈이라 2열(2×203+14=420px)이 폰 화면에 안 들어감.
-   → 최소값을 풀고 화면 폭에 맞춘 유동 폭으로 전환 */
+
   .hero-products{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100vw - var(--pad) * 2);}
   .pcard,.pcard.flip{grid-template-columns:1fr;gap:36px;padding:60px 0;}
   .pcard.flip .pcard-img{order:0;}
   .pcard.flip .pcard-text{order:1;}
 }
 
-/* ── 제품 카드 등장 애니메이션 ── */
 .product-section { overflow: hidden; }
 
 .pcard .pcard-img {
@@ -213,8 +160,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
 
 .sec{position:relative;}
 
-
-/* AEGIS 섹션 지형 영상 배경 — ba_air.html 과 동일 */
 .aegis-sec > .aegis-terrain {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center; z-index: 0; pointer-events: none;
@@ -233,7 +178,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
 </head>
 <body>
 
-<!-- NAVBAR -->
 <script src="nav.js"></script>
 
 <section id="hero">
@@ -346,22 +290,19 @@ h1.ht span{color:rgba(240,237,232,.25);}
   </a>
 </section>
 
-<!-- FOOTER -->
 <script src="footer.js"></script>
 
 <script>
-/* ── TERRAIN ── */
+
 (function(){
   var c = document.getElementById('tc');
   var ctx = c.getContext('2d');
   var W, H, t = 0, pts = [];
   var COLS=300, ROWS=60, FOV=380, CAM_Y=160, CAM_Z=-60;
-  var COLS_PER_PX = 1/5; // 픽셀당 열 수 (참조 이미지 기준)
-  var MAX_COLS = 140; // 화면이 아무리 넓어도 점 가로 개수 상한
+  var COLS_PER_PX = 1/5;
+  var MAX_COLS = 140;
   var BASE_W=200, X_SCALE=3.5, TERRAIN_BOTTOM=620;
-  // TERRAIN_BOTTOM도 화면 높이에 비례: REF_H에서 620, 화면 높이 따라 변동
 
-  // ── 저주파: 큰 봉우리/계곡 흐름. 주파수 변조로 비반복.
   function noiseLow(cx,cy){
     return Math.sin(cx*1 + Math.sin(cx*2+cy*.4)*1.3 + cy*.24)*2.2
       + Math.sin(cx*2 + Math.cos(cx*3+cy*.6)*0.9 + cy*.55)*1.6
@@ -392,14 +333,12 @@ h1.ht span{color:rgba(240,237,232,.25);}
   }
   function r2(a,b){return Math.abs(Math.sin(a*127.1+b*311.7)*43758.5)%1;}
 
-  // 참조 해상도 (이미지1 기준) — 모든 스케일링의 기준점
   var REF_W = 1138, REF_H = 900;
 
   function proj(gx,gy,gz){
     var z=gz*FOV+CAM_Z+FOV; if(z<=0)return null;
     var sc=FOV/z;
-    // 가로 스케일을 화면 너비에 비례 (REF_W에서 1배, 넓으면 1.05배 정도까지만 늘려서 항상 화면 채움)
-    // 너무 강하게 비례시키면 좁은 창에서 끝이 잘리니까 약간 보수적으로
+
     var widthFactor = Math.max(W / REF_W, 0.85);
     return{
       x:W*.5+gx*sc*BASE_W*X_SCALE*widthFactor,
@@ -408,12 +347,11 @@ h1.ht span{color:rgba(240,237,232,.25);}
     };
   }
 
-  // 가로 루프 지형 높이 (각도 기반)
   function terrainHeight(gx, gz){
     var angle = (gx + 1) * Math.PI;
     var n = noise(angle, gz * 13);
     var heightScale = 0.5 + gz * 1.7;
-    // 화면 높이에 비례해서 진폭 조정 (REF_H에서 1배)
+
     var heightFactor = H / REF_H;
     var ty = (n * 13 * heightScale + (gz * 55) * 0.65) * heightFactor;
     if(gz > 0.75){
@@ -431,23 +369,21 @@ h1.ht span{color:rgba(240,237,232,.25);}
     pts=[];
     for(var row=0;row<ROWS;row++)for(var col=0;col<COLS;col++){
       var gz=row/(ROWS-1);
-      var wgx_init=(col/(COLS-1)-.5)*2; // 초기 가로 위치 -1~+1
+      var wgx_init=(col/(COLS-1)-.5)*2;
       var n = terrainNoise(wgx_init, gz);
       var ty = terrainHeight(wgx_init, gz);
       var isSp=r2(col*.91,row*.73)<.18;
       var introDelay = (col / (COLS-1)) * 0.55;
       var introDur   = 0.30 + r2(col*.17,row*.53) * 0.15;
-      // 점이 바뀌지 않으면 일정한 값들 미리 계산
+
       var frontFade = Math.min(1.0, Math.pow(gz / 0.10, 1.8));
       var hf = Math.max(0, (n + 2) / 4.5);
       var df = 1 - gz * 0.58;
       var aBase = Math.min(Math.max(.22, (.38 + hf * .40) * df), .95);
-      // 너무 어두운 점은 어차피 안 보임 → skip 플래그
+
       var aFinal = aBase * frontFade;
       var visible = aFinal >= 0.01;
-      // 뒤쪽 점은 정적 처리: 작고 어둡고 진동도 미미해서 캐시로 충분
-      // v5: 기준을 0.55 → 0.8로 후퇴. 인트로 종료 시 캐시로 전환되며 진동이
-      //     멈추는 게 눈에 띄던 중간 거리 점들을 계속 실시간 렌더링한다.
+
       var isStatic = gz > 0.8 && !isSp;
       pts.push({col,row,gz,wgx_init,ty,n,
         frontFade, hf, df, aBase, aFinal, visible, isStatic,
@@ -470,14 +406,14 @@ h1.ht span{color:rgba(240,237,232,.25);}
   function resize(){
     W = window.innerWidth;
     H = window.innerHeight;
-    // ── DPR 캡: 실제 그리기는 1x, CSS 크기만 화면 크기. 레티나에서 픽셀 수 1/4 ~ 1/9
+
     c.width = W;
     c.height = H;
     c.style.width = W + 'px';
     c.style.height = H + 'px';
-    // 화면 너비에 비례해서 COLS 재계산 (점 밀도 일정 유지)
+
     COLS = Math.max(60, Math.min(MAX_COLS, Math.round(W * COLS_PER_PX)));
-    // 화면 높이에 비례해서 TERRAIN_BOTTOM 재계산 (지형 세로 위치)
+
     TERRAIN_BOTTOM = Math.round(H * (620 / 900));
     if(typeof build === 'function' && pts.length > 0){ build(); }
   }
@@ -492,9 +428,9 @@ h1.ht span{color:rgba(240,237,232,.25);}
   });
   document.getElementById('hero').addEventListener('mouseleave',function(){ mx=-9999; my=-9999; });
 
-  var INTRO_TOTAL = 1.0; // 전체 인트로 1초
+  var INTRO_TOTAL = 1.0;
 
-  var DRIFT_SPEED = 0.06; // 초당 가로 이동량
+  var DRIFT_SPEED = 0.06;
 
   function frame(){
     t+=.016;
@@ -502,20 +438,15 @@ h1.ht span{color:rgba(240,237,232,.25);}
 
     var shift = t * DRIFT_SPEED;
 
-    // 인트로 끝난 직후 한 번 정적 캐시 생성
     if(!staticReady && t > INTRO_TOTAL + 0.05){
       buildStaticCache();
     }
 
-    // 정적 캐시 그리기 (인트로 끝났을 때만)
     if(staticReady){
-      // shift만큼 캐시를 좌측으로 이동시켜서 화면에 복사
-      // wgx_init=-1이 화면 좌단(x=0), staticCanvas에서는 staticX = (-1+2)*W/2 = W/2
-      // drift 적용 후 wgx = wgx_init - shift, 그러나 staticCanvas는 wgx_init 기준
-      // 화면에 그릴 때: 캔버스의 (W/2 + shift*W/2) 위치부터 W만큼 잘라서 그림
-      var shiftMod = ((shift % 2) + 2) % 2; // 0~2 범위
-      var srcX = W * 0.5 + shiftMod * W * 0.5; // 0.5W ~ 1.5W
-      // 한 번에 못 그리면 두 번으로 나눠 그림 (wrap)
+
+      var shiftMod = ((shift % 2) + 2) % 2;
+      var srcX = W * 0.5 + shiftMod * W * 0.5;
+
       if(srcX + W <= W * 2){
         ctx.drawImage(staticCanvas, srcX, 0, W, H, 0, 0, W, H);
       } else {
@@ -525,8 +456,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
       }
     }
 
-    // 3초마다 커서 위치에서 펄스 발생 — 화면 Y로 gz 정확히 역산
-    // 펄스의 pgx는 'wgx 공간'(점의 현재 화면 좌표 공간)에 저장 → drift와 자연스럽게 동기화
     if(mx>0 && t-lastPulseT>3.0){
       var GY_OFFSET = 38;
       var yHorizon = H - TERRAIN_BOTTOM;
@@ -538,10 +467,10 @@ h1.ht span{color:rgba(240,237,232,.25);}
         bestGz = Math.max(0.01, Math.min(0.99, (z_est - CAM_Z - FOV) / FOV));
       }
       var sc0 = FOV / (bestGz * FOV + CAM_Z + FOV);
-      // (W/680) 제거된 proj에 맞춰 역산도 수정
+
       var widthFactor = Math.max(W / REF_W, 0.85);
       var pgx_screen = (mx - W * 0.5) / (sc0 * BASE_W * X_SCALE * widthFactor);
-      // 이 시점의 절대 wgx_init 좌표로 저장 → 시간이 흘러도 같은 점에 박혀있음
+
       var pgx_world = pgx_screen + shift;
       pulses.push({pgx:pgx_world, pgz:bestGz, r:0, maxR:2.8, born:t});
       lastPulseT = t;
@@ -555,11 +484,9 @@ h1.ht span{color:rgba(240,237,232,.25);}
     }
     pulses=ap;
 
-    // fillStyle 캐싱
     var fillCache = frame.fillCache || (frame.fillCache = {});
     var lastAQ = -1;
 
-    // 루프 밖 사전 계산 — 점마다 반복 불필요
     var widthFactor = Math.max(W / REF_W, 0.85);
     var xScale = BASE_W * X_SCALE * widthFactor;
     var yBase = H - TERRAIN_BOTTOM;
@@ -571,16 +498,13 @@ h1.ht span{color:rgba(240,237,232,.25);}
     for(var row=ROWS-1;row>=0;row--)for(var col=0;col<COLS;col++){
       var p=pts[row*COLS+col];
 
-      // 보이지 않는 점 빠른 skip
       if(!introActive && !p.visible) continue;
-      // 정적 점은 캐시에서 그렸으므로 skip (단 인트로 중에는 동적 그리기)
+
       if(!introActive && p.isStatic && staticReady) continue;
 
-      // 점의 현재 화면 가로 위치 (drift 적용 + wrap)
       var wgx_raw = p.wgx_init - shift;
       var wgx = ((wgx_raw + 1) % 2 + 2) % 2 - 1;
 
-      // 인트로 처리
       var introOffsetY = 0, introAlpha = 1;
       if(introActive){
         var elapsed = t - p.introDelay;
@@ -593,7 +517,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
         introAlpha = progress * 2.5; if(introAlpha > 1) introAlpha = 1;
       }
 
-      // 진동
       var amp=p.ab+(Math.sin(t*p.as+p.ap)*.5+.5)*p.ar;
       var vy=Math.sin(t*p.vs+p.vp)*amp;
       if(p.isSp){
@@ -601,13 +524,12 @@ h1.ht span{color:rgba(240,237,232,.25);}
         if(env>.75) vy+=(env-.75)/.25*p.sa*Math.sin(t*p.svs+p.vp);
       }
 
-      // 펄스: 빠른 거리 컬링 (sqrt 호출 전에 사각형 박스 체크)
       var pulsesLen = pulses.length;
       if(pulsesLen > 0){
         for(var pi=0;pi<pulsesLen;pi++){
           var pulse=pulses[pi];
           var dgx=p.wgx_init-pulse.pgx, dgz=p.gz-pulse.pgz;
-          // 가로 wrap 처리: 한 폭(=2) 이상 떨어진 거리는 반대편으로 짧게
+
           if(dgx > 1) dgx -= 2;
           else if(dgx < -1) dgx += 2;
           var absDgx = dgx < 0 ? -dgx : dgx;
@@ -626,7 +548,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
         }
       }
 
-      // 인라인 proj
       var z = p.gz * FOV + fovCamZFov;
       if(z <= 0) continue;
       var sc = FOV / z;
@@ -634,14 +555,12 @@ h1.ht span{color:rgba(240,237,232,.25);}
       var py = yBase - ((p.ty + vy) - CAM_Y) * sc + introOffsetY;
       if(px < -20 || px > W + 20 || py < -10 || py > H + 10) continue;
 
-      // 미리 계산된 hf, frontFade, aBase 사용
       var sizeFactor = Math.max(1.0, W / REF_W);
       var r = Math.max(.7, sc) * (0.88 + p.hf * .2) * sizeFactor;
       if(r > 2.0 * sizeFactor) r = 2.0 * sizeFactor;
       var a = p.aFinal * introAlpha;
       if(a < 0.01) continue;
 
-      // 호버 효과
       if(inverseHover){
         var ddx=(px-mx)/40, ddy=(py-my)/20;
         var dd=Math.sqrt(ddx*ddx+ddy*ddy);
@@ -654,7 +573,7 @@ h1.ht span{color:rgba(240,237,232,.25);}
       }
 
       ctx.beginPath(); ctx.arc(px,py,r,0,6.283);
-      // 알파를 0.01 단위로 양자화하여 같은 값이면 fillStyle 변경 안 함
+
       var aQ = (a * 100) | 0;
       if(aQ !== lastAQ){
         ctx.fillStyle = fillCache[aQ] || (fillCache[aQ] = 'rgba(240,237,232,' + (aQ/100) + ')');
@@ -663,7 +582,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
       ctx.fill();
     }
 
-    // 펄스 링 — 화면 양 끝 wrap을 위해 -2, 0, +2 세 위치에 그림
     for(var pi=0;pi<pulses.length;pi++){
       var pulse=pulses[pi];
       var fade=Math.pow(1-pulse.r/pulse.maxR,1.5);
@@ -673,10 +591,10 @@ h1.ht span{color:rgba(240,237,232,.25);}
       ctx.strokeStyle='rgba(240,237,232,'+(fade*.15)+')';
       ctx.lineWidth=0.8;
       var segs=32;
-      // 펄스 중심을 -2, 0, +2 시프트해서 세 번 그림 (화면 안 들어오는 것만 보임)
+
       for(var shiftIdx=0; shiftIdx<3; shiftIdx++){
         var centerGx = pulse_screen_gx + (shiftIdx - 1) * 2;
-        // 빠른 컬링: 링이 화면 가로 범위(-1.2 ~ +1.2)에 절대 못 들어오면 skip
+
         if(centerGx + pulse.r < -1.2 || centerGx - pulse.r > 1.2) continue;
         ctx.beginPath();
         var first=true;
@@ -708,26 +626,21 @@ h1.ht span{color:rgba(240,237,232,.25);}
     requestAnimationFrame(frame);
   }
 
-  // ── 정적 캐시: 뒤쪽 점들을 한 번 그려두고 재사용
-  // 가로 2폭(-2~+2) 영역에 그려두고, drift에 따라 화면에 잘라서 복사
   var staticCanvas = document.createElement('canvas');
   var staticCtx = staticCanvas.getContext('2d');
   var staticReady = false;
 
   function buildStaticCache(){
-    staticCanvas.width  = W * 2;  // 가로 2배 (drift wrap 대응)
+    staticCanvas.width  = W * 2;
     staticCanvas.height = H;
     staticCtx.clearRect(0,0,W*2,H);
 
-    // 점 그리기 (진동 없음, 펄스 없음, 인트로 이미 끝났다 가정)
     var widthFactor = Math.max(W / REF_W, 0.85);
     var xScale = BASE_W * X_SCALE * widthFactor;
     var yBase = H - TERRAIN_BOTTOM;
     var halfW = W * 0.5;
     var fovCamZFov = CAM_Z + FOV;
 
-    // wgx 좌표 -2 ~ +2 를 staticCanvas 가로 0 ~ 2W에 매핑
-    // staticX = (wgx + 2) / 4 * (W*2) = (wgx + 2) * W * 0.5
     var lastAQ = -1;
     var fillCache = {};
 
@@ -735,18 +648,15 @@ h1.ht span{color:rgba(240,237,232,.25);}
       var p=pts[row*COLS+col];
       if(!p.isStatic || !p.visible) continue;
 
-      // 점 두 번 그리기: wgx_init과 wgx_init+2 (wrap 대응)
       for(var pass=0; pass<2; pass++){
-        var wgx = p.wgx_init + (pass === 0 ? 0 : 2); // 0 또는 +2 시프트
-        // wgx 범위는 -1~+1 또는 +1~+3 → staticCanvas의 0~2W 영역으로 매핑
-        var staticX = (wgx + 2) * W * 0.5; // -2 → 0, +2 → 2W
+        var wgx = p.wgx_init + (pass === 0 ? 0 : 2);
+
+        var staticX = (wgx + 2) * W * 0.5;
 
         var z = p.gz * FOV + fovCamZFov;
         if(z <= 0) continue;
         var sc = FOV / z;
-        // 일반 좌표계에서 px = halfW + wgx * sc * xScale
-        // staticX 기준으로는 staticX는 이미 절대 위치
-        // 단, sc, ty 영향은 동일
+
         var py = yBase - (p.ty - CAM_Y) * sc;
 
         if(staticX < -20 || staticX > W*2 + 20) continue;
@@ -778,7 +688,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
   resize(); build(); frame();
 })();
 
-/* ── DECODE + FADE ── */
 (function(){
   var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
   var TMS=500,INT=30,TF=Math.floor(TMS/INT);
@@ -786,7 +695,7 @@ h1.ht span{color:rgba(240,237,232,.25);}
     var orig=el.textContent.trim(),len=orig.length,done=[],f=0,rev=0;
     for(var i=0;i<len;i++)done.push(false);
     var rs=Math.floor(TF*.25);
-    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     var nsIdx=[]; for(var i=0;i<len;i++) if(orig[i]!=' ') nsIdx.push(i);
     var preCount=Math.floor(nsIdx.length/2);
     for(var i=0;i<preCount;i++) done[nsIdx[i]]=true;
@@ -814,13 +723,13 @@ h1.ht span{color:rgba(240,237,232,.25);}
 
 </script>
 <script>
-// ── 대문 제품 박스: 인트로(흰색 채우기 + decode) + 클릭 스크롤
+
 (function(){
   var btns = document.querySelectorAll('.hp-btn');
   var CHARS = '!<>-_\\/[]{}—=+*^?#________';
   function decodeText(el, target){
     var len = target.length, frame = 0, totalFrames = 14;
-    /* 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     var half = Math.floor(len/2), back = Math.max(1, len-half);
     var iv = setInterval(function(){
       frame++;
@@ -839,7 +748,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
     }, 35);
   }
 
-  // 클릭 → 해당 카드로 스크롤
   btns.forEach(function(b){
     b.addEventListener('click', function(){
       var id = b.getAttribute('data-target');
@@ -848,7 +756,6 @@ h1.ht span{color:rgba(240,237,232,.25);}
     });
   });
 
-  // 시작: 좌→우 순서로 박스 채워지고, 끝나면 텍스트 decode
   function startIntro(){
     btns.forEach(function(b, i){
       var tagEl = b.querySelector('.hp-tag');

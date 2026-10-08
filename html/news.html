@@ -1,18 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- news.html — v13 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- news.html — v12 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: 문서/가이드/반응형_단위가이드.md -->
-<!-- news.html — v11 (2026-09-09): 미사용 코드 제거 — .page-eyebrow(2곳 중복) / .search-input -->
-<!-- news.html — v9 (2026-09-03): 미사용 CSS 제거 (3블록/3줄) — .nav-logo, .fl, #ba-nav .nav-logo -->
-<!-- news.html — v8 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
-<!-- news.html — v9 (2026-09-04): 토글 버튼 선택자 변경 (#ba-nav .nav-toggle → #ba-toggle, nav.js v11 대응) -->
-<!-- news.html — v8 (2026-09-04): 우측 드로어 전환에 맞춰 스크림/패널 배경 분리 (nav.js v10 대응) -->
-<!-- news.html — v7 (2026-09-04): 햄버거 메뉴·전체화면 오버레이 밝은 테마 오버라이드 추가 (nav.js v9 대응) -->
-<!-- news.html — v6 (2026-09-02): 메뉴바 하단 구분선 제거 + 배경 불투명 처리(#fff) -->
-<!--   구분선을 없애자 rgba(255,255,255,.95) 의 5% 투명도로 스크롤 콘텐츠가 -->
-<!--   메뉴바를 비쳐 보이는 현상이 드러나 배경을 불투명으로 바꿈 -->
-<!-- news.html — v5 (2026-09-02): 메뉴바 ABOUT US 테두리 박스 제거 — 다른 메뉴 항목과 같은 텍스트 링크로 통일 -->
-<!-- news.html — v4 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #ffffff + color-scheme light -->
+
 <html lang="en">
 <head>
 <script src="lang.js"></script>
@@ -22,13 +10,10 @@
 <title>BA Solutions - News and Insight</title>
 <style>
 
-/*page eyebrow 서체 */
-
-
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#000;color:#f0ede8;}
 :root{
-  --u:calc(min(100vw, 1440px) / 1440);   /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
+  --u:calc(min(100vw, 1440px) / 1440);
   --bg:#ffffff;
   --bg2:#f2f2f2;
   --ink:#111;
@@ -41,11 +26,9 @@
 }
 body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-/* HEADER */
 #page-header{padding:220px var(--pad) 56px;border-bottom:none;}
 #page-header h1{font-size:max(36px, calc(68 * var(--u)));font-weight:700;letter-spacing:-.01em;line-height:1.05;color:var(--ink);}
 
-/* SEARCH */
 #search-bar{background:#f0f0f0;padding:18px var(--pad);display:flex;align-items:center;}
 .search-inner{display:flex;align-items:center;gap:14px;border:1px solid #111;flex:1;padding:14px 18px;}
 .search-icon{width:16px;height:16px;flex-shrink:0;}
@@ -53,7 +36,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 #search-input{background:#f0f0f0;border:none;outline:none;font-size:10px;letter-spacing:.15em;color:#111;width:100%;font-family:'Michroma', 'Helvetica Neue', Helvetica, sans-serif;padding:0;}
 #search-input::placeholder{color:#888;letter-spacing:.2em;}
 
-/* NEWS LIST */
 #news-list{padding:0 var(--pad);}
 .news-item{display:grid;grid-template-columns:1fr auto;align-items:start;padding:36px 0;border-bottom:0.5px solid var(--line);gap:40px;transition:background .2s;cursor:default;}
 .news-item:hover{background:rgba(0,0,0,.02);}
@@ -66,7 +48,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 .read-more-btn:hover{background:var(--ink);color:#f0ede8;}
 .read-more-btn .arr{font-size:11px;}
 
-/* FEATURED NEWS ITEM (with image) */
 .news-item.featured{grid-template-columns:480px 1fr auto;padding:48px 0;gap:48px;}
 .ni-image{width:480px;height:280px;overflow:hidden;background:var(--bg2);}
 .ni-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s ease;}
@@ -78,7 +59,6 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 .ni-thumb{width:120px;height:80px;flex-shrink:0;overflow:hidden;background:var(--bg2);}
 .ni-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 
-/* 반응형: 860px 이하에서 대문 기사는 사진 위, 글 아래로 세로 스택 */
 @media (max-width:860px){
   .news-item.featured{grid-template-columns:1fr;gap:22px;padding:36px 0;}
   .news-item.featured .ni-image{width:100%;height:auto;aspect-ratio:16/9;}
@@ -86,14 +66,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
   .news-item.featured .ni-right{height:auto;align-items:flex-start;}
 }
 
-/* PAGINATION */
 #pagination{padding:48px var(--pad);display:flex;align-items:center;justify-content:center;gap:4px;border-top:none;}
 .pg{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:0;color:var(--ink2);cursor:pointer;border:0.5px solid transparent;transition:all .3s;text-decoration:none;}
 .pg:hover{border-color:var(--line);color:var(--ink);}
 .pg.act{border-color:var(--ink);color:var(--ink);font-weight:700;}
 .pg-sep{font-size:11px;color:var(--ink3);padding:0 4px;}
 
-/* FADE */
 .fade-in{opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;}
 .fade-in.visible{opacity:1;transform:translateY(0);}
 </style>
@@ -101,9 +79,8 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 </head>
 <body>
 
-<!-- NAVBAR -->
 <script src="nav.js"></script>
-<!-- 뉴스 페이지 전용: 흰색 메뉴바 오버라이드 (다른 페이지 nav.js는 그대로 검정 유지) -->
+
 <style>
 #ba-nav{background:#fff;border-bottom:none;}
 #ba-nav .logo-wrap{color:#111;}
@@ -112,13 +89,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 #ba-nav .nav-links a:hover{color:#111;}
 #ba-nav .nav-about{border:none;background:transparent;color:rgba(0,0,0,.5);}
 #ba-nav .nav-about:hover{background:transparent;color:#111;}
-/* 햄버거·오버레이도 밝은 테마로 (nav.js v9) */
+
 #ba-toggle{color:#111;}
 #ba-menu{background:rgba(255,255,255,.45);}
 #ba-menu .panel{background:#fff;}
 #ba-menu a{color:rgba(0,0,0,.5);}
 #ba-menu a:hover,#ba-menu a:focus-visible{color:#111;}
-/* 언어 토글(nav.js v18)도 밝은 테마로 — 비선택 .5 검정, 선택·호버 #111 */
+
 </style>
 
 <div id="page-header">
@@ -133,12 +110,11 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 </div>
 
 <div id="news-list">
-  <!-- JS로 렌더링 -->
+
 </div>
 
 <div id="pagination" aria-live="polite"></div>
 
-<!-- FOOTER -->
 <script src="footer.js"></script>
 
 <script src="news-data.js"></script>

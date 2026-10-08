@@ -1,4 +1,4 @@
-/* Pre-rendered terrain: one responsive source, no per-frame JavaScript. */
+
 (function () {
   const section = document.querySelector('.aegis-sec');
   const video = section && section.querySelector('.aegis-terrain');
@@ -24,7 +24,7 @@
   }
   video.muted = true;
   video.addEventListener('loadedmetadata', function () {
-    // Each scene holds for 3 seconds before morphing; select a stable start.
+
     const start = Math.floor(Math.random() * 9) * 4.2;
     if (start > 0) {
       video.addEventListener('seeked', function () { prepared = true; update(); }, { once: true });

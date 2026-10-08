@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- ba_air.html — v16 (2026-09-29): 한/영 병기(data-i18n). 소개·섹션 설명·카드 설명·AEGIS 문단만 병기, 대제목 슬로건·제품명·View More 버튼·대문자 CTA는 영문 유지 -->
-<!-- ba_air.html — v15 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
-<!-- ba_air.html — v14 (2026-09-15): Spider 링크도 Interceptor 와 같은 View More(채움+화살표) 버튼으로 통일 -->
-<!-- ba_air.html — v13 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- ba_air.html — v12 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px) -->
-<!-- ba_air.html — v11 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A+B형) -->
-<!-- ba_air.html — v10 (2026-09-03): 미사용 CSS 제거 (6블록/6줄) — .nav-logo, .hero-fade, .hero-tag, .hero-tag::before, .sec-alt, .fl -->
-<!-- ba_air.html — v9 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
-<!-- ba_air.html — v8 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
 
 <html lang="en" data-i18n>
 <head>
@@ -17,21 +8,18 @@
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <title>BA Solutions — AIR POWER</title>
-<!-- AEGIS CTA 블록 공용 스타일 (ba_land/ba_sea 와 공유). 페이지 자체 스타일보다 먼저 로드할 것 -->
+
 <link rel="stylesheet" href="aegis-cta.css">
 <style>
-/* PRODUCT LINEUP 섹션 타이틀*/
+
 .product-section .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-/* 제품 카드 이름 2개 (AEGIS Interceptor, AEGIS Spider) */
 .pcard-name {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-/* HOW AEGIS WORKS 섹션 — 다른 섹션과 동일한 패딩 (좌우/상하 여백) */
-/* .sec.aegis-sec : .sec 규칙(하단 나중 정의)보다 우선하도록 specificity를 높임 */
 .sec.aegis-sec {
   padding: max(20px, calc(60 * var(--u))) var(--pad) 0 var(--pad);
   border-top: none;
@@ -40,7 +28,6 @@
   isolation: isolate;
 }
 
-/* HOW AEGIS WORKS 타이틀*/
 .aegis-sec .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
   color: #f0ede8;
@@ -48,14 +35,12 @@
 .aegis-sec .sec-desc {
   color: #f0ede8;
 }
-/* .aegis-cta-tag 의 Michroma 지정은 aegis-cta.css 로 이관됨 */
 
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#f0ede8;color:#000;}
-/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
+
 :root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)))}
 
-/* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
 html{scrollbar-width:none;}
 html::-webkit-scrollbar{display:none;}
 body{
@@ -63,7 +48,6 @@ body{
   color:#f0ede8;
   font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-/* HERO — AIR 망점 배경 */
 #hero{height:100vh;min-height:600px;position:relative;overflow:hidden;background:#000000;}
 #dot-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
 .hero-content{position:absolute;bottom:90px;left:var(--pad);z-index:2;}
@@ -80,26 +64,19 @@ h1.ht span{color:rgba(255,255,255,.25);}
 .decode{opacity:0;transition:opacity .1s;}
 .decode.visible{opacity:1;}
 
-/* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_land/ba_sea 와 공유) ── */
-
-
-/* ── 대문 제품 박스 (가로 2개, 흰색 채우기 + decode) ── */
-/* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (AEGIS Spider 버튼 기준).
-   컨테이너 폭 = 트랙 합: air 2×203+14=420 / sea 3×203+28=637 / land 4×203+42=854 */
 .hero-products{display:grid;grid-template-columns:repeat(2,minmax(203px,1fr));gap:14px;margin-top:8px;}
-.hp-btn{position:relative;height:48px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}
+.hp-btn{position:relative;height:42px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}
 .hp-fill{position:absolute;inset:0;background:#f0ede8;transform-origin:left center;transform:scaleX(0);transition:transform .55s cubic-bezier(.2,.7,.2,1);}
 .hp-btn.hp-filled{border-color:transparent;}
 .hp-btn.hp-filled .hp-fill{transform:scaleX(1);}
 .hp-label{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;height:100%;padding:0 16px;text-align:left;opacity:0;transition:opacity .25s;}
 .hp-btn.hp-revealed .hp-label{opacity:1;}
 .hp-tag{display:none;}
-.hp-name{font-size:13px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
+.hp-name{font-size:15px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
 .hp-btn.hp-btn.hp-revealed:hover .hp-name{background-size:100% 1.5px;}
 .hp-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#000;opacity:0;transition:opacity .3s,right .3s;z-index:2;}
 .hp-btn.hp-revealed:hover .hp-arrow{opacity:.7;right:10px;}
 
-/* ── 큰 제품 카드 (이미지 + 텍스트 좌우 분할) ── */
 .product-section{padding:140px var(--pad);border-top:none;overflow:hidden;}
 .product-section .sec-title{margin-bottom:16px;}
 .product-list{display:flex;flex-direction:column;gap:0;margin-top:80px;}
@@ -118,34 +95,16 @@ h1.ht span{color:rgba(255,255,255,.25);}
 .pcard-name{font-size:max(28px, calc(44 * var(--u)));font-weight:700;letter-spacing:.02em;line-height:1.05;margin-bottom:22px;}
 .pcard-desc{font-size:20px;color:rgba(255,255,255,.9);line-height:1.3;font-weight:400;}
 
-/* View More 링크 (전 제품 공통 — ba_air/ba_land/ba_sea 동일) — hover 시 박스가 아래에서 차오르고 글씨는 검정·굵게.
-   끊김 방지 구조: 박스+검정 글씨를 한 겹(.plf-cover)에 함께 그려두고 clip-path 하나만 움직인다.
-   · 이전 방식(scaleY + color/font-weight 전환)은 끝날 때 합성 레이어가 풀리며 박스 가장자리·글자 렌더링이
-     한 번 바뀌었고, font-weight 는 중간 굵기가 없는 폰트라 도중에 굵기가 툭 바뀌었다.
-   · 이제 바탕 글씨는 그대로 두고 덮개만 드러나므로, 박스와 검정 글씨가 같은 선으로 함께 차오른다.
-   채움 박스는 좌우 8px 까지만 확장: .pcard-text 의 clip-path 가 padding(8px) 밖을 잘라내기 때문
-   위치: 텍스트 영역 우측 끝 (block + fit-content + margin-left:auto) */
 .pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(13px, calc(18 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
-/* 덮개: 바탕 글씨와 같은 자리에 글자가 오도록 top/left 음수만큼 padding 으로 되돌린다.
-   상하 여백(.42em / .3em)은 대문자 윗선~기준선 중앙과 박스 중앙이 일치하는 값 (Helvetica Neue 기준, "View More ↘"는 하강부 없음)
-   덮개는 화살표를 따로 움직이려고 ::before 대신 실제 요소(.plf-cover)로 둔다 */
+
 .plf-cover{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:#f0ede8;color:#000;font-weight:var(--plf-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none;}
 .pcard-link-fill:hover .plf-cover,.pcard-link-fill:focus-visible .plf-cover{clip-path:inset(0 0 0 0);}
-/* 2026-10-08 사용자 요청: TECH CTA(.cta-arrow)와 같은 값 — 글자 15→18(최소 10→13px, 사용자 요청), 자간 0, 흰 박스는 글자 높이로 자르고 화살표 오른쪽만 띄어쓰기 한 칸(.28em), 키보드 포커스에도 같은 효과 */
+
 .pcard-link-fill{letter-spacing:0;clip-path:inset(0 -.28em 0 0);}
-/* 굵은 글자 폭을 미리 확보 — 덮개 글씨가 박스 밖으로 넘치지 않게 */
+
 .plf-txt{display:inline-grid;}
 .plf-txt::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--plf-weight);height:0;overflow:hidden;visibility:hidden;}
-/* 밑줄 → 화살표 — hover 시 밑줄(.plf-draw)이 ↘ 로 접힌다. 순서:
-   ① 밑줄이 ↘ 글자의 가로 범위(폭 .68em)로 줄어듦  ② 박스 위 화살표 높이로 올라와 "-"
-   ③ 45° 돌며 대각선 길이(.87em)로 늘어나 "\"  ④ 끝에서 두 선이 돋아나 ↘
-   hover 해제 시에는 역순. 속성마다 transition-delay 가 하나뿐이라, 줄어듦/상승은 바깥(.plf-draw),
-   회전/길이는 안쪽(.plf-shaft), 화살촉은 .plf-head 가 나눠 맡는다.
-   치수는 Helvetica Neue ↘ 글리프 실측(em): 잉크 x .03~.71, 대각선 중심 기준선 위 .415em, 화살촉 길이 .25em.
-   덮개(굵기 400)의 ↘ 는 x0 = 100% − .638em 에서 시작 — 덮개 글씨가 바탕(300)보다 .17em 넓어 링크 오른쪽 밖으로 나가 있음. 기준선은 콘텐츠 바닥 위 .13em.
-   진짜 ↘ 글자는 항상 숨기고 자리만 남긴다 — 박스 너비(링크 폭)를 그대로 유지하기 위해.
-   평소 밑줄은 "More" 끝까지만: 오른쪽에서 ↘ 칸(.808em) + 앞 공백(.327em) = 1.135em 을 뺀다 (바탕 굵기 300 실측).
-   두께: 밑줄 1.5px → 줄어드는 동안 화살표 1px 로 가늘어짐 */
+
 .plf-arr{visibility:hidden;}
 .plf-draw{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:#f0ede8;pointer-events:none;
   transition:bottom .2s var(--plf-e) .3s,left .2s var(--plf-e) .48s,width .2s var(--plf-e) .48s,height .2s var(--plf-e) .48s,color .15s linear .08s;}
@@ -186,8 +145,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
 }
 
 @media (max-width:760px){
-  /* 760px 이하: 203px 최소값은 데스크톱 모듈이라 2열(2×203+14=420px)이 폰 화면에 안 들어감.
-   → 최소값을 풀고 화면 폭에 맞춘 유동 폭으로 전환 */
+
   .hero-products{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100vw - var(--pad) * 2);}
   .pcard,.pcard.flip{grid-template-columns:1fr;gap:36px;padding:60px 0;}
   .pcard.flip .pcard-img{order:0;}
@@ -196,8 +154,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
 
 .sec{position:relative;}
 
-
-/* Nine-terrain video; title-free, flat water, 39-second loop. */
 .aegis-sec > .aegis-terrain {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center; z-index: 0; pointer-events: none;
@@ -293,91 +249,85 @@ h1.ht span{color:rgba(255,255,255,.25);}
 <script src="footer.js"></script>
 
 <script>
-/* ── 망점 패턴 (AIR 배경) — 영상 없이 기존 망점 효과 유지 ── */
+
 (function(){
   var c=document.getElementById('dot-canvas');
   var ctx=c.getContext('2d');
   var W,H,grid=[],started=false,animTime=0;
-  var GAP=80; // 망점 간격
-  var CROSS_GAP=320; // 십자 간격 (GAP의 4배 = 점 3개 사이)
-  var DOT_R=0.8; // 더 작은 점 반지름
-  var CROSS_SIZE=32; // 십자 크기 (더 크게)
-  var OFFSET_X=-130, OFFSET_Y=-80; // 망점+십자 전체 위치 이동값(px). 예: OFFSET_X=40; OFFSET_Y=-20;
-  
-  // 기준 화면 크기 (1920x1080 기준)
+  var GAP=80;
+  var CROSS_GAP=320;
+  var DOT_R=0.8;
+  var CROSS_SIZE=32;
+  var OFFSET_X=-130, OFFSET_Y=-80;
+
   var REF_WIDTH=1920;
   var REF_HEIGHT=1080;
-  var REF_COLS=Math.floor(REF_WIDTH/GAP); // 기준 열 개수
-  var REF_ROWS=Math.floor(REF_HEIGHT/GAP); // 기준 행 개수
+  var REF_COLS=Math.floor(REF_WIDTH/GAP);
+  var REF_ROWS=Math.floor(REF_HEIGHT/GAP);
   var REF_CROSS_COLS=Math.floor(REF_WIDTH/CROSS_GAP);
   var REF_CROSS_ROWS=Math.floor(REF_HEIGHT/CROSS_GAP);
-  
-  // 기준 속도 (1920x1080에서의 속도)
-  var REF_DOT_DUR=1500; // 망점 전체 애니메이션
-  var REF_CROSS_DUR=80; // 십자가 하나당 시간
-  
-  // 동적 속도 (현재 화면 크기에 맞춤)
+
+  var REF_DOT_DUR=1500;
+  var REF_CROSS_DUR=80;
+
   var DOT_ANIM_DUR=REF_DOT_DUR;
   var CROSS_ANIM_DUR=REF_CROSS_DUR;
   var CROSS_ANIM_START=1600;
-  
+
   function calcSpeed(){
     var curCols=Math.floor(W/GAP);
     var curRows=Math.floor(H/GAP);
     var curCrossCols=Math.floor(W/CROSS_GAP);
     var curCrossRows=Math.floor(H/CROSS_GAP);
-    
-    // 점 개수 비율로 망점 애니메이션 시간 조정
+
     var dotRatio=(curCols*curRows)/(REF_COLS*REF_ROWS);
-    DOT_ANIM_DUR=REF_DOT_DUR*Math.sqrt(dotRatio); // 제곱근으로 완만하게
-    
-    // 십자가 개수 비율로 십자가 각 애니메이션 시간 조정
+    DOT_ANIM_DUR=REF_DOT_DUR*Math.sqrt(dotRatio);
+
     var crossCount=curCrossCols*curCrossRows;
     var refCrossCount=REF_CROSS_COLS*REF_CROSS_ROWS;
     var crossRatio=crossCount/refCrossCount;
-    // 총 십자 애니메이션 시간을 유지하려면 개수가 늘어날수록 각 십자 시간이 줄어야 함
+
     CROSS_ANIM_DUR=REF_CROSS_DUR/Math.sqrt(crossRatio);
-    
-    // 십자가 시작 시간도 망점 종료에 맞춤
+
     CROSS_ANIM_START=DOT_ANIM_DUR+100;
   }
-  
+
   function build(){
     grid=[];
     var maxX=0,maxY=0;
-    // 망점 그리드
-    for(var x=GAP;x<W+GAP+CROSS_GAP;x+=GAP){ // 간격(GAP)은 그대로, 상한만 +CROSS_GAP → 십자 확장 구간까지 점도 채움
+
+    for(var x=GAP;x<W+GAP+CROSS_GAP;x+=GAP){
       for(var y=GAP;y<H+GAP;y+=GAP){
         grid.push({x:x,y:y,type:'dot',gx:x,gy:y});
         if(x>maxX)maxX=x;
         if(y>maxY)maxY=y;
       }
     }
-    // 정규화된 위치 계산 (0~1)
+
     for(var i=0;i<grid.length;i++){
       grid[i].nx=grid[i].gx/maxX;
       grid[i].ny=grid[i].gy/maxY;
     }
   }
-  
+
   function draw(){
     ctx.fillStyle='#000000';
     ctx.fillRect(0,0,W,H);
 
     ctx.save();
-    ctx.translate(OFFSET_X, OFFSET_Y);   // ← 망점+십자 전체를 함께 이동 (배경 칠은 위에서 끝나 영향 없음)
+    ctx.translate(OFFSET_X, OFFSET_Y);
     for(var i=0;i<grid.length;i++){
       var g=grid[i];
       var alpha=1;
-      
+
       if(g.type==='dot'){
-        // 망점 순차 등장 (행 단위: 좌→우 완료 후 다음 행)
-        var rowDelay=g.ny*DOT_ANIM_DUR*0.7; // 행 지연
-        var colDelay=g.nx*DOT_ANIM_DUR*0.1; // 열 내 지연 (비례)
+
+        var rowDelay=g.ny*DOT_ANIM_DUR*0.7;
+        var colDelay=g.nx*DOT_ANIM_DUR*0.1;
         var dotDelay=rowDelay+colDelay;
         var dotProgress=(animTime-dotDelay)/200;
         alpha=Math.max(0,Math.min(1,dotProgress));
-        
+
         if(alpha>0){
           ctx.globalAlpha=alpha;
           ctx.beginPath();
@@ -395,29 +345,28 @@ h1.ht span{color:rgba(255,255,255,.25);}
   function animate(){
     animTime=Date.now()-startTime;
     draw();
-    
+
     if(animTime<CROSS_ANIM_START+CROSS_ANIM_DUR*50){
       requestAnimationFrame(animate);
     } else {
       draw();
     }
   }
-  
+
   function resize(){
     W=c.width=window.innerWidth;
     H=c.height=window.innerHeight;
-    calcSpeed(); // 화면 크기에 맞춰 속도 재계산
+    calcSpeed();
     build();
     draw();
   }
-  
+
   window.addEventListener('resize',resize);
   resize();
   startTime=Date.now();
   animate();
 })();
 
-/* ── DECODE + FADE ── */
 (function(){
   var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
   var TMS=500,INT=30,TF=Math.floor(TMS/INT);
@@ -425,7 +374,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
     var orig=el.textContent.trim(),len=orig.length,done=[],f=0,rev=0;
     for(var i=0;i<len;i++)done.push(false);
     var rs=Math.floor(TF*.25);
-    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     var nsIdx=[]; for(var i=0;i<len;i++) if(orig[i]!=' ') nsIdx.push(i);
     var preCount=Math.floor(nsIdx.length/2);
     for(var i=0;i<preCount;i++) done[nsIdx[i]]=true;
@@ -452,13 +401,13 @@ h1.ht span{color:rgba(255,255,255,.25);}
 })();
 </script>
 <script>
-// ── 대문 제품 박스: 인트로(흰색 채우기 + decode) + 클릭 스크롤
+
 (function(){
   var btns = document.querySelectorAll('.hp-btn');
   var CHARS = '!<>-_\\/[]{}—=+*^?#________';
   function decodeText(el, target){
     var len = target.length, frame = 0, totalFrames = 14;
-    /* 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     var half = Math.floor(len/2), back = Math.max(1, len-half);
     var iv = setInterval(function(){
       frame++;
@@ -477,7 +426,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
     }, 35);
   }
 
-  // 클릭 → 해당 카드로 스크롤
   btns.forEach(function(b){
     b.addEventListener('click', function(){
       var id = b.getAttribute('data-target');
@@ -486,22 +434,19 @@ h1.ht span{color:rgba(255,255,255,.25);}
     });
   });
 
-  // 시작: 좌→우 순서로 박스 채워지고, 끝나면 텍스트 decode
   function startIntro(){
     btns.forEach(function(b, i){
       var tagEl = b.querySelector('.hp-tag');
       var nameEl = b.querySelector('.hp-name');
       var tagText = b.getAttribute('data-tag');
       var nameText = b.getAttribute('data-name');
-      
-      // 실제 텍스트로 렌더링하여 너비 측정 후 고정
+
       tagEl.textContent = tagText;
       nameEl.textContent = nameText;
       var nameWidth = nameEl.offsetWidth;
       nameEl.style.width = nameWidth + 'px';
       nameEl.style.display = 'inline-block';
-      
-      // 이제 비우기
+
       tagEl.textContent = '';
       nameEl.textContent = '';
 

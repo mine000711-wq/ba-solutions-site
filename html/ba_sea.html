@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- ba_sea.html — v17 (2026-09-29): 한/영 병기(data-i18n). 소개·섹션 설명·카드 설명·AEGIS 문단만 병기, 대제목 슬로건·제품명·View More 버튼·대문자 CTA는 영문 유지 -->
-<!-- ba_sea.html — v16 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
-<!-- ba_sea.html — v15 (2026-09-15): 제품 VIEW DETAILS → ba_air Interceptor 의 View More 버튼(CSS·마크업 동일)으로 교체, 링크를 각 제품 상세 페이지로 -->
-<!-- ba_sea.html — v14 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- ba_sea.html — v13 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: 문서/가이드/반응형_단위가이드.md -->
-<!-- ba_sea.html — v12 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A+B형) -->
-<!-- ba_sea.html — v11 (2026-09-03): 미사용 CSS 제거 (7블록/7줄) — .nav-logo, .hero-tag, .hero-tag::before, .sec-alt, .fl, .pcard-img-lbl, .pcard-img-corner -->
-<!-- ba_sea.html — v10 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
-<!-- ba_sea.html — v9 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
-<!-- ba_sea.html — v8 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
-<!-- ba_sea.html — v8 (2026-09-03): CTA 규격·디자인 AIR 페이지와 완전 동일화(태그=AEGIS/Michroma, 버튼 좌측 세로 배치, 패딩/translateY 규격 반영) -->
+
 <html lang="en" data-i18n>
 <head>
 <script src="lang.js"></script>
@@ -18,20 +8,18 @@
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <title>BA Solutions — SEA POWER</title>
-<!-- AEGIS CTA 블록 공용 스타일 (ba_air/ba_land 와 공유). 페이지 자체 스타일보다 먼저 로드할 것 -->
+
 <link rel="stylesheet" href="aegis-cta.css">
 <style>
-/*PRODUCT LINEUP 섹션 타이틀*/
+
 .product-section .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-/* 제품 카드 이름 3개 (Autonomous Hovercraft, Autonomous Jetboat, Autonomous Airboat) */
 .pcard-name {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-/* HOW AEGIS WORKS 섹션 — AIR 페이지와 동일한 배경/패딩 */
 .sec.aegis-sec {
   padding: max(20px, calc(60 * var(--u))) var(--pad) 0 var(--pad);
   border-top: none;
@@ -40,7 +28,6 @@
   isolation: isolate;
 }
 
-/* HOW AEGIS WORKS 타이틀*/
 .aegis-sec .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
   color: #f0ede8;
@@ -48,14 +35,12 @@
 .aegis-sec .sec-desc {
   color: #f0ede8;
 }
-/* .aegis-cta-tag 의 Michroma 지정은 aegis-cta.css 로 이관됨 */
 
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#f0ede8;color:#000;}
-/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
+
 :root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)));}
 
-/* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
 html{scrollbar-width:none;}
 html::-webkit-scrollbar{display:none;}
 body{background:var(--bg);color:#f0ede8;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
@@ -77,26 +62,19 @@ h1.ht span{color:rgba(255,255,255,.25);}
 .decode{opacity:0;transition:opacity .1s;}
 .decode.visible{opacity:1;}
 
-/* ── AEGIS CTA 블록 스타일은 aegis-cta.css 로 이관 (ba_air/ba_land 와 공유) ── */
-
-
-/* ── 대문 제품 박스 (가로 3개, 흰색 채우기 + decode) ── */
-/* 버튼 최소 폭 203px 은 세 도메인 페이지 공통 모듈 (ba_air 의 AEGIS Spider 버튼 기준).
-   컨테이너 폭 = 트랙 합: air 2×203+14=420 / sea 3×203+28=637 / land 4×203+42=854 */
 .hero-products{display:grid;grid-template-columns:repeat(3,minmax(203px,1fr));gap:14px;margin-top:8px;}
-.hp-btn{position:relative;height:48px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}
+.hp-btn{position:relative;height:42px;border:0.5px solid transparent;background:transparent;cursor:pointer;overflow:hidden;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;padding:0;color:#f0ede8;transition:border-color .25s;}
 .hp-fill{position:absolute;inset:0;background:#f0ede8;transform-origin:left center;transform:scaleX(0);transition:transform .55s cubic-bezier(.2,.7,.2,1);}
 .hp-btn.hp-filled{border-color:transparent;}
 .hp-btn.hp-filled .hp-fill{transform:scaleX(1);}
 .hp-label{position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;height:100%;padding:0 16px;text-align:left;opacity:0;transition:opacity .25s;}
 .hp-btn.hp-revealed .hp-label{opacity:1;}
 .hp-tag{display:none;}
-.hp-name{font-size:13px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
+.hp-name{font-size:15px;letter-spacing:0;font-weight:700;color:#000;display:inline-block;white-space:nowrap;padding-bottom:2px;background-image:linear-gradient(#000,#000);background-repeat:no-repeat;background-position:0 100%;background-size:0% 1.5px;transition:background-size .35s cubic-bezier(.2,.7,.2,1);}
 .hp-btn.hp-revealed:hover .hp-name{background-size:100% 1.5px;}
 .hp-arrow{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:14px;color:#000;opacity:0;transition:opacity .3s,right .3s;z-index:2;}
 .hp-btn.hp-revealed:hover .hp-arrow{opacity:.7;right:10px;}
 
-/* ── 큰 제품 카드 (이미지 + 텍스트 좌우 분할) ── */
 .product-section{padding:140px var(--pad);border-top:none;overflow:hidden;}
 .product-section .sec-title{margin-bottom:16px;}
 .product-list{display:flex;flex-direction:column;gap:0;margin-top:80px;}
@@ -106,7 +84,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
 .pcard.flip .pcard-img{order:2;}
 .pcard.flip .pcard-text{order:1;}
 
-/* 이미지 비율: 16/7 (넓고 낮은 와이드) */
 .pcard-img{aspect-ratio:16/7;background:linear-gradient(135deg,rgba(255,255,255,.025) 0%,rgba(255,255,255,.005) 100%);border:0.5px solid var(--line);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
 .pcard-img::before,.pcard-img::after{content:'';position:absolute;background:rgba(255,255,255,.1);}
 .pcard-img::before{top:14px;left:14px;width:30px;height:0.5px;}
@@ -117,16 +94,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
 .pcard-tag{display:none;}
 .pcard-name{font-size:max(28px, calc(44 * var(--u)));font-weight:700;letter-spacing:.02em;line-height:1.05;margin-bottom:22px;}
 .pcard-desc{font-size:20px;color:rgba(255,255,255,.9);line-height:1.3;font-weight:400;}
-
-/* ── 영수증 효과: 중앙에서 바깥으로 밀려나오는 reveal ──
-   시작: 중앙에 숨겨진 상태 (clip으로 안 보임 + 중앙에 위치)
-   끝:   제자리로 이동하며 완전히 드러남
-
-   기본 카드 (이미지=왼쪽, 텍스트=오른쪽):
-     이미지: 오른쪽(중앙)에 있고 clip으로 가려짐 → 왼쪽 제자리로 이동하며 드러남
-     텍스트: 왼쪽(중앙)에 있고 clip으로 가려짐 → 오른쪽 제자리로 이동하며 드러남
-   flip 카드: 반대
-*/
 
 .pcard .pcard-img{
   clip-path:inset(0 0 0 100%);
@@ -152,35 +119,16 @@ h1.ht span{color:rgba(255,255,255,.25);}
   transform:translateX(0);
 }
 
-
-/* View More 링크 (전 제품 공통 — ba_air/ba_land/ba_sea 동일) — hover 시 박스가 아래에서 차오르고 글씨는 검정·굵게.
-   끊김 방지 구조: 박스+검정 글씨를 한 겹(.plf-cover)에 함께 그려두고 clip-path 하나만 움직인다.
-   · 이전 방식(scaleY + color/font-weight 전환)은 끝날 때 합성 레이어가 풀리며 박스 가장자리·글자 렌더링이
-     한 번 바뀌었고, font-weight 는 중간 굵기가 없는 폰트라 도중에 굵기가 툭 바뀌었다.
-   · 이제 바탕 글씨는 그대로 두고 덮개만 드러나므로, 박스와 검정 글씨가 같은 선으로 함께 차오른다.
-   채움 박스는 좌우 8px 까지만 확장: .pcard-text 의 clip-path 가 padding(8px) 밖을 잘라내기 때문
-   위치: 텍스트 영역 우측 끝 (block + fit-content + margin-left:auto) */
 .pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(13px, calc(18 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
-/* 덮개: 바탕 글씨와 같은 자리에 글자가 오도록 top/left 음수만큼 padding 으로 되돌린다.
-   상하 여백(.42em / .3em)은 대문자 윗선~기준선 중앙과 박스 중앙이 일치하는 값 (Helvetica Neue 기준, "View More ↘"는 하강부 없음)
-   덮개는 화살표를 따로 움직이려고 ::before 대신 실제 요소(.plf-cover)로 둔다 */
+
 .plf-cover{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:#f0ede8;color:#000;font-weight:var(--plf-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none;}
 .pcard-link-fill:hover .plf-cover,.pcard-link-fill:focus-visible .plf-cover{clip-path:inset(0 0 0 0);}
-/* 2026-10-08 사용자 요청: TECH CTA(.cta-arrow)와 같은 값 — 글자 15→18(최소 10→13px, 사용자 요청), 자간 0, 흰 박스는 글자 높이로 자르고 화살표 오른쪽만 띄어쓰기 한 칸(.28em), 키보드 포커스에도 같은 효과 */
+
 .pcard-link-fill{letter-spacing:0;clip-path:inset(0 -.28em 0 0);}
-/* 굵은 글자 폭을 미리 확보 — 덮개 글씨가 박스 밖으로 넘치지 않게 */
+
 .plf-txt{display:inline-grid;}
 .plf-txt::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--plf-weight);height:0;overflow:hidden;visibility:hidden;}
-/* 밑줄 → 화살표 — hover 시 밑줄(.plf-draw)이 ↘ 로 접힌다. 순서:
-   ① 밑줄이 ↘ 글자의 가로 범위(폭 .68em)로 줄어듦  ② 박스 위 화살표 높이로 올라와 "-"
-   ③ 45° 돌며 대각선 길이(.87em)로 늘어나 "\"  ④ 끝에서 두 선이 돋아나 ↘
-   hover 해제 시에는 역순. 속성마다 transition-delay 가 하나뿐이라, 줄어듦/상승은 바깥(.plf-draw),
-   회전/길이는 안쪽(.plf-shaft), 화살촉은 .plf-head 가 나눠 맡는다.
-   치수는 Helvetica Neue ↘ 글리프 실측(em): 잉크 x .03~.71, 대각선 중심 기준선 위 .415em, 화살촉 길이 .25em.
-   덮개(굵기 400)의 ↘ 는 x0 = 100% − .638em 에서 시작 — 덮개 글씨가 바탕(300)보다 .17em 넓어 링크 오른쪽 밖으로 나가 있음. 기준선은 콘텐츠 바닥 위 .13em.
-   진짜 ↘ 글자는 항상 숨기고 자리만 남긴다 — 박스 너비(링크 폭)를 그대로 유지하기 위해.
-   평소 밑줄은 "More" 끝까지만: 오른쪽에서 ↘ 칸(.808em) + 앞 공백(.327em) = 1.135em 을 뺀다 (바탕 굵기 300 실측).
-   두께: 밑줄 1.5px → 줄어드는 동안 화살표 1px 로 가늘어짐 */
+
 .plf-arr{visibility:hidden;}
 .plf-draw{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:#f0ede8;pointer-events:none;
   transition:bottom .2s var(--plf-e) .3s,left .2s var(--plf-e) .48s,width .2s var(--plf-e) .48s,height .2s var(--plf-e) .48s,color .15s linear .08s;}
@@ -197,8 +145,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
 @media (prefers-reduced-motion:reduce){.plf-draw,.plf-shaft,.plf-head,.pcard-link-fill:hover .plf-draw,.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:hover .plf-head,.pcard-link-fill:focus-visible .plf-draw,.pcard-link-fill:focus-visible .plf-shaft,.pcard-link-fill:focus-visible .plf-head{transition:none;}}
 
 @media (max-width:760px){
-  /* 760px 이하: 203px 최소값은 데스크톱 모듈이라 2열(2×203+14=420px)이 폰 화면에 안 들어감.
-   → 최소값을 풀고 화면 폭에 맞춘 유동 폭으로 전환 */
+
   .hero-products{grid-template-columns:repeat(2,minmax(0,1fr));width:calc(100vw - var(--pad) * 2);}
   .pcard,.pcard.flip{grid-template-columns:1fr;gap:36px;padding:60px 0;}
   .pcard.flip .pcard-img{order:0;}
@@ -207,7 +154,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
 
 .sec{position:relative;}
 
-/* AEGIS 섹션 지형 영상 배경 — ba_air.html 과 동일 */
 .aegis-sec > .aegis-terrain {
   position: absolute; inset: 0; width: 100%; height: 100%;
   object-fit: cover; object-position: center; z-index: 0; pointer-events: none;
@@ -323,15 +269,14 @@ h1.ht span{color:rgba(255,255,255,.25);}
 <script src="footer.js"></script>
 
 <script>
-/* ── HERO WAVE CANVAS — DUNE×WAVE LINE FIELD ── */
+
 (function(){
   const c=document.getElementById('wc'),ctx=c.getContext('2d');
   let W,H;
   const DPR=window.devicePixelRatio||1;
 
-  // 픽셀 단위 고정 파라미터 (창 크기와 무관)
-  const LINE_GAP_PX = 9;   // 라인 간 픽셀 간격 (고정)
-  let LINES = 95;          // 창 높이에 비례해 매 resize마다 갱신
+  const LINE_GAP_PX = 9;
+  let LINES = 95;
 
   function resize(){
     W=window.innerWidth; H=window.innerHeight;
@@ -339,12 +284,11 @@ h1.ht span{color:rgba(255,255,255,.25);}
     c.style.width=W+'px'; c.style.height=H+'px';
     ctx.setTransform(1,0,0,1,0,0);
     ctx.scale(DPR,DPR);
-    // 라인 개수를 픽셀 간격 기준으로 재계산
+
     LINES = Math.ceil(H / LINE_GAP_PX) + 4;
   }
   window.addEventListener('resize',resize); resize();
 
-  // ── 노이즈
   const noiseSeed=[];
   for(let i=0;i<2048;i++) noiseSeed.push(Math.random());
   function smooth(t){ return t*t*(3-2*t); }
@@ -374,9 +318,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
   const STEP_X = 3;
   let t=0;
 
-  // 너울 레이어 — ky는 픽셀 단위(posY)에 곱해지므로 창 크기 무관
-  // 기존 ky 값들이 라인 인덱스 기반이었으므로, 픽셀 기준으로 환산하려면 ky/LINE_GAP_PX 정도 스케일
-  // (원래 LINES≈95, H≈900px 기준 LINE_GAP≈9.6 → 거의 동일하게 보이도록 유지)
   const layers = [
     { kx:0.0035, kyPx:0.06/9.6,  kt:0.50, phase:0.0, ampBase:28, ampWild:38, ridge:true },
     { kx:0.0022, kyPx:0.09/9.6,  kt:0.32, phase:1.5, ampBase:18, ampWild:26, ridge:true },
@@ -386,26 +327,23 @@ h1.ht span{color:rgba(255,255,255,.25);}
     { kx:0.013,  kyPx:0.07/9.6,  kt:1.05, phase:3.1, ampBase:4,  ampWild:7,  ridge:false },
   ];
 
-  // 7시 → 2시 대각선 너울
   const DIAG_FREQ = 0.026;
   const DIAG_SPEED = 1.6;
   const DIAG_DIR_X = Math.cos(-Math.PI/3);
   const DIAG_DIR_Y = Math.sin(-Math.PI/3);
 
-  // 노이즈 디테일도 픽셀 단위 ny 사용 (라인 인덱스 의존 제거)
-  const CHOPPY_NY_K = 0.28/9.6;  // 원래 i*0.28 → posY*(0.28/9.6)
+  const CHOPPY_NY_K = 0.28/9.6;
   const FOAM_NY_K = 0.5/9.6;
 
-  // wildness 기준점 — 화면 높이가 어떻든 같은 비율(상단=거칠고 하단=잔잔)
   function frame(){
     t += 0.0045;
     ctx.fillStyle='#000000';
     ctx.fillRect(0,0,W,H);
 
     for(let i=0;i<LINES;i++){
-      const posY = LINE_GAP_PX*i;          // 픽셀 단위 baseY
+      const posY = LINE_GAP_PX*i;
       const baseY = posY;
-      const rowRatio = posY/H;             // 0(위) ~ 1(아래) — 픽셀 비율 기반
+      const rowRatio = posY/H;
       const wildness = Math.max(0, 1 - rowRatio);
 
       ctx.beginPath();
@@ -415,7 +353,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
 
         for(let L=0; L<layers.length; L++){
           const ly = layers[L];
-          // ky는 픽셀 단위로 직접 적용
+
           const phase = x*ly.kx + posY*ly.kyPx + t*ly.kt + ly.phase;
           const w = Math.sin(phase);
           let amp = ly.ampBase + wildness * ly.ampWild;
@@ -457,7 +395,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
 })();
 </script>
 <script>
-/* ── DECODE + FADE ── */
+
 (function(){
   var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
   var TMS=500,INT=30,TF=Math.floor(TMS/INT);
@@ -465,7 +403,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
     var orig=el.textContent.trim(),len=orig.length,done=[],f=0,rev=0;
     for(var i=0;i<len;i++)done.push(false);
     var rs=Math.floor(TF*.25);
-    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     var nsIdx=[]; for(var i=0;i<len;i++) if(orig[i]!=' ') nsIdx.push(i);
     var preCount=Math.floor(nsIdx.length/2);
     for(var i=0;i<preCount;i++) done[nsIdx[i]]=true;
@@ -492,13 +430,13 @@ h1.ht span{color:rgba(255,255,255,.25);}
 })();
 </script>
 <script>
-// ── 대문 제품 박스: 인트로(흰색 채우기 + decode) + 클릭 스크롤
+
 (function(){
   var btns = document.querySelectorAll('.hp-btn');
   var CHARS = '!<>-_\\/[]{}—=+*^?#________';
   function decodeText(el, target){
     var len = target.length, frame = 0, totalFrames = 14;
-    /* 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     var half = Math.floor(len/2), back = Math.max(1, len-half);
     var iv = setInterval(function(){
       frame++;
@@ -553,7 +491,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
 })();
 </script>
 <script>
-/* ── PCARD SLIDE-IN ── */
+
 (function(){
   var obs = new IntersectionObserver(function(entries){
     entries.forEach(function(e){

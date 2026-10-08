@@ -1,8 +1,5 @@
-/* TECH 5개 공용 스크립트 — 해시로 서비스 펼침, 메뉴 현재 위치, 문의 초안(메일/복사). 2026-09-29 분리.
-   2026-10-08: 문의 폼을 자유 서술 → 선택형(분야·환경·지원 칩 + 회사·담당자·연락처)으로 변경. 칩 문구는 HTML 병기 span에서 읽는다.
-   2026-09-29: 한/영 전환 — 입력 안내·메일 제목/본문·상태 안내가 lang.js 의 선택 언어(BA_LANG)를 따른다.
-   'ba:lang' 이벤트로 즉시 갱신.
-   <body> 끝에서 동기 로드(defer 금지). */
+
+
 (function(){
 var section=document.getElementById(location.hash.slice(1));
 if(section && section.classList.contains('service'))section.open=true;
@@ -28,7 +25,7 @@ var T={
           en:'Please copy the selected draft below. Your selections are kept as is.'}
 };
 function t(k){return T[k][ko()?'ko':'en'];}
-/* 선택 칩의 표시 문구를 현재 언어로 읽는다 — 병기 쌍이면 해당 언어 span, 단일 문구면 그대로. */
+
 function chipText(input){var c=input.nextElementSibling,s=c.querySelector('[lang="'+(ko()?'ko':'en')+'"]');return (s||c).textContent.trim();}
 function picked(name){var a=[],els=form.querySelectorAll('input[name="'+name+'"]:checked');for(var i=0;i<els.length;i++)a.push(chipText(els[i]));return a;}
 function val(id){var v=document.getElementById(id).value.trim();return v||t('blank');}

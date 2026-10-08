@@ -1,35 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- aegis.html — v64 (2026-10-06): COMMAND 홀로그램 iframe에 단계 진입·이탈을 postMessage({aegisCommand})로도 알림 — file://로 열면 출처가 달라 __aegisReset 직접 호출이 막혀, 홀로그램이 로드 즉시 진입 모션을 다 재생해 버리던 문제. 늦게 로드된 iframe의 aegisReady에 현재 단계를 답함 -->
-<!-- aegis.html — v63 (2026-10-01): DOMAIN 카드 호버를 카드 하나로 한정 — 다른 카드 숨김·구분선 숨김·제목 문장 교체(ALL THREE→도메인명, S 지움) 제거, 영상은 섹션 배경 → 각 카드 안. 도메인 이름은 흰 박스가 채워진 채 검정 글자로 멈춤, 커서가 나가면 박스가 오른쪽으로 걷힘. 설명·제품 목록은 호버 시 박스가 지나가며 사라지고, 나가면 글자만 왼쪽→오른쪽으로 채워지며 다시 나타남(.dl-leave) -->
-<!-- aegis.html — v62 (2026-09-29): 한/영 병기(data-i18n) — 3NO 설명·FLOW 카드 설명·DOMAIN 설명·파트너 소개만 병기. 3NO·FLOW 제목(글자 단위 애니메이션)·HUD·제품명은 영문 유지. DOMAIN 제품 목록의 "Autonomous" 이름은 제품 상세와 맞춰 제거 -->
-<!-- aegis.html — v62 (2026-09-29): FLOW 카드 — 빠른 스크롤로 .flow-left가 다 들어오기 전에 아래로 지나치면 글자를 지우던 문제 → 아래로 벗어날 때(윗변이 화면 위)는 finishCopy로 완성 상태 표시. 위에서 들어오는 중에는 종전대로 초기화 후 타이핑 -->
-<!-- aegis.html — v61 (2026-09-29): COMMAND 시각물 교체 — aegis_command-raider.html(계층 방어 평면도, 휴지통으로) → aegis_command-hologram.html(Three.js 실시간 홀로그램, 원본은 시나리오/aegis/aegis-three-preview.html → 사이트반영.py로 생성). 표시 조건 .show·__aegisReset 계약은 그대로 -->
-<!-- aegis.html — v60 (2026-09-16): 우측 섹션 인디케이터 제거 — <body data-no-sec-ind> (footer.js v11 가드) -->
-<!-- aegis.html — v59 (2026-09-15): DECIDE 터미널 빨강 7곳 → 3곳 (HIGH / P(hostile_intent) / EXECUTE). UAS_SWARM·HARD-KILL은 약한 분류명 색으로 -->
-<!-- aegis.html — v58 (2026-09-15): DECIDE 터미널 주황 #ffb300 → #daab4e (채도 100% → 약 65%, 빨강·파랑과 맞춤) -->
-<!-- aegis.html — v57 (2026-09-15): DECIDE 터미널 약한 색 4종 추가(TERM_WEAK_RE) — 식별자 #9790ad / 분류명 #7fa39c / 항목명 #7f8d9c / 수치 #b3a58c, 저채도·반투명. 강한 키워드 색이 우선 -->
-<!-- aegis.html — v56 (2026-09-15): DECIDE 터미널 빨강 #ff3b30 → #e0655c, 파랑 #4096ff → #729fda (채도 100% → 약 65%/58%) -->
-<!-- aegis.html — v56 (2026-09-17): FLOW 카드(AEGIS IS_ + 제목) 타이핑 효과는 카드별 최초 1회만 — 이후 재진입·단계 복귀 시 완성 상태 유지 -->
-<!-- aegis.html — v55 (2026-09-15): DECIDE 터미널 줄 단위 출력 → 글자 타이핑(rAF 타임라인). 반복 줄(mounting/TGT-0/rule[/opt/P()은 빠르게, 리더 점·'<--' 뒤 결과값은 짧게 대기. 전체 3.87s로 기존 3.90s 이내 (TERM_TYPE) -->
-<!-- aegis.html — v55 (2026-09-17): FLOW SENSE 영상 — 섹션 이탈 시 재생 중이면 일시정지(복귀 시 이어서 재생), 끝난 뒤면 페이드아웃→되감기→페이드인 -->
-<!-- aegis.html — v54 (2026-09-15): DECIDE 터미널 키워드 색 — 위협 #ff3b30 / 주의·선택 #ffb300 / 아군·링크 #4096ff / 정상 #34c759. 줄 전체가 아닌 단어 단위(termColorize) -->
-<!-- aegis.html — v54 (2026-09-17): FLOW SENSE 영상(aegis_sense_v2)이 로드 즉시 재생되어 3No를 보는 동안 끝나버리던 문제 → .flow-left가 화면에 다 들어온 뒤(카피 타이핑과 같은 시점) 처음부터 재생, 벗어나면 정지·되감기 -->
-<!-- aegis.html — v53 (2026-09-15): 3No sec-desc 글자 크기 20px 고정 → max(15px, calc(20 * var(--u))) — 1440px 이상에서 20px(최대), 좁아지면 비례 축소 (ba_air 기준) -->
-<!-- aegis.html — v52 (2026-09-15): 3No RELAY 색수차 수렴 속도 0.6s → 0.3s -->
-<!-- aegis.html — v51 (2026-09-15): 3No 세 번째 단어 DEPENDENCY → RELAY. decode 스크램블 대신 색수차(RGB 3채널 분리 → 가산혼합 수렴) 효과. 검토 프로토타입: Homepage/Prototype/06_3no_relay/ -->
-<!-- aegis.html — v50 (2026-09-14): 협력사 로고월 한 줄 최대 4칸 → 6칸 (max-width 1000px → 6칸+간격 폭 1280px, 좁으면 자동 줄바꿈) -->
-<!-- aegis.html — v49 (2026-09-14): 협력사 3곳(대진대학교·KRIT·경기도) 추가 — 흰색 단색 투명 PNG로 통일, KRIT는 워드마크 제거한 심볼만 사용. 로고월을 flex로 바꿔 개수와 무관하게 중앙 정렬 -->
-<!-- aegis.html — v47: reference-style AEGIS IS type reveal and concise SENSE / DECIDE / COMMAND copy -->
-<!-- aegis.html — v46 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- aegis.html — v45 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: 문서/가이드/반응형_단위가이드.md -->
-<!-- aegis.html — v44 (2026-09-08): COMMAND 시각물 교체 — aegis_command_map.html(등고선 지형) → aegis_command-raider.html(계층 방어 평면도). 기존 파일은 삭제하지 않고 병존 -->
-<!-- aegis.html — v43 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A형) -->
-<!-- aegis.html — v42 (2026-09-03): 미사용 CSS 제거 (6블록/11줄) — .nav-logo, .sec-alt, .sec-label, .dl-arrow, .dl:hover .dl-arrow, .fl -->
-<!-- aegis.html — v41 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
-<!-- aegis.html — v40 (2026-09-03): 푸터 배경 #030304 → #000000 / 히어로 이미지 배경 #0a0a0c → #000000 -->
-<!-- aegis.html — v39 (2026-09-03): 기본 배경 계열 색상 통일 — #060608 / rgba(6,6,8,x) → #000000 / rgba(0,0,0,x) -->
-<!-- aegis.html — v32 (2026-09-02): 브라우저 탭/툴바 색상 지정 — theme-color #000000 + color-scheme dark -->
+
 <html lang="en" data-i18n>
 <head>
 <script src="lang.js"></script>
@@ -39,21 +10,15 @@
 <title data-ko="BA Solutions - AEGIS AI 플랫폼">BA Solutions - AEGIS AI Platform</title>
 <style>
 
-/* DOMAIN 섹션 타이틀*/
 .domain-sec .sec-title {
   font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
-  letter-spacing: .04em;   /* v46: 공용 .sec-title 자간이 0이 되어 Michroma 제목만 기존 값 유지 */
+  letter-spacing: .04em;
 }
-
-/* DOMAIN 섹션 세부 타이틀
-.dl-name {
-  font-family: 'Michroma', 'Helvetica Neue', Helvetica, sans-serif;
-}*/
 
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#f0ede8;color:#000;}
 :root{
-  --u:calc(min(100vw, 1440px) / 1440);   /* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
+  --u:calc(min(100vw, 1440px) / 1440);
   --bg:#000000;
   --line:rgba(255,255,255,.08);
   --accent:#fff;
@@ -61,26 +26,21 @@
 }
 body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
-
-/* HERO */
 #hero{height:100vh;min-height:600px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 #hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
 .hero-fade{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 42%,rgba(0,0,0,.28) 80%,rgba(0,0,0,.6) 100%);pointer-events:none;}
 .hero-center{position:relative;z-index:3;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;}
-.hero-title{font-size:clamp(80px,14vw,160px); /* vw 유지 — 화면 폭 비율 디스플레이 (반응형_단위가이드.md) */font-weight:700;letter-spacing:0;line-height:1;}
+.hero-title{font-size:clamp(80px,14vw,160px);  font-weight:700;letter-spacing:0;line-height:1;}
 
-/* SECTIONS */
 .sec{padding: clamp(50px, 10vh, 300px) var(--pad);position:relative;}
 .sec-title{font-size:max(22px, calc(43.2 * var(--u)));font-weight:700;letter-spacing:0;line-height:1.2;margin-bottom:12px;}
 .sec-desc{font-size:20px;color:rgba(255,255,255,1);line-height:1.3;max-width:560px;font-weight:300;}
 
-/* FADE */
 .fade-in{opacity:0;transform:translateY(16px);transition:opacity 1s ease,transform 1s ease;}
 .fade-in.visible{opacity:1;transform:translateY(0);}
 #domainTitle.dt-pre{opacity:0;}
-@keyframes dom-s-return-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}   /* 3NO 섹션 NO 토큰이 사용 */
-/* Only the hovered card changes. Name: box fills and stays (black text inside).
-   Description/products: box passes and hides text; on leave (.dl-leave) the text alone fills back in left→right (no box). */
+@keyframes dom-s-return-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
+
 .dl-name,.dl-description,.dl-products>span{position:relative;}
 .dl-products>span{align-self:flex-start;}
 .dl-name::after,.dl-products>span::after{
@@ -88,7 +48,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   clip-path:inset(0 100% 0 0);pointer-events:none;
 }
 .dl-name::after{content:attr(data-text) / "";color:#000;}
-/* Clone the wipe background onto each rendered text line, excluding empty space. */
+
 .dl-description-text{
   -webkit-box-decoration-break:clone;box-decoration-break:clone;
   background-image:linear-gradient(#fff,#fff);
@@ -100,12 +60,12 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 .dl:hover .dl-description,.dl:hover .dl-products>span{animation:dl-hide 840ms linear both;}
 .dl.dl-leave .dl-description,.dl.dl-leave .dl-products>span{animation:dl-text-fill 560ms cubic-bezier(.65,0,.35,1) both;}
 .dl:hover .dl-products>span::after{animation:dl-wipe 840ms cubic-bezier(.65,0,.35,1) both;}
-/* 호버/복귀 키프레임은 이름을 달리해야 클래스가 바뀔 때 처음부터 다시 재생된다 */
+
 @keyframes dl-fill{to{clip-path:inset(0);}}
 @keyframes dl-unfill{from{clip-path:inset(0);}to{clip-path:inset(0 0 0 100%);}}
 @keyframes dl-wipe{0%{clip-path:inset(0 100% 0 0);}50%{clip-path:inset(0);}100%{clip-path:inset(0 0 0 100%);}}
 @keyframes dl-hide{0%,49.99%{color:inherit;}50%,100%{color:transparent;}}
-@keyframes dl-text-fill{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0);}}   /* 복귀: 글자만 박스와 같은 방향으로 채움 */
+@keyframes dl-text-fill{from{clip-path:inset(0 100% 0 0);}to{clip-path:inset(0);}}
 @keyframes dl-desc-wipe{
   0%{background-size:0% 100%;background-position:left;}
   50%{background-size:100% 100%;background-position:left;}
@@ -121,11 +81,10 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 .decode{opacity:0;transition:opacity 1s;}
 .decode.visible{opacity:1;}
 
-/* ── FLOW: scroll-driven sticky ── */
 #flow { background:var(--bg); padding:0; }
 .flow-sticky-wrap {
   position:relative;
-  height:300vh; /* 3 단계 x 100vh */
+  height:300vh;
 }
 .flow-sticky {
   position:sticky;
@@ -137,7 +96,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   border-top:none;
   overflow:hidden;
 }
-/* 왼쪽: 숫자 */
+
 .flow-left {
   display:flex;
   align-items:center;
@@ -164,24 +123,24 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 }
 .flow-num.above  { transform:translateY(-60px); opacity:0; }
 .flow-num.below  { transform:translateY(60px);  opacity:0; }
-/* SENSE 영상 */
+
 .flow-vid {
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
-  object-position:44% 50%; /* 카메라가 화면 중앙에 오도록 크롭 위치 조정 */
+  object-position:44% 50%;
   opacity:0;
   transition:opacity .6s ease;
   z-index:1;
   pointer-events:none;
 }
 .flow-vid.show { opacity:1; }
-.flow-vid.show.rewind { opacity:0; } /* 끝난 영상 되감기 중 페이드아웃 */
+.flow-vid.show.rewind { opacity:0; }
 .flow-cmd{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .6s ease;z-index:1;pointer-events:none;background:#000000;}
 .flow-cmd.show{opacity:1;}
-/* DECIDE 터미널 스트림 */
+
 .flow-term {
   position:absolute;
   inset:0;
@@ -217,17 +176,17 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 .flow-term-line.go  { color:#f0ede8; letter-spacing:.03em; }
 .flow-term-line.gap { height:7px; line-height:7px; }
 .flow-term-line .hi { color:#f0ede8; font-weight:700; }
-/* 키워드 색 — COMMAND 지도(aegis_command-raider) 팔레트 기반 + 초록. v56: 빨강·파랑 채도 낮춤 (지도 원색 #ff3b30 / #4096ff) */
+
 .flow-term-line .t-red   { color:#e0655c; }
-.flow-term-line .t-amber { color:#daab4e; }  /* v58: #ffb300 → 채도 낮춤 */
+.flow-term-line .t-amber { color:#daab4e; }
 .flow-term-line .t-blue  { color:#729fda; }
 .flow-term-line .t-green { color:#34c759; }
-/* 약한 색 — 저채도, 기본 회색(.34)보다 조금만 밝게. 시선을 강한 색에서 분산 */
-.flow-term-line .w-num { color:rgba(179,165,140,.75); }  /* 수치·단위  #b3a58c */
-.flow-term-line .w-key { color:rgba(127,141,156,.85); }  /* 항목명     #7f8d9c */
-.flow-term-line .w-id  { color:rgba(151,144,173,.85); }  /* 식별자     #9790ad */
-.flow-term-line .w-cls { color:rgba(127,163,156,.85); }  /* 분류명     #7fa39c */
-/* 타이핑 커서 — 입력 중엔 고정, 마지막 줄(EXECUTE) 완료 후 깜빡임 */
+
+.flow-term-line .w-num { color:rgba(179,165,140,.75); }
+.flow-term-line .w-key { color:rgba(127,141,156,.85); }
+.flow-term-line .w-id  { color:rgba(151,144,173,.85); }
+.flow-term-line .w-cls { color:rgba(127,163,156,.85); }
+
 .flow-term-line .t-cur { color:#f0ede8; }
 .flow-term-line.done .t-cur { animation:fc-cursor-blink .96s step-end infinite; }
 .flow-term-fade {
@@ -235,8 +194,8 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   pointer-events:none;
   background:linear-gradient(to bottom,var(--bg) 0%,rgba(0,0,0,0) 8%);
 }
-.flow-num { z-index:2; } /* 숫자가 영상/터미널 위 */
-/* 오른쪽: 레퍼런스 타이포그래피 — label / headline / half-width detail */
+.flow-num { z-index:2; }
+
 .flow-right{padding:var(--pad);position:relative;height:100%;display:flex;align-items:center;}
 .flow-card{position:absolute;top:50%;left:var(--pad);right:var(--pad);transform:translateY(-50%);opacity:0;pointer-events:none;}
 .flow-card.active{opacity:1;pointer-events:auto;}
@@ -251,7 +210,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 .flow-type-ready .fc-char{visibility:hidden;}
 .flow-type-ready .fc-desc{opacity:0;transition:opacity .25s ease;}
 .flow-type-ready.copy-done .fc-desc{opacity:1;}
-/* S.D.C ≤860px: 풀블리드 시각물 + 하단 텍스트 */
+
 @media(max-width:860px){
   .flow-sticky{display:block;}
   .flow-left{position:absolute;inset:0;z-index:1;}
@@ -267,11 +226,10 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   .flow-card.cursor-blink .fc-cursor{animation:none;}
 }
 
-/* ── 3NO ── */
 #three-no{background:var(--bg);text-align:center;padding:0;min-height:210vh;min-height:210svh;}
 .three-no-stage{position:sticky;top:0;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px var(--pad);}
 #three-no .sec-title{
-  font-size:clamp(30px, 8vw, 80px) ; /* vw 유지 — 화면 폭 비율 디스플레이 (반응형_단위가이드.md) */
+  font-size:clamp(30px, 8vw, 80px) ;
   letter-spacing:0;
   line-height:1.15;
   text-align: center;
@@ -283,7 +241,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 #three-no .sec-title .inv{visibility:hidden;}
 #three-no .sec-desc{font-size:max(13px, calc(20 * var(--u)));margin-top:24px;max-width:560px;margin-left:auto;margin-right:auto;}
 
-/* 3NO: reserve final widths while each word reveals. */
 .no-token{position:relative;display:inline-block;}
 #three-no.motion-ready .no-ink{visibility:hidden;}
 .no-token::after{content:'';position:absolute;inset:0;background:#fff;clip-path:inset(0 100% 0 0);pointer-events:none;}
@@ -299,17 +256,15 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 .latency-cursor{animation:latency-blink .48s step-end infinite;}
 @keyframes latency-blink{0%,100%{opacity:0;}50%{opacity:1;}}
 
-/* RELAY — 색수차. R·G·B 세 채널이 한 축 위에 어긋나 있다가 포개지며 가산혼합으로 순백이 된다.
-   mix-blend-mode:screen 이므로 이 섹션 배경이 검정(--bg:#000000)일 때만 성립함. */
 .relay-word{position:relative;display:inline-block;}
-.rw-space{visibility:hidden;}                                   /* 폭 예약 — .latency-space 와 같은 패턴 */
+.rw-space{visibility:hidden;}
 .rw-stack{position:absolute;left:0;top:0;white-space:nowrap;isolation:isolate;}
 .rw-ch{position:absolute;left:0;top:0;mix-blend-mode:screen;}
 .rw-r{color:#ff0000;}
 .rw-g{color:#00ff00;}
 .rw-b{color:#0000ff;}
-#three-no.motion-ready .rw-r{transform:translateX(-.08em);}     /* 파장이 긴 적색이 덜 꺾임 */
-#three-no.motion-ready .rw-b{transform:translateX(.08em);}      /* 짧은 청색이 가장 많이 꺾임 */
+#three-no.motion-ready .rw-r{transform:translateX(-.08em);}
+#three-no.motion-ready .rw-b{transform:translateX(.08em);}
 #three-no.relay-focus .rw-r,
 #three-no.relay-focus .rw-b{transform:translateX(0);transition:transform .3s ease;}
 @media(prefers-reduced-motion:reduce){
@@ -323,25 +278,24 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   #three-no .rw-stack{display:none;}
 }
 
-/* ── 협력사 로고 그리드 ── */
 #partners{background:var(--bg);padding-top:max(120px, calc(220 * var(--u)));}
 .partner-intro{max-width:620px;margin:20px 0 0;text-align:left;font-size:15px;color:#f0ede8;line-height:1.2;}
 .logo-wall{
-  --lw-w:190px;   /* 로고 칸 너비 */
+  --lw-w:190px;
   --lw-gap:28px;
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
   gap:var(--lw-gap);
   margin:56px auto 0;
-  /* 한 줄 최대 6칸 — 폭이 모자라면 5·4·3…칸으로 자동 줄바꿈 */
+
   max-width:calc(var(--lw-w) * 6 + var(--lw-gap) * 5);
 }
-.lw-item{flex:0 0 var(--lw-w);min-width:0;}   /* min-width:0 — 가로로 긴 로고가 칸을 190px 넘게 밀어내지 않게 */
+.lw-item{flex:0 0 var(--lw-w);min-width:0;}
 .lw-item{
   background:transparent;
   min-height:150px;
-  padding:28px 20px;   /* 24→20: 로고 max-width 150px이 190px 칸 안에 딱 맞도록 */
+  padding:28px 20px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -354,16 +308,15 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 @media(max-width:760px){.logo-wall{--lw-w:140px;}}
 .lw-logo{
   height:44px;width:auto;max-width:min(150px, 100%);object-fit:contain;
-  /* 로고별 광학 보정: 원형 씰은 크게, 가로로 긴 워드마크는 작게 */
+
   opacity:1;
   filter:blur(0);
   transition:opacity .35s, filter .35s;
 }
-.lw-logo.is-seal{height:72px;}   /* 대진대학교 — 원형 씰 (64→72, 2026-09-30) */
-.lw-logo.is-mark{height:38px;}   /* KRIT — 심볼 단독 */
-.lw-logo.is-wide{height:30px;}   /* 경기도 — 심볼+워드마크 가로형 */
+.lw-logo.is-seal{height:72px;}
+.lw-logo.is-mark{height:38px;}
+.lw-logo.is-wide{height:30px;}
 
-/* 호버 시 로고를 없애지 않고 초점이 나간 듯 흐리게 — 회사명 뒤에 연하게 깔림 */
 .lw-item:hover .lw-logo{opacity:.35;filter:blur(3px);}
 .lw-name{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
@@ -376,14 +329,13 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 }
 .lw-item.placeholder .lw-ph{font-size:9px;letter-spacing:0;color:rgba(255,255,255,.14);}
 
-/* ── DOMAINS: 비디오 배경 호버 ── */
 #domains-cta {
   position:relative;
   overflow:hidden;
   background:#000;
   padding:0;
 }
-/* 카드별 비디오 레이어 — 커서가 올라간 카드 안에서만 재생 */
+
 .dl-video {
   position:absolute; inset:0;
   overflow:hidden;
@@ -401,17 +353,17 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 .dl-video::after {
   content:'';
   position:absolute; inset:0;
-  background:rgba(0,0,0,.55); /* 영상 위 어두운 오버레이 — 글자 가독성 */
+  background:rgba(0,0,0,.55);
   opacity:0;
   transition:opacity 1.2s ease;
 }
 .dl:hover .dl-video::after { opacity:1; }
-/* 제목은 비디오 위에 패딩 섹션처럼 */
+
 .domains-head {
   position:relative; z-index:2;
-  padding:max(160px, calc(260 * var(--u))) var(--pad) 0;   /* 위 섹션(Flow)과의 간격 확대 */
+  padding:max(160px, calc(260 * var(--u))) var(--pad) 0;
 }
-/* 카드 그리드 */
+
 .domain-links {
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -422,13 +374,13 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 }
 .dl {
   --domain-title-height:max(32px, calc(64 * var(--u)));
-  background:rgba(240,237,232,.1);   /* 호버 전 카드 배경 — 밝은 회색 */
+  background:rgba(240,237,232,.1);
   padding:max(14px, calc(20 * var(--u))) max(20px, calc(40 * var(--u))) max(20px, calc(40 * var(--u))) max(20px, calc(40 * var(--u)));
   text-decoration:none;
   color:inherit;
   display:grid;
   grid-template-columns:auto minmax(0,1fr);
-  grid-template-rows:auto 1fr;   /* 카드 높이 확대 — 제품 목록은 카드 하단에 붙임 */
+  grid-template-rows:auto 1fr;
   min-height:max(310px, calc(480 * var(--u)));
   align-items:start;
   gap:max(12px, calc(20 * var(--u)));
@@ -478,8 +430,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   line-height:1;
 }
 
-
-/* 대체 영상 대기: 호버해도 설명·제품명을 유지한다. */
 .dl.media-pending .dl-description,
 .dl.media-pending .dl-description-text,
 .dl.media-pending .dl-products>span {
@@ -492,10 +442,8 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 </head>
 <body data-no-sec-ind>
 
-<!-- NAV -->
 <script src="nav.js"></script>
 
-<!-- HERO -->
 <div id="hero">
   <canvas id="hero-canvas"></canvas>
   <div class="hero-fade"></div>
@@ -504,7 +452,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   </div>
 </div>
 
-<!-- 3NO -->
 <section class="sec" id="three-no" data-sec-label="EDGE">
   <div class="three-no-stage">
   <h2 class="sec-title" id="threeNoTitle" aria-label="NO CLOUD. NO LATENCY. NO RELAY.">
@@ -516,12 +463,10 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   </div>
 </section>
 
-<!-- FLOW: scroll-driven -->
 <section id="flow">
   <div class="flow-sticky-wrap">
     <div class="flow-sticky">
 
-      <!-- 왼쪽: 숫자 / 영상 -->
       <div class="flow-left">
         <video class="flow-vid" data-step="0" muted playsinline preload="auto">
           <source src="../video/aegis_sense_v2.mp4" type="video/mp4">
@@ -536,21 +481,20 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
         <div class="flow-num below" id="fn3">3</div>
       </div>
 
-      <!-- 오른쪽: 카드 -->
       <div class="flow-right">
-        <!-- SENSE -->
+
         <div class="flow-card below" id="fc1" data-function="SENSE" aria-hidden="true">
           <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
           <h2 class="fc-name" aria-label="SENSE: Seeing Threats Clearly"><span class="fc-title-line" aria-hidden="true">Seeing Threats</span><span class="fc-title-line" aria-hidden="true">Clearly</span></h2>
           <p class="fc-desc"><span lang="ko">레이더, EO/IR, RF 정보를 하나로 모아 표적마다 식별하고 추적합니다.</span><span lang="en">Radar, EO/IR, and RF feeds unite to classify and track each contact.</span></p>
         </div>
-        <!-- DECIDE -->
+
         <div class="flow-card below" id="fc2" data-function="DECIDE" aria-hidden="true">
           <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
           <h2 class="fc-name" aria-label="DECIDE: Choosing the Right Response"><span class="fc-title-line" aria-hidden="true">Choosing the</span><span class="fc-title-line" aria-hidden="true">Right Response</span></h2>
           <p class="fc-desc"><span lang="ko">장비에 탑재된 인텔리전스가 위협을 평가하고, 임무가 정한 규칙 안에서 대응을 고릅니다.</span><span lang="en">On-device intelligence evaluates threats and selects a response within mission-defined rules.</span></p>
         </div>
-        <!-- COMMAND -->
+
         <div class="flow-card below" id="fc3" data-function="COMMAND" aria-hidden="true">
           <div class="fc-eyebrow" aria-label="AEGIS IS"><span class="fc-type-label" aria-hidden="true">AEGIS IS</span><span class="fc-cursor" aria-hidden="true">_</span></div>
           <h2 class="fc-name" aria-label="COMMAND: Bringing Every Platform Together"><span class="fc-title-line" aria-hidden="true">Bringing Every</span><span class="fc-title-line" aria-hidden="true">Platform Together</span></h2>
@@ -562,15 +506,12 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   </div>
 </section>
 
-<!-- DOMAINS -->
 <section class="domain-sec" id="domains-cta" style="padding:0;">
 
-  <!-- 제목 -->
   <div class="domains-head">
     <h2 class="sec-title dt-pre" id="domainTitle"><span class="dt-p">AEGIS ACROSS </span><span class="dom-def">ALL THREE</span><span class="dt-p"> DOMAIN</span><span class="dom-s">S</span></h2>
   </div>
 
-  <!-- 카드 -->
   <div class="domain-links fade-in">
     <a class="dl media-pending" href="ba_air.html" data-domain="air">
       <span class="dl-name" data-text="Air">Air</span>
@@ -603,13 +544,10 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 
 </section>
 
-<!-- 협력사 로고 그리드 -->
 <section class="sec" id="partners" data-sec-label="PARTNERS">
   <h2 class="sec-title decode">Technology Partners</h2>
   <p class="partner-intro"><span lang="ko">분류, 엣지 추론, 자율 판단 로직 — AEGIS는 이를 맡는 전문 기술 파트너들과 함께 만들어져 모든 BA Solutions 플랫폼에 흐릅니다.</span><span lang="en">AEGIS is built on a network of specialized technology partners powering classification, edge inference, and autonomous decision logic across every BA Solutions platform.</span></p>
 
-  <!-- 협력사 추가 방법: .lw-item 블록을 하나 복사해 로고 경로/tag/role만 바꾸면 됩니다.
-       빈 자리(placeholder)는 삭제하거나 실제 협력사로 교체하세요. -->
   <div class="logo-wall fade-in">
 
     <div class="lw-item">
@@ -645,11 +583,10 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   </div>
 </section>
 
-<!-- FOOTER -->
 <script src="footer.js"></script>
 
 <script>
-/* ── HERO CANVAS - LIVING PULSE ── */
+
 (function(){
   var cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
   var W=0,H=0,DPR=Math.min(2,window.devicePixelRatio||1),cx,cy,N,gap;
@@ -687,13 +624,11 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   resize();requestAnimationFrame(draw);
 })();
 
-/* ── FLOW SCROLL TRIGGER ── */
 (function(){
   const wrap  = document.getElementById('flow');
   const nums  = [document.getElementById('fn1'), document.getElementById('fn2'), document.getElementById('fn3')];
   const cards = [document.getElementById('fc1'), document.getElementById('fc2'), document.getElementById('fc3')];
 
-  // Reserve final glyph widths and line breaks before revealing each character.
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   let copyFrame = 0, copyInView = false, currentCopyStep = 0;
   const copyGlyphs = cards.map(card => {
@@ -711,7 +646,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     card.classList.add('flow-type-ready');
     return {label, title};
   });
-  // 타이핑이 한 번 끝난 카드는 이후 다시 들어와도 효과 없이 완성 상태 유지
+
   const copyPlayed = cards.map(() => false);
   function resetCopy(){
     cancelAnimationFrame(copyFrame);
@@ -725,7 +660,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     const count = Math.floor(chars.length * Math.max(0, Math.min(1, progress)));
     chars.forEach((el, index) => el.style.visibility = index < count ? 'visible' : 'hidden');
   };
-  // 카드를 완성 상태로 — 타이핑이 끝났을 때, 또는 타이핑 전·도중에 아래로 지나쳐 버렸을 때
+
   function finishCopy(i){
     if(copyPlayed[i]) return;
     cancelAnimationFrame(copyFrame);
@@ -758,7 +693,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     }
     copyFrame = requestAnimationFrame(frame);
   }
-  // 왼쪽 영상 영역이 화면에 전부 들어왔을 때만 타이핑 재생 (IO 비율 대신 픽셀 계산 — 모바일 100vh > innerHeight 대비)
+
   const copyTarget = document.querySelector('.flow-left');
   function checkCopyView(){
     const r = copyTarget.getBoundingClientRect(), vh = window.innerHeight;
@@ -767,15 +702,12 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     if(full === copyInView) return;
     copyInView = full;
     if(full) playCopy(currentCopyStep);
-    // 아래로 지나쳐 영역 윗변이 화면 위로 올라갔으면(빠른 스크롤) 지우지 않고 완성 상태로 둔다.
-    // 위에서 아직 들어오는 중이면 초기화 — 다 들어온 뒤 타이핑.
+
     else if(r.top < 0) finishCopy(currentCopyStep);
     else resetCopy();
     syncVids();
   }
 
-  // 현재 단계 영상은 .flow-left가 화면에 다 들어왔을 때(카피 타이핑과 같은 시점) 재생.
-  // 벗어날 때: 재생 중이면 일시정지(다시 오면 이어서), 끝난 뒤면 페이드아웃 → 처음으로 되감기 → 페이드인
   function playVid(v){ const p = v.play(); if (p) p.catch(()=>{}); }
   function rewindVid(v){
     v._rewinding = true;
@@ -789,9 +721,9 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
         if (v._playAfter) { v._playAfter = false; playVid(v); }
       };
       v.addEventListener('seeked', done, { once:true });
-      setTimeout(done, 400); // seeked 이벤트가 오지 않는 경우 대비
+      setTimeout(done, 400);
       try { v.currentTime = 0; } catch(e){ done(); }
-    }, 600); // .flow-vid opacity 전환 시간과 동일
+    }, 600);
   }
   function syncVids(){
     vids.forEach((v) => {
@@ -809,7 +741,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 
   const vids  = Array.from(document.querySelectorAll('.flow-vid'));
 
-  /* ── DECIDE 터미널 스트림 ── */
   const decideTerm = document.getElementById('decideTerm');
   const decideLog  = document.getElementById('decideLog');
   const TERM_LINES = [
@@ -888,9 +819,9 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   function termEsc(s){
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
-  // 키워드 색칠 — 원문 기준으로 [글자, 클래스] 조각을 만들고, 타이핑 중 보이는 글자 수만큼 잘라 그림
+
   const TERM_COLORS = [
-    // 빨강은 판단 흐름의 세 지점에만 — 위협 등급(HIGH) → 적대 의도 확정 → 실행
+
     ["!!!HIGH","t-red hi","HIGH"],
     ["P(hostile_intent): 0.97","t-red"],
     ["EXECUTE.","t-red"],
@@ -918,12 +849,11 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     TERM_COLOR_MAP[c[0]] = c;
     return c[0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
   }).join('|'),'g');
-  // 약한 색 — 뜻이 아닌 종류로 자동 분류해 모든 줄에 고르게 퍼지게 함. 강한 키워드가 먼저 잡고, 남은 글자에만 적용.
-  // 괄호 순서 = 우선순위: 식별자 → 분류명 → 항목명(xxx:) → 수치
+
   const TERM_WEAK_RE = new RegExp([
     "(TGT-\\d+|rule\\[\\d+\\]|opt [A-C]\\b|\\w+\\.(?:bin|cfg)|[\\w.]+\\(\\)|link16|SECTOR 7-DELTA|v\\d+(?:\\.\\d+)+)",
     "\\b(FIXED_WING|ROTARY|COMM_RELAY|UAS_SWARM|HARD-KILL|RADAR|EO/IR|ESM|RF-JAM|RF|KE-SHOT|NET-GUN|PTP|RAIM|EMISSION_PERMITTED)\\b",
-    // 여러 단어 항목명(최대 3단어)은 줄 첫머리나 '| ' 뒤에서만, 한 단어는 어디서나
+
     "((?<=^|\\| )[A-Za-z_][\\w-]*(?: [A-Za-z_][\\w-]*){0,2}:|(?<![\\w-])[A-Za-z_][\\w-]*:)",
     "((?<![\\w.])(?:T[+-]|[+-])?\\d+(?:\\.\\d+)*(?:m/s|us|km|kt|ft|m|s|%)?(?!\\w))"
   ].join('|'),'g');
@@ -961,19 +891,16 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     return html;
   }
 
-  // 타이핑 타임라인 — 글자마다 표시 시각(ms)을 미리 계산.
-  // 같은 모양이 반복되는 줄(2번째부터)은 빠르게, '....' 리더·'<--' 뒤 결과값은 잠깐 멈췄다가 표시.
-  // 합계는 EXECUTE까지 약 3.87s — 기존 줄 단위 출력(3.90s)보다 늦지 않게 맞춘 값
   const TERM_TYPE = {
-    ch:1.2,        // 일반 글자 ms
-    rep:0.35,      // 반복 줄 글자 ms
-    dot:0.2,       // 리더 점 ms
-    result:80,     // 결과값 전 대기
-    repResult:30,  // 반복 줄의 결과값 전 대기
-    hd:20,         // 제목 줄 뒤 대기
-    gap:20,        // 빈 줄
-    exec:90,       // EXECUTE 전 대기
-    execCh:20      // EXECUTE 글자 ms
+    ch:1.2,
+    rep:0.35,
+    dot:0.2,
+    result:80,
+    repResult:30,
+    hd:20,
+    gap:20,
+    exec:90,
+    execCh:20
   };
   const TERM_GROUPS = ["mounting ","TGT-0","rule[","opt ","P("];
   function termGroup(s){
@@ -1001,7 +928,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     if(lvl===0)t+=TERM_TYPE.hd;
     return {at:at,dur:t};
   }
-  // 줄마다 시작 시각·글자 시각·색 조각을 한 번만 계산
+
   const TERM_TIMELINE=(function(){
     const out=[]; let t0=0, prev=null;
     TERM_LINES.forEach(function(row){
@@ -1031,7 +958,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     let i=0, cur=null, curShown=-1;
     function frame(now){
       const el=now-t0;
-      // 이번 프레임까지 시작된 줄을 모두 처리 (빠른 줄은 한 프레임에 여러 줄이 끝날 수 있음)
+
       while(i<TERM_TIMELINE.length&&TERM_TIMELINE[i].start<=el){
         const L=TERM_TIMELINE[i];
         if(cur)cur.div.innerHTML=cur.L.lvl===-1?"&nbsp;":cur.L.pad+termRender(cur.L.segs,cur.L.at.length);
@@ -1060,7 +987,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     if(termTimer){cancelAnimationFrame(termTimer);termTimer=null;}
   }
 
-  // COMMAND 홀로그램이 다른 출처(file://)라 직접 못 부를 때: 늦게 로드된 iframe이 aegisReady를 보내면 현재 단계를 알려 준다(v64).
   window.addEventListener('message', function(e){
     var c=document.getElementById('cmdMap');
     if(c&&e.data&&e.data.aegisReady&&e.source===c.contentWindow)c.contentWindow.postMessage({aegisCommand:currentCopyStep===2},'*');
@@ -1074,7 +1000,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
       if (j === i)      n.classList.add('active');
       else if (j < i)   n.classList.add('above');
       else              n.classList.add('below');
-      // 영상이 나오는 칸의 숫자는 완전히 숨김
+
       n.style.display = (j === i) ? 'none' : '';
     });
     cards.forEach((c, j) => {
@@ -1084,14 +1010,14 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
       else if (j < i)   c.classList.add('above');
       else              c.classList.add('below');
     });
-    // 영상 재생 제어 (data-step 기준) — 섹션 진입 전에는 재생하지 않음
+
     vids.forEach((v) => {
       const j = parseInt(v.dataset.step, 10);
       v.classList.toggle('show', j === i);
     });
     syncVids();
     var _cm=document.getElementById('cmdMap');if(_cm){_cm.classList.toggle('show', i===2);if(i===2){try{_cm.contentWindow&&_cm.contentWindow.__aegisReset&&_cm.contentWindow.__aegisReset();}catch(e){}}try{_cm.contentWindow&&_cm.contentWindow.postMessage({aegisCommand:i===2},'*');}catch(e){}}
-    // DECIDE(1) 터미널 제어
+
     if (i === 1) {
       decideTerm.classList.add('show');
       if (!termPlayed) termPlay();
@@ -1118,7 +1044,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   window.addEventListener('resize', onScroll, {passive:true});
 })();
 
-/* ── DOMAIN VIDEO HOVER: 커서가 올라간 카드의 영상만 재생 (표시는 CSS :hover) ── */
 (function(){
   document.querySelectorAll('.dl[data-domain]').forEach(card => {
     const vid = card.querySelector('.dl-video video');
@@ -1132,22 +1057,21 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     });
     card.addEventListener('mouseleave', () => {
       clearTimeout(pauseTimer);
-      pauseTimer = setTimeout(() => { try { vid.pause(); } catch(e){} }, 1200);   /* CSS 페이드(1.2s) 끝난 뒤 정지 */
+      pauseTimer = setTimeout(() => { try { vid.pause(); } catch(e){} }, 1200);
     });
   });
 })();
 
-/* ── 3NO: word entrance, then a deeper scroll reveals NO. ── */
 (function(){
   const section=document.getElementById('three-no');
   const title=document.getElementById('threeNoTitle');
   const word=section.querySelector('.latency-word');
   const desc=section.querySelector('.sec-desc');
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  // v51: 이 섹션의 .decode 요소가 사라져 decode 옵저버의 fade-in 폴백이 없음 → 직접 켠다.
+
   if(reduced.matches){desc.classList.add('visible');return;}
   section.classList.add('motion-ready');
-  const noStep=480; // .no-token 와이프 길이(CSS 480ms)와 맞춤
+  const noStep=480;
   section.querySelectorAll('.no-token').forEach((token,i)=>token.style.setProperty('--no-delay',(i*noStep)+'ms'));
   word.innerHTML='<span class="latency-space">LATENCY.</span><span class="latency-live"><span class="latency-letters"></span><span class="latency-cursor">_</span></span>';
   const letters=word.querySelector('.latency-letters');
@@ -1161,20 +1085,20 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     started=true;
     section.classList.add('words-start');
     letters.textContent='L';
-    const typingInterval=2470/3; // E의 마지막 입력 시점(2470ms)을 세 간격으로 균등 분배.
+    const typingInterval=2470/3;
     ['LA','LAT','LATE'].forEach((text,i)=>{
       typingTimers.push(setTimeout(()=>letters.textContent=text,(i+1)*typingInterval));
     });
   }
   function release(){
-    // 무대 고정 후 화면 높이의 30%를 더 스크롤해야 NO 시작 (섹션 210vh → 고정 구간 약 110vh).
+
     if(released||section.getBoundingClientRect().top>-innerHeight*.3)return;
     released=true;
     startTyping();
     section.classList.add('no-start');
-    // Each NO finishes its wipe before the next starts; sync each word to its own reveal.
+
     later(()=>section.classList.add('cloud-clear'),noStep/2);
-    // CLOUD의 NO 동안 지연 입력을 유지하고, LATENCY의 NO 시작 시에만 전환.
+
     later(()=>typingTimers.forEach(clearTimeout),noStep);
     later(()=>{
       const full='LATENCY.';
@@ -1186,8 +1110,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
         },(length-entered-1)*45);
       }
     },noStep*1.5);
-    // 설명은 세 번째 NO 와이프가 끝난 뒤 등장 (decode 옵저버는 motion-ready 동안 이 섹션 fade-in을 건너뜀).
-    // 세 번째 NO 잉크가 드러나는 시점에 색수차 수렴 시작(CLOUD 해제와 같은 구조).
+
     later(()=>section.classList.add('relay-focus'),noStep*2.5);
     later(()=>desc.classList.add('visible'),noStep*3);
     window.removeEventListener('scroll',schedule);
@@ -1219,9 +1142,8 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   check();
 })();
 
-/* ── DECODE + FADE-IN ── */
 (function(){
-  /* ba_air.html 과 동일한 문자셋 — # & 포함 */
+
   const CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#&';
   const INTERVAL=30;
   function decode(el, onDone, totalMs){
@@ -1229,7 +1151,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     const orig=el.textContent.trim(), len=orig.length;
     const done=Array(len).fill(false); let f=0, revealed=0;
     const revealStart=Math.floor(TOTAL_FRAMES*.25);
-    /* 문장 앞쪽 절반은 처음부터 정상 표시 — 중간 지점 이후 글자만 디코딩 */
+
     const nsIdx=[]; for(let i=0;i<len;i++) if(orig[i]!==' ') nsIdx.push(i);
     const preCount=Math.floor(nsIdx.length/2);
     for(let i=0;i<preCount;i++) done[nsIdx[i]]=true;
@@ -1248,7 +1170,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     tick();
   }
   function typeThenDecode(el, onDone){
-    // 시간 기반 단일 패스 + 최종 레이아웃 고정(미등장 글자는 최종 글자를 투명 처리해 폭/줄바꿈 예약)
+
     el.classList.add('visible');
     const spans=Array.prototype.slice.call(el.querySelectorAll('.nw'));
     const wrap=spans.length>0;
@@ -1268,12 +1190,12 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
         for(var j=0;j<ph.length;j++,gk++){
           var fc=ph.charAt(j);
           if(fc===' '){ html+='<span> </span>'; continue; }
-          if(gk<rev-scr) html+='<span>'+esc(fc)+'</span>';                                     // 확정
-          else if(gk<rev) html+='<span>'+CHARS.charAt(Math.random()*CHARS.length|0)+'</span>'; // 스크램블(가시)
-          else html+='<span class="inv">'+esc(fc)+'</span>';                                   // 미등장(최종폭 예약·투명)
+          if(gk<rev-scr) html+='<span>'+esc(fc)+'</span>';
+          else if(gk<rev) html+='<span>'+CHARS.charAt(Math.random()*CHARS.length|0)+'</span>';
+          else html+='<span class="inv">'+esc(fc)+'</span>';
         }
         html+='</span>';
-        if(pi<phrases.length-1){ html+=' '; gk++; }   // 구절 사이 공백(전역 인덱스 소비)
+        if(pi<phrases.length-1){ html+=' '; gk++; }
       }
       el.innerHTML=html;
       if(p<1) requestAnimationFrame(frame);
@@ -1282,21 +1204,21 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     requestAnimationFrame(frame);
   }
   function triggerDecode(el){
-    if(el.dataset.decoded) return;              // 중복 방지
+    if(el.dataset.decoded) return;
     el.dataset.decoded='1';
     obs.unobserve(el);
     el.classList.add('visible');
     const sec=el.closest('section')||el.closest('#cta');
-    // 3NO 모션 중에는 설명 fade-in을 3NO 스크립트가 NO 와이프 종료 후 직접 켬
+
     const fadeEls=(sec&&!sec.classList.contains('motion-ready'))?sec.querySelectorAll('.fade-in'):[];
     const run=(el.id==='heroDecode')?typeThenDecode:decode;
-    run(el,()=>{ fadeEls.forEach((fe,i)=>setTimeout(()=>fe.classList.add('visible'),i*120)); });  // ba_air 과 동일 간격
+    run(el,()=>{ fadeEls.forEach((fe,i)=>setTimeout(()=>fe.classList.add('visible'),i*120)); });
   }
   const obs=new IntersectionObserver(entries=>{
     entries.forEach(entry=>{ if(entry.isIntersecting) triggerDecode(entry.target); });
   },{threshold:0, rootMargin:'0px 0px -5% 0px'});
   document.querySelectorAll('.decode').forEach(el=>obs.observe(el));
-  // 새로고침 시 스크롤 복원으로 이미 화면에 보이는 요소는 로드 후 강제 트리거
+
   function decodeCheckInView(){
     document.querySelectorAll('.decode').forEach(el=>{
       if(el.dataset.decoded) return;
@@ -1305,23 +1227,22 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     });
   }
   window.addEventListener('load', ()=>setTimeout(decodeCheckInView, 80));
-  setTimeout(decodeCheckInView, 400);           // 스크롤 복원이 늦는 경우 대비
+  setTimeout(decodeCheckInView, 400);
 })();
 </script>
 <script>
-/* ── DOMAINS 타이틀 디코드 / 카드 복귀 효과 ── */
+
 (function(){
   var title=document.getElementById('domainTitle'); if(!title) return;
   var links=document.querySelector('.domain-links');
   var cards=document.querySelectorAll('.dl[data-domain]');
   var CH='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  // 커서가 나간 카드만 복귀 효과(박스가 지나가며 글자 복원). 다시 들어오면 호버 효과가 처음부터 재생
+
   cards.forEach(function(c){
     c.addEventListener('mouseenter',function(){ c.classList.remove('dl-leave'); });
     c.addEventListener('mouseleave',function(){ c.classList.add('dl-leave'); });
   });
 
-  // 스크롤 진입 시 타이틀 디코드(조각 스팬 구조 유지) + 카드 페이드인
   var spans=Array.prototype.slice.call(title.querySelectorAll('.dt-p, .dom-def, .dom-s'));
   var texts=spans.map(function(s){return s.textContent;});
   var done=false;
@@ -1342,7 +1263,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 })();
 </script>
 <script>
-// Fit the complete description into a box matching the domain title height.
+
 (function(){
   var descriptions=document.querySelectorAll('.dl-description');
   function fitDescriptions(){
@@ -1359,7 +1280,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   }
   var observer=new ResizeObserver(fitDescriptions);
   descriptions.forEach(function(description){ observer.observe(description); });
-  /* 한/영 전환 시 상자 크기는 그대로라 ResizeObserver 가 안 불림 → 언어 바뀌면 다시 맞춘다 */
+
   document.addEventListener('ba:lang', fitDescriptions);
   document.fonts.ready.then(fitDescriptions);
 })();

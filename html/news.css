@@ -1,4 +1,4 @@
-/* News pages: no corner ornaments; article navigation. */
+
 #ba-corners{display:none!important;}
 .news-pagination{display:grid;grid-template-columns:1fr 1fr;margin:0 var(--pad);border-top:1px solid var(--line);}
 .news-neighbor{display:flex;flex-direction:column;gap:14px;min-width:0;padding:max(24px, calc(36 * var(--u))) 0;color:var(--ink);text-decoration:none;}

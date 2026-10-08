@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<!-- IT services v1 · 2026-09-21 -->
-<!-- 2026-09-29: 한/영 병기(data-i18n). 한국어 원문 + 영문 신규 작성. 제목·속성은 한국어 기본값, 영어는 data-en 속성 -->
+
 <html lang="ko" data-i18n>
 <head>
 <script src="lang.js"></script>
@@ -13,17 +12,15 @@
 <link rel="stylesheet" href="tech.css?v=20261008f">
 <style>
 .hero h1 .kern-ty{letter-spacing:.02em}
-/* SERVICE DIRECTORY 펼침 상태: 닫힘 ↗, 열림 시 90° 회전해 ↘. */
+
 .service .arrow{justify-self:end;line-height:1;font-weight:100;transition:transform .3s cubic-bezier(.2,.8,.2,1)}.service[open] .arrow{transform:rotate(90deg)}
-/* SERVICE DIRECTORY 펼침 모션 (2026-10-06) — 높이는 스크립트가 펼침/접힘, 본문은 글자만 왼쪽부터 순서대로 채움(AEGIS dl-text-fill 재사용).
-   제목 디코드·흰 박스 와이프는 산만해 제외(사용자 요청). */
-/* 행 번호(01~04) 제거 (2026-10-06, 사용자 요청) — 번호 칸을 빼고, 펼친 본문은 제목과 구분되게 살짝만 들여씀 */
+
 .service summary{grid-template-columns:1.25fr 1fr 35px}.service-body{padding-left:max(20px,calc(32 * var(--u)))}
 @media(max-width:700px){.service summary{grid-template-columns:minmax(0,1fr) 22px}.summary-copy{grid-column:1;grid-row:2}.service .arrow{grid-column:2;grid-row:1}.service-body{padding-left:16px}}
 .service-body{overflow:hidden}.service.svc-closing .arrow{transform:none}
 .service.svc-in .service-body p,.service.svc-in .service-body li,.service.svc-in .cta-arrow{animation:svc-text-fill 520ms cubic-bezier(.2,.8,.2,1) var(--d,0ms) both}
 @keyframes svc-text-fill{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0)}}
-/* 2026-10-08 사용자 요청: 펼친 본문 CTA의 흰 박스는 글자 높이로 잘린 모양을 유지하되, 화살표 오른쪽만 띄어쓰기 한 칸(.28em)만큼 흰색이 보이게 */
+
 .service.svc-in .cta-arrow{animation-name:svc-cta-fill}
 @keyframes svc-cta-fill{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 -.28em 0 0)}}
 @media(prefers-reduced-motion:reduce){.service.svc-in .service-body p,.service.svc-in .service-body li,.service.svc-in .cta-arrow{animation:none}}
@@ -47,31 +44,6 @@
 <div class="hero-meta mono">
 <span>INFRASTRUCTURE · SECURITY · CONTINUITY · OPERATIONS</span>
 <span>DESIGN / BUILD / SUPPORT</span>
-</div>
-<div class="diagram" role="img" aria-label="컴퓨팅, 데이터, 보안, 복구가 연결된 IT 환경 개념도" data-ko-aria-label="컴퓨팅, 데이터, 보안, 복구가 연결된 IT 환경 개념도" data-en-aria-label="Concept diagram of an IT environment connecting compute, data, security and recovery">
-<svg viewBox="0 0 1200 240" preserveAspectRatio="xMidYMid meet">
-<defs>
-<pattern id="dots" width="7" height="7" patternUnits="userSpaceOnUse">
-<circle cx="1" cy="1" r=".8" fill="#f0ede8" opacity=".35"/>
-</pattern>
-</defs>
-<rect x="0" y="0" width="1200" height="240" fill="url(#dots)" opacity=".2"/>
-<path class="route" d="M120 120H1080M300 120V45H900V120M300 120V195H900V120"/>
-<path class="signal" d="M120 120H1080M300 120V45H900V120M300 120V195H900V120"/>
-<rect class="node" x="90" y="88" width="120" height="64"/>
-<rect x="100" y="98" width="100" height="44" fill="url(#dots)"/>
-<text x="150" y="180" text-anchor="middle">COMPUTE</text>
-<rect class="node" x="390" y="88" width="120" height="64"/>
-<rect x="400" y="98" width="100" height="44" fill="url(#dots)"/>
-<text x="450" y="180" text-anchor="middle">DATA</text>
-<rect class="node" x="690" y="88" width="120" height="64"/>
-<rect x="700" y="98" width="100" height="44" fill="url(#dots)"/>
-<text x="750" y="180" text-anchor="middle">SECURITY</text>
-<rect class="node" x="990" y="88" width="120" height="64"/>
-<rect x="1000" y="98" width="100" height="44" fill="url(#dots)"/>
-<text x="1050" y="180" text-anchor="middle">RECOVERY</text>
-<text x="600" y="29" text-anchor="middle" opacity=".5">CONNECTED IT ENVIRONMENT</text>
-</svg>
 </div>
 </header>
 <section class="section" id="services">
@@ -251,16 +223,16 @@
 <script src="footer.js"></script>
 <script src="tech.js?v=20261008e"></script>
 <script>
-/* SERVICE DIRECTORY 펼침 모션 — 높이 펼침/접힘 + 본문 글자 순차 채움(스타일은 head 참고). */
+
 (function(){
   if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var EASE='cubic-bezier(.2,.8,.2,1)', STEP=70; /* 시작부터 바로 움직이는 감속 곡선 — 느린 출발 곡선은 멈칫해 보임 */
+  var EASE='cubic-bezier(.2,.8,.2,1)', STEP=70;
   Array.prototype.forEach.call(document.querySelectorAll('details.service'),function(d){
     var summary=d.querySelector('summary'), body=d.querySelector('.service-body'), anim=null;
-    /* 위아래 여백까지 0으로 접어야 시작·끝에서 여백만큼 툭 튀지 않는다 */
+
     function full(){ var cs=getComputedStyle(body); return {height:body.getBoundingClientRect().height+'px',paddingTop:cs.paddingTop,paddingBottom:cs.paddingBottom}; }
     function shut(){ return {height:'0px',paddingTop:'0px',paddingBottom:'0px'}; }
-    /* 순서: 설명 → 태그 → 링크 → 목록 */
+
     Array.prototype.forEach.call(body.querySelectorAll('p,.cta-arrow,li'),function(el,i){ el.style.setProperty('--d',(40+STEP*i)+'ms'); });
     summary.addEventListener('click',function(e){
       e.preventDefault();

@@ -1,5 +1,4 @@
-/* 제품 상세 9개(product-*.html) 공용 스타일 — 2026-09-29 각 페이지 <style>에서 분리.
-   페이지 전용 규칙은 각 HTML의 <style>에 남아 이 파일 뒤에서 덮어쓴다. */
+
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--u:calc(min(100vw,1440px)/1440);--bg:#000000;--bg2:#000000;--ink:#f0ede8;--muted:rgba(240,237,232,.62);--line:rgba(240,237,232,.21);--pad:max(20px,calc(60 * var(--u)))}
 html{scroll-behavior:smooth;scroll-padding-top:100px}
@@ -72,13 +71,6 @@ h1{font-size:max(44px,calc(98 * var(--u)));font-weight:500;letter-spacing:-.045e
 .study{display:grid;grid-template-columns:1fr 1fr;gap:8%;align-items:center;margin-top:48px;border-top:1px solid var(--line);padding-top:32px}
 .study img{display:block;width:100%;max-width:580px;height:auto}
 .study h3{font-size:26px;font-weight:400;margin:12px 0}
-.source-details{margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
-.source-details summary{cursor:pointer;font-size:13px;list-style:none;display:flex;justify-content:space-between;gap:20px}
-.source-details summary::-webkit-details-marker{display:none}
-.source-details summary span{font-size:20px;font-weight:100;transition:transform .28s}
-.source-details[open] summary span{transform:rotate(90deg)}
-.source-details p{font-size:13px;line-height:1.9;color:var(--muted);margin-top:16px}
-.source-details a{text-decoration:underline;text-underline-offset:4px}
 .related{padding-top:40px;padding-bottom:60px}
 .related-grid{display:flex;flex-wrap:wrap;gap:12px 28px;margin-top:20px}
 .related a{font-size:14px;border-bottom:1px solid var(--line);padding:8px 0}
