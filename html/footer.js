@@ -1,3 +1,4 @@
+/* v16 (2026-10-08): 내부 CONTACT 연결, 사무실 전화·팩스 번호 제거. 이메일은 Contact 본문에서 안내. */
 /* v15 (2026-09-29): 언어 선택 상자를 메뉴 목록 아래 → 왼편으로 이동(글자 높이 AIR POWER 에 맞춤). 640px 이하는 메뉴 아래. */
 /* v14 (2026-09-29): 한/영 전환을 메뉴바에서 푸터로 이동 — 오른쪽 링크 아래 접힌 상자(KOR ^).
         누르면 위로 펼쳐져 바꿀 수 있는 언어만(ENG 또는 KOR) 보이고, 고르면 바로 전환·저장 후 접힘. */
@@ -118,7 +119,7 @@
     <a class="logo-wrap" href="${homeHref}" aria-label="BA SOLUTIONS home" data-ko-aria-label="BA SOLUTIONS 홈">
       ${logoSvg.replace('role="img" aria-label="BA SOLUTIONS"','aria-hidden="true" focusable="false"')}
     </a>
-    <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>${P('56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 13572', '경기도 성남시 분당구 안골로 56<br>(13572)')}<br><br>${P('Tel', '전화')}: +82-2-576-5295<br>${P('Fax', '팩스')}: +82-31-707-7943</div>
+    <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>${P('56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 13572', '경기도 성남시 분당구 안골로 56<br>(13572)')}</div>
     <div class="foot-copy">© 2004 ~ ${year} BA Solutions, Co., Ltd. All rights reserved.<br>${P('The Jammer is the strategic item and is under control of Korean government.', '재머는 전략물자로 대한민국 정부의 통제를 받습니다.')}</div>
   </div>
   <div class="fright">
@@ -136,7 +137,8 @@
     <a href="${pageBase}aegis.html">AEGIS</a>
     <a href="${pageBase}it-services.html">TECH</a>
     <a href="${pageBase}news.html" style="margin-top:36px;">NEWS</a>
-    <a href="https://basolutions.co.kr">ABOUT US</a>
+    <a href="${pageBase}contact.html">CONTACT</a>
+    <a href="https://basolutions.co.kr">INSIGHT</a>
   </div>
   </div>
 </footer>

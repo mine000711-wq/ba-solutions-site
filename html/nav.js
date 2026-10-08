@@ -1,3 +1,4 @@
+/* v21 (2026-10-08): 외부 ABOUT US를 내부 CONTACT로 변경 — 데스크톱·모바일 공통. */
 /* v20 (2026-09-29): 한/영 토글(KO / EN)을 메뉴바·모바일 드로어에서 제거 — 푸터 언어 선택 상자(footer.js v14)로 이동.
         햄버거·드로어 접근성 문구는 계속 선택 언어를 따름('ba:lang' 이벤트). */
 /* v19 (2026-09-29): 로고를 div onclick → <a> 홈 링크로(모양 그대로). 새 탭 열기·링크 복사·키보드 이동 가능.
@@ -73,6 +74,7 @@
   var assetBase = inSub ? '../' : '';
   var pageBase  = inSub ? '' : 'html/';
   var homeHref  = inSub ? '../BA_Solutions.html' : 'BA_Solutions.html';
+  var contactCurrent = /\/contact\.html$/.test(location.pathname) ? ' aria-current="page"' : '';
 
   var links = [
     ['AIR','ba_air.html'],
@@ -144,14 +146,14 @@
     '<ul class="nav-links">'+li+'</ul>'+
     '<div class="nav-right">'+
       '<a href="'+pageBase+'news.html" class="nav-about">NEWS</a>'+
-      '<a href="https://basolutions.co.kr" class="nav-about">ABOUT US</a>'+
+      '<a href="'+pageBase+'contact.html" class="nav-about"'+contactCurrent+'>CONTACT</a>'+
     '</div>'+
   '</nav>'+
   '<button id="ba-toggle" type="button" aria-expanded="false" aria-controls="ba-menu" aria-label="'+(isKo()?'메뉴 열기':'Open menu')+'"><span></span></button>'+
   '<div id="ba-menu" role="dialog" aria-modal="true" aria-label="'+(isKo()?'메뉴':'Menu')+'">'+
     '<div class="panel">'+
       '<ul>'+mli+'</ul>'+
-      '<a href="https://basolutions.co.kr" class="about">ABOUT US</a>'+
+      '<a href="'+pageBase+'contact.html" class="about"'+contactCurrent+'>CONTACT</a>'+
     '</div>'+
   '</div>'
   );
