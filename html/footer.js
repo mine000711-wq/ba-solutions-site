@@ -65,6 +65,7 @@
 #ba-footer{position:relative;z-index:999998;background:#000;border:0;
   padding:72px max(20px, calc(60 * var(--u, calc(min(100vw, 1440px) / 1440)))) 56px;display:flex;justify-content:space-between;align-items:flex-start;
   font-family:inherit;box-sizing:border-box;}
+#ba-footer .fleft{align-self:flex-end;}
 #ba-footer .logo-wrap{display:flex;width:fit-content;align-items:center;margin-bottom:28px;color:#F0EDE8;text-decoration:none;}
 #ba-footer a:focus-visible{outline:1px solid currentColor;outline-offset:4px;}
 #ba-footer .foot-addr a{color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.2);transition:color .3s,border-color .3s;}
@@ -115,7 +116,7 @@
 }
 </style>
 <footer id="ba-footer">
-  <div>
+  <div class="fleft">
     <a class="logo-wrap" href="${homeHref}" aria-label="BA SOLUTIONS home" data-ko-aria-label="BA SOLUTIONS 홈">
       ${logoSvg.replace('role="img" aria-label="BA SOLUTIONS"','aria-hidden="true" focusable="false"')}
     </a>
