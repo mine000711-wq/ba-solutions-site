@@ -36,7 +36,7 @@ h1{font-size:max(44px,calc(98 * var(--u)));font-weight:500;letter-spacing:-.045e
 .sec-label{display:block;font-family:'Michroma',sans-serif;font-size:10px;letter-spacing:.08em;color:var(--muted);margin-bottom:26px}
 .overview{display:grid;grid-template-columns:1fr 2fr;gap:8%}
 .overview h2{font-size:max(27px,calc(42 * var(--u)));font-weight:500;line-height:1.25;letter-spacing:-.025em}
-.lead{font-size:max(18px,calc(25 * var(--u)));line-height:1.8;word-break:keep-all;max-width:850px}
+.lead{font-size:max(16px,calc(21 * var(--u)));line-height:1.8;word-break:keep-all;max-width:850px}
 .section-heading{font-size:max(28px,calc(46 * var(--u)));font-weight:500;line-height:1.3;letter-spacing:-.03em;margin-bottom:40px;word-break:keep-all}
 .items{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
 .item{border-top:1px solid var(--line);padding-top:24px}
