@@ -220,9 +220,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
 
 <section id="hero">
 
-  <video id="hero-video" autoplay muted loop playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s;">
-    <source src="../video/hero-video.mp4" type="video/mp4">
-  </video>
   <canvas id="dot-canvas"></canvas>
   <div class="hero-content">
     <h1 class="ht">Air.<br><span>Decisive.</span></h1>
@@ -297,11 +294,11 @@ h1.ht span{color:rgba(255,255,255,.25);}
 <script src="footer.js"></script>
 
 <script>
-/* ── 망점 패턴 (AIR 새 배경) — 십자는 제거, 영상 시작 타이밍은 기존 값 유지 ── */
+/* ── 망점 패턴 (AIR 배경) — 영상 없이 기존 망점 효과 유지 ── */
 (function(){
   var c=document.getElementById('dot-canvas');
   var ctx=c.getContext('2d');
-  var W,H,grid=[],started=false,animTime=0,animationComplete=false;
+  var W,H,grid=[],started=false,animTime=0;
   var GAP=80; // 망점 간격
   var CROSS_GAP=320; // 십자 간격 (GAP의 4배 = 점 3개 사이)
   var DOT_R=0.8; // 더 작은 점 반지름
@@ -365,13 +362,8 @@ h1.ht span{color:rgba(255,255,255,.25);}
   }
   
   function draw(){
-    // 비디오가 시작되면 투명하게, 아니면 검은 배경
-    if(animationComplete){
-      ctx.clearRect(0,0,W,H);
-    } else {
-      ctx.fillStyle='#000000';
-      ctx.fillRect(0,0,W,H);
-    }
+    ctx.fillStyle='#000000';
+    ctx.fillRect(0,0,W,H);
 
     ctx.save();
     ctx.translate(OFFSET_X, OFFSET_Y);   // ← 망점+십자 전체를 함께 이동 (배경 칠은 위에서 끝나 영향 없음)
@@ -401,21 +393,9 @@ h1.ht span{color:rgba(255,255,255,.25);}
   }
 
   var startTime=Date.now();
-  var videoStartTime;
   function animate(){
     animTime=Date.now()-startTime;
     draw();
-    
-    // 비디오 시작 체크
-    if(!animationComplete && animTime>=videoStartTime){
-      animationComplete=true;
-      var video=document.getElementById('hero-video');
-      if(video){
-        video.play();
-        video.style.opacity='1';
-        // canvas는 페이드아웃하지 않고 계속 오버레이 유지
-      }
-    }
     
     if(animTime<CROSS_ANIM_START+CROSS_ANIM_DUR*50){
       requestAnimationFrame(animate);
@@ -428,7 +408,6 @@ h1.ht span{color:rgba(255,255,255,.25);}
     W=c.width=window.innerWidth;
     H=c.height=window.innerHeight;
     calcSpeed(); // 화면 크기에 맞춰 속도 재계산
-    videoStartTime=CROSS_ANIM_START+1100; // 십자가 시작 후 1.1초
     build();
     draw();
   }
