@@ -4,7 +4,7 @@
 <!-- ba_sea.html — v16 (2026-09-17): 섹션 인디케이터 라벨 전환에 슬롯 효과 (footer.js v12 의 window.baSlotRender 호출) -->
 <!-- ba_sea.html — v15 (2026-09-15): 제품 VIEW DETAILS → ba_air Interceptor 의 View More 버튼(CSS·마크업 동일)으로 교체, 링크를 각 제품 상세 페이지로 -->
 <!-- ba_sea.html — v14 (2026-09-14): Helvetica 텍스트 자간 전부 0 (Michroma·nav·footer 제외) -->
-<!-- ba_sea.html — v13 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: Homepage/반응형_단위가이드.md -->
+<!-- ba_sea.html — v13 (2026-09-14): vw clamp → --u 단위 (1440px 기준 1px). 가이드: 문서/가이드/반응형_단위가이드.md -->
 <!-- ba_sea.html — v12 (2026-09-04): 디코드 효과 통일 — 문장 앞쪽 절반은 처음부터 정상 표시, 중간 이후 글자만 스크램블 (A+B형) -->
 <!-- ba_sea.html — v11 (2026-09-03): 미사용 CSS 제거 (7블록/7줄) — .nav-logo, .hero-tag, .hero-tag::before, .sec-alt, .fl, .pcard-img-lbl, .pcard-img-corner -->
 <!-- ba_sea.html — v10 (2026-09-03): 보조 배경 통일 — --bg2 / .flow-cmd → #000000 (ba_air 기준) -->
@@ -52,7 +52,7 @@
 
 *{margin:0;padding:0;box-sizing:border-box;}
 ::selection{background:#f0ede8;color:#000;}
-/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
 :root{--u:calc(min(100vw, 1440px) / 1440);--bg:#000000;--bg2:#000000;--line:rgba(255,255,255,.08);--pad:max(20px, calc(60 * var(--u)));}
 
 /* 메인페이지(BA_Solutions.html)와 동일하게 스크롤바 숨김 */
@@ -160,12 +160,14 @@ h1.ht span{color:rgba(255,255,255,.25);}
    · 이제 바탕 글씨는 그대로 두고 덮개만 드러나므로, 박스와 검정 글씨가 같은 선으로 함께 차오른다.
    채움 박스는 좌우 8px 까지만 확장: .pcard-text 의 clip-path 가 padding(8px) 밖을 잘라내기 때문
    위치: 텍스트 영역 우측 끝 (block + fit-content + margin-left:auto) */
-.pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(10px, calc(15 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
+.pcard-link-fill{--plf-weight:400;--plf-e:cubic-bezier(.65,0,.35,1);position:relative;display:block;width:fit-content;margin:28px 0 0 auto;font-size:max(13px, calc(18 * var(--u)));line-height:1;font-weight:300;letter-spacing:.05em;color:#f0ede8;text-decoration:none;padding-bottom:calc(.2em + 1.5px);white-space:nowrap;}
 /* 덮개: 바탕 글씨와 같은 자리에 글자가 오도록 top/left 음수만큼 padding 으로 되돌린다.
    상하 여백(.42em / .3em)은 대문자 윗선~기준선 중앙과 박스 중앙이 일치하는 값 (Helvetica Neue 기준, "View More ↘"는 하강부 없음)
    덮개는 화살표를 따로 움직이려고 ::before 대신 실제 요소(.plf-cover)로 둔다 */
 .plf-cover{position:absolute;top:-.42em;left:-8px;right:-8px;bottom:-.3em;padding:.42em 0 0 8px;background:#f0ede8;color:#000;font-weight:var(--plf-weight);clip-path:inset(100% 0 0 0);transition:clip-path .4s cubic-bezier(.4,0,.15,1);pointer-events:none;}
-.pcard-link-fill:hover .plf-cover{clip-path:inset(0 0 0 0);}
+.pcard-link-fill:hover .plf-cover,.pcard-link-fill:focus-visible .plf-cover{clip-path:inset(0 0 0 0);}
+/* 2026-10-08 사용자 요청: TECH CTA(.cta-arrow)와 같은 값 — 글자 15→18(최소 10→13px, 사용자 요청), 자간 0, 흰 박스는 글자 높이로 자르고 화살표 오른쪽만 띄어쓰기 한 칸(.28em), 키보드 포커스에도 같은 효과 */
+.pcard-link-fill{letter-spacing:0;clip-path:inset(0 -.28em 0 0);}
 /* 굵은 글자 폭을 미리 확보 — 덮개 글씨가 박스 밖으로 넘치지 않게 */
 .plf-txt{display:inline-grid;}
 .plf-txt::after{content:attr(data-text);content:attr(data-text) / "";font-weight:var(--plf-weight);height:0;overflow:hidden;visibility:hidden;}
@@ -182,17 +184,17 @@ h1.ht span{color:rgba(255,255,255,.25);}
 .plf-arr{visibility:hidden;}
 .plf-draw{position:absolute;left:0;bottom:0;width:calc(100% - 1.135em);height:1.5px;color:#f0ede8;pointer-events:none;
   transition:bottom .2s var(--plf-e) .3s,left .2s var(--plf-e) .48s,width .2s var(--plf-e) .48s,height .2s var(--plf-e) .48s,color .15s linear .08s;}
-.pcard-link-fill:hover .plf-draw{left:calc(100% - .61em);width:.68em;height:1px;bottom:calc(.745em + 1px);color:#000;
+.pcard-link-fill:hover .plf-draw,.pcard-link-fill:focus-visible .plf-draw{left:calc(100% - .61em);width:.68em;height:1px;bottom:calc(.745em + 1px);color:#000;
   transition:left .22s var(--plf-e),width .22s var(--plf-e),height .22s var(--plf-e),bottom .22s var(--plf-e) .2s,color .12s linear;}
 .plf-shaft{position:absolute;top:0;bottom:0;left:0;right:0;background:currentColor;
   transition:transform .2s var(--plf-e) .12s,left .2s var(--plf-e) .12s,right .2s var(--plf-e) .12s;}
-.pcard-link-fill:hover .plf-shaft{left:-.095em;right:-.095em;transform:rotate(45deg);
+.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:focus-visible .plf-shaft{left:-.095em;right:-.095em;transform:rotate(45deg);
   transition:transform .22s var(--plf-e) .42s,left .22s var(--plf-e) .42s,right .22s var(--plf-e) .42s;}
 .plf-head{position:absolute;top:0;right:0;width:.25em;height:100%;background:currentColor;transform-origin:100% 50%;transform:rotate(-45deg) scaleX(0);transition:transform .15s var(--plf-e);}
 .plf-head-b{transform:rotate(45deg) scaleX(0);}
-.pcard-link-fill:hover .plf-head{transform:rotate(-45deg) scaleX(1);transition:transform .18s var(--plf-e) .64s;}
-.pcard-link-fill:hover .plf-head-b{transform:rotate(45deg) scaleX(1);}
-@media (prefers-reduced-motion:reduce){.plf-draw,.plf-shaft,.plf-head,.pcard-link-fill:hover .plf-draw,.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:hover .plf-head{transition:none;}}
+.pcard-link-fill:hover .plf-head,.pcard-link-fill:focus-visible .plf-head{transform:rotate(-45deg) scaleX(1);transition:transform .18s var(--plf-e) .64s;}
+.pcard-link-fill:hover .plf-head-b,.pcard-link-fill:focus-visible .plf-head-b{transform:rotate(45deg) scaleX(1);}
+@media (prefers-reduced-motion:reduce){.plf-draw,.plf-shaft,.plf-head,.pcard-link-fill:hover .plf-draw,.pcard-link-fill:hover .plf-shaft,.pcard-link-fill:hover .plf-head,.pcard-link-fill:focus-visible .plf-draw,.pcard-link-fill:focus-visible .plf-shaft,.pcard-link-fill:focus-visible .plf-head{transition:none;}}
 
 @media (max-width:760px){
   /* 760px 이하: 203px 최소값은 데스크톱 모듈이라 2열(2×203+14=420px)이 폰 화면에 안 들어감.
@@ -267,7 +269,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
         <div class="pcard-num">01</div>
         <div class="pcard-tag">AMPHIBIOUS</div>
         <h3 class="pcard-name">Hovercraft</h3>
-        <p class="pcard-desc"><span lang="ko">디자인 단계의 공기부양 플랫폼.<br>페이스리프트부터 전면 변경까지, 세 가지 안.</span><span lang="en">An air-cushion platform at the design stage.<br>Three exterior options, from facelift to full change.</span></p>
+        <p class="pcard-desc"><span lang="ko">물과 해변, 습지를 넘나드는 수륙양용 플랫폼.<br>일반 선박이 접근하기 어려운 연안까지 활동 범위를 넓힙니다.</span><span lang="en">An amphibious platform that travels across water, beaches, and wetlands.<br>Extending reach to coastal areas that conventional vessels struggle to access.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-hovercraft.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -280,7 +282,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
         <div class="pcard-num">02</div>
         <div class="pcard-tag">HIGH-SPEED</div>
         <h3 class="pcard-name">Jetboat</h3>
-        <p class="pcard-desc"><span lang="ko">물을 뿜어 나아가는 워터제트 플랫폼.<br>모델 사양은 확정 전.</span><span lang="en">A vessel platform driven by waterjet propulsion.<br>Model specifications to be confirmed.</span></p>
+        <p class="pcard-desc"><span lang="ko">신속한 해상 대응을 위한 고속 워터제트 플랫폼.<br>물을 분사하는 추진 방식으로 빠른 이동과 기동을 지원합니다.</span><span lang="en">A high-speed waterjet platform for rapid maritime response.<br>Waterjet propulsion supports fast transit and maneuverability.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-jetboat.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>
@@ -293,7 +295,7 @@ h1.ht span{color:rgba(255,255,255,.25);}
         <div class="pcard-num">03</div>
         <div class="pcard-tag">SHALLOW WATER</div>
         <h3 class="pcard-name">Airboat</h3>
-        <p class="pcard-desc"><span lang="ko">공기 프로펠러로 달리는 선박 플랫폼.<br>모델 사양은 확정 전.</span><span lang="en">A vessel platform driven by an air propeller.<br>Model specifications to be confirmed.</span></p>
+        <p class="pcard-desc"><span lang="ko">갯벌과 습지, 얕은 하천을 위한 공기 추진 플랫폼.<br>수중 프로펠러 없이, 얕은 수역에서의 이동을 지원합니다.</span><span lang="en">An air-propelled platform for tidal flats, wetlands, and shallow rivers.<br>Supporting travel through shallow waters without a submerged propeller.</span></p>
         <a class="pcard-link pcard-link-fill" href="product-airboat.html"><span class="plf-txt" data-text="View More ↘︎"><span>View More <span class="plf-arr">↘︎</span></span></span><span class="plf-cover" aria-hidden="true">View More <span class="plf-arr">↘︎</span></span><span class="plf-draw" aria-hidden="true"><span class="plf-shaft"><i class="plf-head"></i><i class="plf-head plf-head-b"></i></span></span></a>
       </div>
     </article>

@@ -23,7 +23,7 @@ html { scrollbar-width:none; }
 html::-webkit-scrollbar { display:none; }
 
 /* v43: vw clamp → --u 단위 (1440px 기준 1px) */
-/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — Homepage/반응형_단위가이드.md */
+/* --u : 1440px 창에서 1px. 좁아지면 비례 축소, 1440px 이상 고정. 시안 px 숫자 그대로 calc(68 * var(--u)) — 문서/가이드/반응형_단위가이드.md */
 :root { --u:calc(min(100vw, 1440px) / 1440); --pad:max(20px, calc(40 * var(--u)));}
 
 /* ── HERO ── */
@@ -607,8 +607,8 @@ section { width:100%; padding:200px var(--pad); position:relative; }
     <img class="domain-thumb" src="images/thumb_land.jpg" alt=""
          style="transform:scale(1.6) translate(0, 18%); transform-origin:center;"
          onload="this.classList.add('loaded')" onerror="this.style.display='none'">
-    <video class="domain-video" src="video/video_land.mp4"
-           style="transform:scale(1.6) translate(0, 18%); transform-origin:center;"
+    <video class="domain-video" src="video/aegis_sense_v2.mp4"
+           style="transform:scale(1.15) translate(6%, 10%); transform-origin:center;"
            muted loop playsinline preload="none"></video>
     <div class="domain-overlay"></div>
     <div class="dlabel">

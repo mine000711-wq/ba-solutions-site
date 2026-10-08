@@ -37,7 +37,7 @@
    v9: 좌우 padding clamp(20px 4.1667vw 60px) → --u 단위 (2026-09-14)
         기존 값은 쉼표가 빠져 선언 전체가 무효였고, 각 페이지의 footer{} 규칙이 대신 적용되고 있었음
         (product-aegis-v-jammer 는 규칙이 없어 좌우 여백 0). 이제 이 값이 전 페이지에 적용됨.
-        --u 가 없는 페이지에서도 동작하도록 var(--u, 기본식) 폴백 사용. Homepage/반응형_단위가이드.md
+        --u 가 없는 페이지에서도 동작하도록 var(--u, 기본식) 폴백 사용. 문서/가이드/반응형_단위가이드.md
    이 파일 하나만 수정하면 모든 페이지 푸터가 함께 바뀝니다.
    각 HTML의 <footer> 위치에 <script src="footer.js"></script> 만 넣으세요.
 
@@ -118,7 +118,7 @@
     <a class="logo-wrap" href="${homeHref}" aria-label="BA SOLUTIONS home" data-ko-aria-label="BA SOLUTIONS 홈">
       ${logoSvg.replace('role="img" aria-label="BA SOLUTIONS"','aria-hidden="true" focusable="false"')}
     </a>
-    <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>${P('56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 13572', '경기도 성남시 분당구 안골로 56<br>(13572)')}<br><br>${P('Tel', '전화')}: +82-2-576-5295<br>${P('Fax', '팩스')}: +82-31-707-7943<br>${P('Email', '이메일')}: <a href="mailto:babystar@basolutions.co.kr">babystar@basolutions.co.kr</a></div>
+    <div class="foot-addr">BA SOLUTIONS, Co., Ltd.<br>${P('56 Angol-ro, Bundang-gu<br>Seongnam-si, Gyeonggi-do<br>South Korea 13572', '경기도 성남시 분당구 안골로 56<br>(13572)')}<br><br>${P('Tel', '전화')}: +82-2-576-5295<br>${P('Fax', '팩스')}: +82-31-707-7943</div>
     <div class="foot-copy">© 2004 ~ ${year} BA Solutions, Co., Ltd. All rights reserved.<br>${P('The Jammer is the strategic item and is under control of Korean government.', '재머는 전략물자로 대한민국 정부의 통제를 받습니다.')}</div>
   </div>
   <div class="fright">

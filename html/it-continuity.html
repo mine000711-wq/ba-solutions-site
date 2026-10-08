@@ -10,7 +10,7 @@
 <meta name="color-scheme" content="dark">
 <title data-en="High Availability &amp; Disaster Recovery | BA Solutions">이중화·재해복구 | BA Solutions</title>
 <meta name="description" content="MIMIX의 데이터 복제, Db2 Mirror for i의 동기식 미러링, 서버 이중화·재해복구 구축을 통해 장애와 재해에 대비한 업무 연속성을 준비합니다.">
-<link rel="stylesheet" href="tech.css?v=20261006">
+<link rel="stylesheet" href="tech.css?v=20261008f">
 </head>
 <body>
 <a class="skip" href="#main"><span lang="ko">본문으로 바로가기</span><span lang="en">Skip to content</span></a>
@@ -93,17 +93,40 @@
 </div>
 </div>
 <form class="brief" id="brief-form">
-<label for="brief-topic"><span lang="ko">문의 분야</span><span lang="en">Service area</span></label>
-<select id="brief-topic" name="topic">
-<option value="infrastructure">인프라 설계·구축</option>
-<option value="security">데이터·시스템 보안</option>
-<option value="continuity" selected>이중화·재해복구</option>
-<option value="operations">운영·개발·기술지원</option>
-</select>
-<label for="brief-text"><span lang="ko">운영 환경과 요청 사항</span><span lang="en">Your environment and request</span></label>
-<textarea id="brief-text" name="brief" maxlength="1200" aria-describedby="brief-hint">
-</textarea>
-<p class="hint" id="brief-hint"><span lang="ko">공유 가능한 범위의 개요만 적어 주세요. 비밀번호·개인정보·상세 접속정보는 필요하지 않습니다.</span><span lang="en">Share only an overview you can disclose. Passwords, personal data and detailed access information are not needed.</span></p>
+<fieldset class="chips" data-field="topic">
+<legend><span lang="ko">문의 분야</span><span lang="en">Service area</span></legend>
+<div class="chip-row">
+<label><input type="radio" name="topic" value="infrastructure"><span class="chip"><span lang="ko">인프라 설계·구축</span><span lang="en">Infrastructure</span></span></label>
+<label><input type="radio" name="topic" value="security"><span class="chip"><span lang="ko">데이터·시스템 보안</span><span lang="en">Security</span></span></label>
+<label><input type="radio" name="topic" value="continuity" checked><span class="chip"><span lang="ko">이중화·재해복구</span><span lang="en">HA &amp; DR</span></span></label>
+<label><input type="radio" name="topic" value="operations"><span class="chip"><span lang="ko">운영·개발·기술지원</span><span lang="en">Operations &amp; support</span></span></label>
+</div>
+</fieldset>
+<fieldset class="chips" data-field="env">
+<legend><span lang="ko">현재 환경 (여러 개 선택 가능)</span><span lang="en">Current environment (select all that apply)</span></legend>
+<div class="chip-row">
+<label><input type="checkbox" name="env" value="ibmi"><span class="chip">IBM i / AS400</span></label>
+<label><input type="checkbox" name="env" value="windows"><span class="chip">Windows</span></label>
+<label><input type="checkbox" name="env" value="linux"><span class="chip">Linux</span></label>
+<label><input type="checkbox" name="env" value="cloud"><span class="chip"><span lang="ko">클라우드</span><span lang="en">Cloud</span></span></label>
+<label><input type="checkbox" name="env" value="unknown"><span class="chip"><span lang="ko">모름</span><span lang="en">Not sure</span></span></label>
+</div>
+</fieldset>
+<fieldset class="chips" data-field="support">
+<legend><span lang="ko">필요한 지원</span><span lang="en">Support needed</span></legend>
+<div class="chip-row">
+<label><input type="checkbox" name="support" value="build"><span class="chip"><span lang="ko">신규 구축</span><span lang="en">New build</span></span></label>
+<label><input type="checkbox" name="support" value="review"><span class="chip"><span lang="ko">점검·진단</span><span lang="en">Review &amp; assessment</span></span></label>
+<label><input type="checkbox" name="support" value="incident"><span class="chip"><span lang="ko">장애 대응</span><span lang="en">Incident response</span></span></label>
+<label><input type="checkbox" name="support" value="migration"><span class="chip"><span lang="ko">이전·교체</span><span lang="en">Migration &amp; replacement</span></span></label>
+</div>
+</fieldset>
+<div class="brief-who">
+<div><label for="brief-company"><span lang="ko">회사명</span><span lang="en">Company</span></label><input type="text" id="brief-company" name="company" maxlength="80" autocomplete="organization"></div>
+<div><label for="brief-name"><span lang="ko">담당자</span><span lang="en">Contact person</span></label><input type="text" id="brief-name" name="name" maxlength="40" autocomplete="name"></div>
+<div><label for="brief-phone"><span lang="ko">연락처</span><span lang="en">Phone or email</span></label><input type="text" id="brief-phone" name="phone" maxlength="80" autocomplete="tel"></div>
+</div>
+<p class="hint" id="brief-hint"><span lang="ko">비밀번호·상세 접속정보는 필요하지 않으며, 연락처는 회신에만 사용합니다.</span><span lang="en">Passwords and detailed access information are not needed, and contact details are used only to reply.</span></p>
 <div class="actions">
 <a class="button" id="compose-mail" href="mailto:babystar@basolutions.co.kr"><span lang="ko">메일 앱에서 문의 작성 ↗</span><span lang="en">Draft in your email app ↗</span></a>
 <button class="button secondary" id="copy-brief" type="button"><span lang="ko">초안 복사</span><span lang="en">Copy draft</span></button>
@@ -120,6 +143,6 @@
 </section>
 </main>
 <script src="footer.js"></script>
-<script src="tech.js"></script>
+<script src="tech.js?v=20261008e"></script>
 </body>
 </html>
