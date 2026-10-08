@@ -479,6 +479,15 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 }
 
 
+/* 대체 영상 대기: 호버해도 설명·제품명을 유지한다. */
+.dl.media-pending .dl-description,
+.dl.media-pending .dl-description-text,
+.dl.media-pending .dl-products>span {
+  animation:none;
+  color:#f0ede8;
+}
+.dl.media-pending .dl-products>span::after { display:none; }
+
 </style>
 </head>
 <body data-no-sec-ind>
@@ -563,8 +572,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 
   <!-- 카드 -->
   <div class="domain-links fade-in">
-    <a class="dl" href="ba_air.html" data-domain="air">
-      <span class="dl-video" aria-hidden="true"><video src="../video/air-loop.mp4" muted loop playsinline preload="metadata"></video></span>
+    <a class="dl media-pending" href="ba_air.html" data-domain="air">
       <span class="dl-name" data-text="Air">Air</span>
       <span class="dl-description"><span class="dl-description-text"><span lang="ko">요격 드론과 그물포로 적대 드론을 막아냅니다.</span><span lang="en">Stop hostile drones with interceptor drones and net launchers.</span></span></span>
       <span class="dl-products">
@@ -572,8 +580,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
         <span>AEGIS Spider</span>
       </span>
     </a>
-    <a class="dl" href="ba_land.html" data-domain="land">
-      <span class="dl-video" aria-hidden="true"><video src="../video/land-loop.mp4" muted loop playsinline preload="metadata"></video></span>
+    <a class="dl media-pending" href="ba_land.html" data-domain="land">
       <span class="dl-name" data-text="Land">Land</span>
       <span class="dl-description"><span class="dl-description-text"><span lang="ko">대드론 체계로 사람과 시설을 적대 드론으로부터 지킵니다.</span><span lang="en">Protect people and sites from hostile drones with counter-drone systems.</span></span></span>
       <span class="dl-products">
@@ -583,8 +590,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
         <span>AEGIS-B</span>
       </span>
     </a>
-    <a class="dl" href="ba_sea.html" data-domain="sea">
-      <span class="dl-video" aria-hidden="true"><video src="../video/sea-loop.mp4" muted loop playsinline preload="metadata"></video></span>
+    <a class="dl media-pending" href="ba_sea.html" data-domain="sea">
       <span class="dl-name" data-text="Sea">Sea</span>
       <span class="dl-description"><span class="dl-description-text"><span lang="ko">자율 호버크래프트로 수역을 순찰하고 위협에 대응합니다.</span><span lang="en">Patrol waters and respond to threats with autonomous hovercraft.</span></span></span>
       <span class="dl-products">
