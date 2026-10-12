@@ -232,9 +232,10 @@ const m=onPhone?{...cameraView.margin,top:cameraView.margin.top-cameraView.mobil
 shiftX=-focal*(x0+x1)/2;shiftY=focal*((y0+y1)/2)+H*(m.top-m.bottom)/2;F=focal*36/50;}
 
 function cssColor(token,fallback){const e=document.createElement('span');e.style.color='var('+token+', '+fallback+')';root.append(e);const c=getComputedStyle(e).color;e.remove();return new THREE.Color(c);}
-const groundColor=new THREE.Color('#87cefa');
 
-let deviceColor=cssColor('--viz-series-1','#38bdf8'),targetColor=new THREE.Color('#ff3b3b');
+const groundColor=new THREE.Color('#efdfc0');
+
+let deviceColor=new THREE.Color('#efdfc0'),targetColor=new THREE.Color('#ff3b3b');
 
 let killColor=cssColor('--viz-series-3','#4ade80');
 
@@ -1195,7 +1196,7 @@ const mw=Math.max(1,Math.round(w*reflectionScale)),mh=Math.max(1,Math.round(h*re
 for(const t of [rtMirrorObj,rtMirrorScratch])t.setSize(mw,mh);
 markBaseDirty();}
 new ResizeObserver(resize).observe(root);
-new MutationObserver(()=>{deviceColor=cssColor('--viz-series-1','#38bdf8');killColor=cssColor('--viz-series-3','#4ade80');spiderColor=deviceColor;updateDeviceIndicator(deviceIndAt);markBaseDirty();})
+new MutationObserver(()=>{killColor=cssColor('--viz-series-3','#4ade80');spiderColor=deviceColor;updateDeviceIndicator(deviceIndAt);markBaseDirty();})
 .observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
 resize();
 
