@@ -8,9 +8,6 @@
   const host = section.querySelector('.av-viewer');
   const status = section.querySelector('.av-status');
   const buttons = [...section.querySelectorAll('[data-av-shot]')];
-  const captions = [...section.querySelectorAll('[data-av-caption]')];
-  const count = section.querySelector('.av-count');
-  const progress = section.querySelector('.av-progress i');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let viewer, scenes, config, transition, elapsed = 0, active = 0;
   let frame = 0, scrollFrame = 0, lastTime = 0, inView = false;
@@ -52,9 +49,6 @@
   function select(index, animate = true) {
     active = index;
     buttons.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
-    captions.forEach((caption, i) => { caption.hidden = i !== index; });
-    count.textContent = `0${index + 1} / 03`;
-    progress.style.transform = `translateX(${index * 100}%)`;
     if (!viewer) return;
     stop();
     transition = scenes.createTransition(viewer.getState(), config.shots[index], config.motion);
