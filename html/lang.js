@@ -54,7 +54,17 @@
   var css = document.createElement('style');
   css.textContent =
     'html[data-lang="ko"] body [lang="en"],html[data-lang="en"] body [lang="ko"]{display:none!important;}' +
-    'html[data-i18n][lang="ko"] body,body [lang="ko"]{word-break:keep-all;}';
+    'html[data-i18n][lang="ko"] body,body [lang="ko"]{word-break:keep-all;}' +
+
+    '@media (prefers-reduced-motion:no-preference){' +
+      '@view-transition{navigation:auto;}' +
+      '#ba-nav{view-transition-name:ba-nav;}#ba-corners{view-transition-name:ba-corners;}' +
+      '::view-transition-group(ba-nav),::view-transition-group(ba-corners){animation:none;}' +
+      '::view-transition-old(root){animation:ba-vt-out .2s cubic-bezier(.4,0,1,1) both;}' +
+      '::view-transition-new(root){animation:ba-vt-in .42s cubic-bezier(.2,.7,.2,1) .12s both;}' +
+    '}' +
+    '@keyframes ba-vt-out{to{opacity:0;}}' +
+    '@keyframes ba-vt-in{from{opacity:0;transform:translateY(12px);}}';
   (document.head || root).appendChild(css);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', swapAttrs);
