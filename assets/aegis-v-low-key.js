@@ -1,7 +1,12 @@
 import * as THREE from 'three';
-import { createSystemXray } from './aegis-v-system-xray.js';
+import { createSystemXray } from './aegis-v-system-xray.js?v=20261013-tuned1';
+import { ANTENNA_CONCEPT, createAntennaBodyGeometry } from './aegis-v-antenna-concept.js?v=20261013-tuned1';
+import { COOLING_EFFECT_DEFAULTS, COOLING_EFFECT_FIELDS } from './aegis-v-cooling-effect.js?v=20261013-tuned1';
+import { SYSTEM_MOTION_DEFAULTS, SYSTEM_MOTION_FIELDS, createInstallationEffect } from './aegis-v-system-motion.js?v=20261013-tuned1';
 
 export const AEGIS_V_LOW_KEY_DEFAULTS = Object.freeze({
+  ...COOLING_EFFECT_DEFAULTS,
+  ...SYSTEM_MOTION_DEFAULTS,
   vehicleRim: 5, vehicleFill: 0.0001, shadowLift: 0, rimWidth: 6,
   beamSpread: 0.5, beamPosition: -0.35,
   coverVisibility: 0.65, radarHighlight: 1.2, radarOpacity: 0.7,
@@ -29,7 +34,9 @@ export const AEGIS_V_LOW_KEY_FIELDS = [
   ['powerLineOpacity', '배터리 → 레이더 연결선', 0, 1, 0.01],
   ['coolingHighlight', '냉각 하이라이트', 0, 3, 0.05],
   ['coolingOpacity', '냉각 투시 농도', 0, 1, 0.01],
-  ['coolingColor', '냉각 빛 색상']
+  ['coolingColor', '냉각 빛 색상'],
+  ...COOLING_EFFECT_FIELDS,
+  ...SYSTEM_MOTION_FIELDS
 ];
 
 const vertexShader = `
@@ -72,7 +79,7 @@ const bodyFragment = `
 `;
 const radarFragment = `
   uniform vec3 tint, rimDirection;
-  uniform float highlight, density;
+  uniform float highlight, density, installationVisibility;
   varying vec3 vNormalView, vView, vWorld;
   void main() {
     vec3 n = normalize(vNormalView);
@@ -80,14 +87,16 @@ const radarFragment = `
     float light = pow(max(0.0, dot(n, rimDirection)), 2.0);
     float strip = pow(max(0.0, dot(n, normalize(normalize(vView) + rimDirection))), 65.0);
     // A soft, untextured volume. No wireframe, fasteners, fins or internals.
-    float value = highlight * (0.025 + 1.4 * edge * (0.12 + 0.88 * light) + 1.2 * strip);
-    gl_FragColor = vec4(tint * value, density * (0.3 + 0.7 * max(edge, strip)));
+    // Flat primitive faces need a broad light term to keep the block readable.
+    float face = 0.08 + 0.16 * max(0.0, dot(n, rimDirection));
+    float value = highlight * (face + 1.4 * edge * (0.12 + 0.88 * light) + 1.2 * strip);
+    gl_FragColor = vec4(tint * value, installationVisibility * density * (0.45 + 0.55 * max(edge, strip)));
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
   }
 `;
 
-export function createLowKeyTreatment(model) {
+export function createLowKeyTreatment(model, { antennaShape = 'dome' } = {}) {
   const original = [];
   const black = new THREE.MeshBasicMaterial({ color: 0x000000 });
   const direction = new THREE.Vector3();
@@ -102,25 +111,41 @@ export function createLowKeyTreatment(model) {
   model.traverse(object => { if (object.userData.name) rootNodes.set(object.userData.name, object); });
   const radarSource = rootNodes.get('QBA2026001_render.005');
   if (!radarSource) throw new Error('레이더 영역의 기준 형상을 찾을 수 없습니다.');
-  const radarBounds = new THREE.Box3().setFromObject(radarSource);
-  const systems = createSystemXray(model, rootNodes, radarBounds);
-  const radarCenter = radarBounds.getCenter(new THREE.Vector3());
-  const radarSize = radarBounds.getSize(new THREE.Vector3());
+  const radarCenter = new THREE.Box3().setFromObject(radarSource).getCenter(new THREE.Vector3());
+  const deck = rootNodes.get('QBA2026001_render.007');
+  if (!deck) throw new Error('안테나 설치면을 찾을 수 없습니다.');
+  const deckTop = new THREE.Box3().setFromObject(deck).max.y;
+  const inverse = new THREE.Matrix4().copy(model.matrixWorld).invert();
+  const mount = new THREE.Vector3(radarCenter.x, deckTop, radarCenter.z).applyMatrix4(inverse);
   const envelope = new THREE.Group();
-  envelope.name = 'Radar_Soft_Envelope';
-  envelope.position.copy(radarCenter);
+  envelope.name = 'Antenna_Concept';
+  envelope.position.copy(mount);
 
-  const profile = [[0, -0.5], [0.40, -0.5], [0.49, -0.43], [0.49, 0.34], [0.43, 0.48], [0, 0.48]];
-  const geometry = new THREE.LatheGeometry(profile.map(([r, y]) => new THREE.Vector2(r, y)), 48);
-  geometry.scale(radarSize.x, radarSize.y, radarSize.z);
+  const { radius, plateHeight, bodyHeight } = ANTENNA_CONCEPT;
+  const plateGeometry = new THREE.CylinderGeometry(radius, radius, plateHeight, 48);
+  let bodyGeometry = createAntennaBodyGeometry(antennaShape);
   const radar = new THREE.ShaderMaterial({
     vertexShader, fragmentShader: radarFragment, transparent: true,
     depthTest: false, depthWrite: false,
-    uniforms: { tint: { value: new THREE.Color() }, rimDirection: { value: direction }, highlight: { value: 0.55 }, density: { value: 0.45 } }
+    uniforms: { tint: { value: new THREE.Color() }, rimDirection: { value: direction }, highlight: { value: 0.55 }, density: { value: 0.45 }, installationVisibility: { value: 1 } }
   });
-  const radarMesh = new THREE.Mesh(geometry, radar);
-  radarMesh.renderOrder = 10;
-  envelope.add(radarMesh);
+  const plate = new THREE.Mesh(plateGeometry, radar);
+  plate.name = 'Antenna_Concept_Disc';
+  plate.position.y = plateHeight / 2;
+  plate.renderOrder = 10;
+  const antennaBody = new THREE.Mesh(bodyGeometry, radar);
+  antennaBody.name = 'Antenna_Concept_Body';
+  antennaBody.position.y = plateHeight;
+  antennaBody.renderOrder = 11;
+  envelope.add(plate, antennaBody);
+  const conceptBounds = new THREE.Box3().setFromCenterAndSize(
+    mount.clone().add(new THREE.Vector3(0, (plateHeight + bodyHeight) / 2, 0)),
+    new THREE.Vector3(radius * 2, plateHeight + bodyHeight, radius * 2)
+  ).applyMatrix4(model.matrixWorld);
+  const systems = createSystemXray(model, rootNodes, conceptBounds);
+  const installation = createInstallationEffect([
+    {object: envelope, order: 0, opacity: radar.uniforms.installationVisibility}, ...systems.installationTargets
+  ]);
 
   model.traverse(object => {
     if (!object.isMesh) return;
@@ -143,6 +168,20 @@ export function createLowKeyTreatment(model) {
   });
   model.add(envelope, systems.group);
   return {
+    updateEffects(delta, reduced) { systems.updateEffects(delta, reduced); installation.update(delta, reduced); },
+    hasAnimatedEffects: () => systems.hasAnimatedEffects() || installation.isAnimating(),
+    restartCooling: () => systems.restartCooling(),
+    restartEffect(kind) {
+      if (kind === 'installation') installation.restart();
+      else if (kind === 'power') systems.restartPower();
+      else if (kind === 'cooling') systems.restartCooling();
+    },
+    setAntennaShape(shape) {
+      const next = createAntennaBodyGeometry(shape);
+      antennaBody.geometry = next;
+      bodyGeometry.dispose();
+      bodyGeometry = next;
+    },
     configure(settings) {
       const a = THREE.MathUtils.degToRad(settings.rimAzimuth), e = THREE.MathUtils.degToRad(settings.rimElevation);
       direction.set(Math.sin(a) * Math.cos(e), Math.sin(e), Math.cos(a) * Math.cos(e));
@@ -159,12 +198,15 @@ export function createLowKeyTreatment(model) {
       radar.uniforms.highlight.value = settings.radarHighlight;
       radar.uniforms.density.value = settings.radarOpacity;
       systems.configure(settings);
+      installation.configure(settings);
     },
     dispose() {
       original.forEach(({object, material, visible}) => { object.material = material; object.visible = visible; });
       model.remove(envelope);
+      installation.dispose();
       systems.dispose();
-      geometry.dispose(); [black, body, shell, radar].forEach(material => material.dispose());
+      plateGeometry.dispose(); bodyGeometry.dispose();
+      [black, body, shell, radar].forEach(material => material.dispose());
     }
   };
 }

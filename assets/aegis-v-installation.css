@@ -1,5 +1,5 @@
 
-.av-installation{position:relative;background:#000;border-bottom:1px solid var(--line);scroll-margin-top:56px}
+.av-installation{position:relative;background:#000;scroll-margin-top:56px}
 .av-installation [hidden]{display:none!important}
 .av-stage{height:min(900px,calc(100svh - 56px));min-height:580px;padding-top:24px;display:flex;flex-direction:column;background:#000}
 .av-pinned .av-stage{position:sticky;top:56px}

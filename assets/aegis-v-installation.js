@@ -90,8 +90,8 @@
     loading = true; statusKey = 'loading'; language();
     try {
       const [sceneModule, viewModule] = await Promise.all([
-        import(new URL('./aegis-v-scenes.js', moduleBase).href),
-        import(new URL('./aegis-v-viewer.js', moduleBase).href)
+        import(new URL('./aegis-v-scenes.js?v=20261013-tuned1', moduleBase).href),
+        import(new URL('./aegis-v-viewer.js?v=20261013-tuned1', moduleBase).href)
       ]);
       if (disposed) return;
       scenes = sceneModule; config = scenes.AEGIS_V_STORY;

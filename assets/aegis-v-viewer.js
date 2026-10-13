@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createLowKeyTreatment, AEGIS_V_LOW_KEY_DEFAULTS, AEGIS_V_LOW_KEY_FIELDS } from './aegis-v-low-key.js';
+import { createLowKeyTreatment, AEGIS_V_LOW_KEY_DEFAULTS, AEGIS_V_LOW_KEY_FIELDS } from './aegis-v-low-key.js?v=20261013-tuned1';
 import { GLTFLoader } from './vendor/three-0.186.0/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from './vendor/three-0.186.0/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from './vendor/three-0.186.0/examples/jsm/controls/OrbitControls.js';
@@ -124,7 +124,7 @@ export async function createAegisVViewer(host, options = {}) {
       if (material.name === 'windowglass') windowMaterials.add(material);
     }
   });
-  const lowKey = options.lowKey ? createLowKeyTreatment(model) : null;
+  const lowKey = options.lowKey ? createLowKeyTreatment(model, { antennaShape: options.antennaShape }) : null;
   function positionLight(light, azimuth, elevation, width, height) {
     const a = THREE.MathUtils.degToRad(azimuth), e = THREE.MathUtils.degToRad(elevation);
     const distance = sphere.radius * 2.1;
@@ -159,9 +159,28 @@ export async function createAegisVViewer(host, options = {}) {
   let visible = true;
   let width = 1, height = 1;
   let fitting = false;
+  let effectFrame = 0, effectPrevious = 0, contextLost = false;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const emit = () => options.onChange?.({ ...settings, playing, duration: clip.duration });
-  const render = () => { if (!disposed && !document.hidden && visible) renderer.render(scene, camera); };
+  const effectsCanRun = () => !disposed && !document.hidden && visible && !contextLost
+    && !reduced.matches && lowKey?.hasAnimatedEffects();
+  function stopEffects() { cancelAnimationFrame(effectFrame); effectFrame = 0; }
+  function tickEffects(now) {
+    effectFrame = 0;
+    if (!effectsCanRun()) return;
+    lowKey.updateEffects(Math.min((now - effectPrevious) / 1000, 0.1), false);
+    effectPrevious = now;
+    renderer.render(scene, camera);
+    effectFrame = requestAnimationFrame(tickEffects);
+  }
+  const render = () => {
+    if (disposed || document.hidden || !visible || contextLost) return;
+    lowKey?.updateEffects(0, reduced.matches);
+    renderer.render(scene, camera);
+    if (effectsCanRun() && !effectFrame) {
+      effectPrevious = performance.now(); effectFrame = requestAnimationFrame(tickEffects);
+    } else if (!effectsCanRun()) stopEffects();
+  };
   function pose(progress) {
     settings.progress = THREE.MathUtils.clamp(progress, 0, 1);
     action.time = settings.progress * clip.duration;
@@ -249,26 +268,29 @@ export async function createAegisVViewer(host, options = {}) {
     render(); emit();
   };
   controls.addEventListener('change', onOrbit);
-  const onHidden = () => { if (document.hidden) pause(); else render(); };
-  const onReduced = () => { if (reduced.matches) pause(); };
+  const onHidden = () => { if (document.hidden) { pause(); stopEffects(); } else render(); };
+  const onReduced = () => { if (reduced.matches) pause(); render(); };
   document.addEventListener('visibilitychange', onHidden);
   reduced.addEventListener('change', onReduced);
   const resizeObserver = new ResizeObserver(resize);
   resizeObserver.observe(host);
   const intersectionObserver = new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
-    if (!visible) pause(); else render();
+    if (!visible) { pause(); stopEffects(); } else render();
   });
   intersectionObserver.observe(host);
-  const onLost = event => { event.preventDefault(); pause(); options.onError?.('3D 화면 연결이 끊겼습니다. 새로고침해 주세요.'); };
+  const onLost = event => { event.preventDefault(); contextLost = true; pause(); stopEffects(); options.onError?.('3D 화면 연결이 끊겼습니다. 새로고침해 주세요.'); };
   renderer.domElement.addEventListener('webglcontextlost', onLost);
   resize(); pose(settings.progress);
   return {
     play, pause, open: opts => play(1, opts), close: opts => play(-1, opts),
     setProgress: progress => { pause(); pose(progress); }, configure,
+    setAntennaShape: shape => { lowKey?.setAntennaShape(shape); render(); },
+    restartCooling: () => { lowKey?.restartCooling(); render(); },
+    restartEffect: kind => { lowKey?.restartEffect(kind); render(); },
     getState: () => ({ ...settings, playing, duration: clip.duration }),
     dispose() {
-      pause(); disposed = true;
+      pause(); stopEffects(); disposed = true;
       resizeObserver.disconnect(); intersectionObserver.disconnect();
       document.removeEventListener('visibilitychange', onHidden);
       reduced.removeEventListener('change', onReduced);
