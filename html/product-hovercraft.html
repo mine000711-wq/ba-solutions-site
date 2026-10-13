@@ -11,19 +11,34 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="BA Solutions">
 <meta property="og:title" content="Hovercraft | BA Solutions">
-<meta property="og:description" content="A 12-seat air-cushion platform that crosses water, beaches and wetlands.">
+<meta property="og:description" content="A custom-built air-cushion platform that crosses water, beaches and wetlands.">
 <meta property="og:url" content="https://mine000711-wq.github.io/ba-solutions-site/html/product-hovercraft.html">
 <meta property="og:image" content="https://mine000711-wq.github.io/ba-solutions-site/images/og-share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="description" content="A 12-seat air-cushion platform that crosses water, beaches and wetlands.">
+<meta name="description" content="A custom-built air-cushion platform that crosses water, beaches and wetlands.">
 <link rel="stylesheet" href="product.css">
 <link rel="stylesheet" href="../assets/hovercraft-components.css?v=5">
 <style>
 
 .hovercraft-film{position:relative;aspect-ratio:64/27;overflow:hidden;margin-top:24px;border-bottom:1px solid var(--line)}
 .hovercraft-film video{position:absolute;top:0;left:0;display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;background:#000}
+
+.seat-table{width:100%;border-collapse:collapse;font-size:14px}
+.seat-table th,.seat-table td{border-top:1px solid var(--line);padding:18px 0;text-align:left;font-weight:400;vertical-align:baseline}
+.seat-table thead th{border-top:0;padding-top:0;color:var(--muted);font-size:13px}
+.seat-table tbody th{width:38%;font-size:max(18px,calc(22 * var(--u)))}
+.seat-table td{font-variant-numeric:tabular-nums}
+
+.cb-gallery{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;gap:max(10px,calc(14 * var(--u)))}
+.cb-shot{position:relative;margin:0;overflow:hidden;background:#0b0b0b}
+.cb-a{grid-row:span 2;aspect-ratio:3/2}
+.cb-shot img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:768px){.cb-gallery{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+.cb-a{grid-column:span 2;grid-row:auto}
+.cb-b,.cb-c{aspect-ratio:1/1}
+.cb-b img{object-position:40% center}}
 </style>
 </head>
 <body class="sea">
@@ -42,7 +57,7 @@
 <span class="kind"><span lang="ko">공기부양 플랫폼</span><span lang="en">Air-cushion platform</span></span>
 </div>
 <div class="hero-copy">
-<p class="intro"><span lang="ko">물과 해변, 습지를 넘나드는 12인승 공기부양 플랫폼.</span><span lang="en">A 12-seat air-cushion platform that crosses water, beaches and wetlands.</span></p>
+<p class="intro"><span lang="ko">물과 해변, 습지를 넘나드는 맞춤형 공기부양 플랫폼.</span><span lang="en">A custom-built air-cushion platform that crosses water, beaches and wetlands.</span></p>
 <a class="text-link" href="#overview"><span lang="ko">제품 개요</span><span lang="en">Product overview</span> <span aria-hidden="true">↘</span>
 </a>
 </div>
@@ -56,7 +71,7 @@
 <section class="sec wrap" id="overview">
 <div class="overview reveal">
 <h2><span lang="ko">제품 개요</span><span lang="en">Product overview</span></h2>
-<p class="lead"><span lang="ko">BA Solutions 호버크래프트는 공기 쿠션 위에 떠서 물과 해변, 습지, 갯벌을 하나의 플랫폼으로 이어 달립니다. 전장 약 7.6m 선체에 12인승 선실, 공기부양팬과 덕트형 추진 프로펠러를 갖췄습니다.</span><span lang="en">The BA Solutions hovercraft rides on a cushion of air, carrying one platform across water, beaches, wetlands and tidal flats. Its hull of about 7.6 m combines a 12-seat cabin, a lift fan and a ducted propulsion propeller.</span></p>
+<p class="lead"><span lang="ko">BA Solutions 호버크래프트는 공기 쿠션 위에 떠서 물과 해변, 습지, 갯벌을 하나의 플랫폼으로 이어 달립니다. 선실 크기와 인승은 임무에 맞춰 구성하고, 공기부양팬과 덕트형 추진 프로펠러를 갖췄습니다.</span><span lang="en">The BA Solutions hovercraft rides on a cushion of air, carrying one platform across water, beaches, wetlands and tidal flats. Its cabin size and seating are configured for the mission, alongside a lift fan and a ducted propulsion propeller.</span></p>
 </div>
 </section>
 <section class="sec wrap enablement" id="enablement">
@@ -74,7 +89,7 @@
 <article class="enablement-step reveal">
 <span class="enablement-kicker">MISSION ROLE</span>
 <h3><span lang="ko">연안 순찰과 신속 대응</span><span lang="en">Coastal patrol and rapid response</span></h3>
-<p><span lang="ko">12인승 선실에 인원과 장비를 함께 싣고, 해변 접근·연안 순찰·구조 지원 같은 임무에 투입할 수 있습니다.</span><span lang="en">Its 12-seat cabin carries crew and equipment together for beach access, coastal patrol and rescue support.</span></p>
+<p><span lang="ko">임무에 맞춰 구성한 선실에 인원과 장비를 함께 싣고, 해변 접근·연안 순찰·구조 지원 같은 임무에 투입할 수 있습니다.</span><span lang="en">Its mission-configured cabin carries crew and equipment together for beach access, coastal patrol and rescue support.</span></p>
 <span class="enablement-status">COASTAL RESPONSE</span>
 </article>
 <article class="enablement-step potential reveal">
@@ -99,7 +114,7 @@
 <article class="hc-chapter is-active" data-hc-chapter>
 <span class="num mono">01</span>
 <h3 id="hc-cabin-title"><span lang="ko">승객실</span><span lang="en">Cabin</span></h3>
-<p><span lang="ko">12명이 탑승하는 승객실. 넓은 창으로 전방과 측면 시야를 확보합니다.</span><span lang="en">A cabin for twelve, with wide windows for forward and side visibility.</span></p>
+<p><span lang="ko">좌석 배치를 임무에 맞춰 바꿀 수 있는 승객실. 넓은 창으로 전방과 측면 시야를 확보합니다.</span><span lang="en">A cabin whose seating can be arranged for the mission, with wide windows for forward and side visibility.</span></p>
 </article>
 <article class="hc-chapter" data-hc-chapter>
 <span class="num mono">02</span>
@@ -115,26 +130,33 @@
 </div>
 </div>
 </section>
+<section class="sec wrap custom-build" id="custom">
+<div class="enablement-intro reveal">
+<h2 class="section-heading"><span lang="ko">임무에 맞춰, 새로 만듭니다.</span><span lang="en">Built to fit the mission.</span></h2>
+<p class="enablement-summary"><span lang="ko">호버크래프트는 운용 환경과 임무에 맞춰 커스텀 제작할 수 있습니다. 필요한 사양은 고객과 함께 정합니다.</span><span lang="en">The hovercraft can be custom-built for each operating environment and mission, with the specification defined together with the customer.</span></p>
+</div>
+<div class="cb-gallery reveal">
+<figure class="cb-shot cb-a"><img src="../images/hovercraft-custom/custom-hull-frame.jpg" width="2000" height="1128" loading="lazy" decoding="async" alt="Riveted aluminum hull frame under construction" data-ko-alt="제작 중인 리벳 접합 알루미늄 선체 골조"></figure>
+<figure class="cb-shot cb-b"><img src="../images/hovercraft-custom/custom-riveting.jpg" width="1400" height="790" loading="lazy" decoding="async" alt="Two technicians riveting a curved aluminum panel" data-ko-alt="곡면 알루미늄 패널을 리벳 작업하는 작업자 두 명"></figure>
+<figure class="cb-shot cb-c"><img src="../images/hovercraft-custom/custom-hull-detail.jpg" width="1400" height="790" loading="lazy" decoding="async" alt="Close-up of the hull's internal structure with temporary fasteners" data-ko-alt="임시 고정구를 꽂은 선체 내부 구조 근접 사진"></figure>
+</div>
+</section>
 <section class="sec wrap" id="information">
 <div class="facts-area">
 <div class="reveal">
 <h2 class="section-heading"><span lang="ko">주요 정보</span><span lang="en">Key information</span></h2>
-<p class="note"><span lang="ko">12인승 공기부양 플랫폼</span><span lang="en">12-seat air-cushion platform</span></p>
 </div>
-<dl class="facts reveal">
-<div class="fact">
-<dt><span lang="ko">플랫폼 유형</span><span lang="en">Platform type</span></dt>
-<dd><span lang="ko">호버크래프트</span><span lang="en">Hovercraft</span></dd>
-</div>
-<div class="fact">
-<dt><span lang="ko">탑승 인원</span><span lang="en">Seating</span></dt>
-<dd><span lang="ko">12인</span><span lang="en">12 persons</span></dd>
-</div>
-<div class="fact">
-<dt><span lang="ko">크기 (전장 × 전폭 × 전고)</span><span lang="en">Size (L × W × H)</span></dt>
-<dd><span lang="ko">약 7.6 × 3.6 × 2.2m</span><span lang="en">approx. 7.6 × 3.6 × 2.2 m</span></dd>
-</div>
-</dl>
+
+<table class="seat-table reveal">
+<thead><tr><th scope="col"><span lang="ko">인승</span><span lang="en">Seating</span></th><th scope="col"><span lang="ko">크기 (전장 × 전폭 × 전고)</span><span lang="en">Size (L × W × H)</span></th></tr></thead>
+<tbody>
+<tr><th scope="row"><span lang="ko">2인승</span><span lang="en">2 seats</span></th><td>4.0 × 2.2 × 1.4 m</td></tr>
+<tr><th scope="row"><span lang="ko">4인승</span><span lang="en">4 seats</span></th><td>5.0 × 2.6 × 1.7 m</td></tr>
+<tr><th scope="row"><span lang="ko">6인승</span><span lang="en">6 seats</span></th><td>6.2 × 3.0 × 1.9 m</td></tr>
+<tr><th scope="row"><span lang="ko">10인승</span><span lang="en">10 seats</span></th><td>7.6 × 3.6 × 2.2 m</td></tr>
+<tr><th scope="row"><span lang="ko">12인승</span><span lang="en">12 seats</span></th><td>9.4 × 3.6 × 2.2 m</td></tr>
+</tbody>
+</table>
 </div>
 </section>
 <div class="related wrap" role="navigation" aria-label="Related products" data-ko-aria-label="관련 제품">
