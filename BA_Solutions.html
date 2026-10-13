@@ -4,6 +4,14 @@
 <head>
 <script src="html/lang.js"></script>
 <title>BA Solutions</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BA Solutions">
+<meta property="og:title" content="BA Solutions">
+<meta property="og:url" content="https://mine000711-wq.github.io/ba-solutions-site/BA_Solutions.html">
+<meta property="og:image" content="https://mine000711-wq.github.io/ba-solutions-site/images/og-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <meta name="theme-color" content="#000000">
@@ -427,7 +435,7 @@ section { width:100%; padding:200px var(--pad); position:relative; }
     <img class="domain-thumb" src="images/thumb_sea.jpg" alt=""
          style="transform:scale(1.8) translate(12%, -10%); transform-origin:center;"
          onload="this.classList.add('loaded')" onerror="this.style.display='none'">
-    <video class="domain-video" src="video/hovercraft-reveal-render.mp4"
+    <video class="domain-video" src="video/hovercraft-reveal-web.mp4"
            style="transform:translateX(25%); transform-origin:center;"
            muted playsinline preload="none"></video>
     <div class="domain-overlay"></div>
@@ -808,7 +816,7 @@ const products = [
   {domain:'LAND POWER', name:'AEGIS C-UAS System',     img:'images/product_land_cuas.jpg',        href:'html/product-aegis-cuas.html'},
   {domain:'AIR POWER',  name:'AEGIS Spider',            img:'images/spider.jpg',                   href:'html/product-aegis-spider.html'},
   {domain:'LAND POWER', name:'AEGIS-B Backpack Jammer', img:'images/aegis-e.png',    href:'html/product-aegis-b-jammer.html'},
-  {domain:'SEA POWER',  name:'Hovercraft',              img:'images/product_sea_hovercraft.jpg',   href:'html/product-hovercraft.html'},
+  {domain:'SEA POWER',  name:'Hovercraft',              img:'images/hovercraft-reveal-last-frame.jpg', href:'html/product-hovercraft.html'},
 ];
 function PAIR(en, ko){ return window.baPair ? window.baPair(en, ko) : en; }
 const grid = document.getElementById('productGrid');

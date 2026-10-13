@@ -8,8 +8,18 @@
 <meta name="theme-color" content="#000000">
 <meta name="color-scheme" content="dark">
 <title>Hovercraft | BA Solutions</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="BA Solutions">
+<meta property="og:title" content="Hovercraft | BA Solutions">
+<meta property="og:description" content="A 12-seat air-cushion platform that crosses water, beaches and wetlands.">
+<meta property="og:url" content="https://mine000711-wq.github.io/ba-solutions-site/html/product-hovercraft.html">
+<meta property="og:image" content="https://mine000711-wq.github.io/ba-solutions-site/images/og-share.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="A 12-seat air-cushion platform that crosses water, beaches and wetlands.">
 <link rel="stylesheet" href="product.css">
+<link rel="stylesheet" href="../assets/hovercraft-components.css?v=5">
 <style>
 
 .hovercraft-film{position:relative;aspect-ratio:64/27;overflow:hidden;margin-top:24px;border-bottom:1px solid var(--line)}
@@ -39,7 +49,7 @@
 </div>
 <div class="hovercraft-film">
 <video autoplay muted playsinline preload="auto" aria-label="호버크래프트 외관 영상">
-<source src="../video/hovercraft-reveal-render.mp4" type="video/mp4">
+<source src="../video/hovercraft-reveal-web.mp4" type="video/mp4">
 </video>
 </div>
 </header>
@@ -75,24 +85,34 @@
 </article>
 </div>
 </section>
-<section class="sec wrap columns" id="character">
+<section class="sec wrap hovercraft-components" id="character" data-hovercraft-components>
 <h2 class="section-heading reveal"><span lang="ko">주요 구성</span><span lang="en">Key components</span></h2>
-<div class="items">
-<article class="item reveal">
+<div class="hc-layout">
+<div class="hc-stage">
+<figure class="hc-viewer" aria-labelledby="hc-cabin-title">
+<div class="hc-media">
+<img src="../images/hovercraft-components-v7/e0_000.jpg" width="960" height="600" loading="lazy" decoding="async" alt="Hovercraft component in low-key lighting" data-ko-alt="로우키 조명으로 보이는 호버크래프트 구성">
+<canvas width="960" height="600" aria-hidden="true"></canvas>
+</div>
+</figure>
+<div class="hc-chapters">
+<article class="hc-chapter is-active" data-hc-chapter>
 <span class="num mono">01</span>
-<h3><span lang="ko">승객실</span><span lang="en">Cabin</span></h3>
+<h3 id="hc-cabin-title"><span lang="ko">승객실</span><span lang="en">Cabin</span></h3>
 <p><span lang="ko">12명이 탑승하는 승객실. 넓은 창으로 전방과 측면 시야를 확보합니다.</span><span lang="en">A cabin for twelve, with wide windows for forward and side visibility.</span></p>
 </article>
-<article class="item reveal">
+<article class="hc-chapter" data-hc-chapter>
 <span class="num mono">02</span>
-<h3><span lang="ko">공기부양팬 · 스커트</span><span lang="en">Lift fan · Skirt</span></h3>
+<h3 id="hc-lift-title"><span lang="ko">공기부양팬 · 스커트</span><span lang="en">Lift fan · Skirt</span></h3>
 <p><span lang="ko">공기부양팬이 만든 공기를 스커트가 가둬, 선체를 수면과 지면 위로 띄웁니다.</span><span lang="en">The skirt contains the air from the lift fan, raising the hull above water and ground.</span></p>
 </article>
-<article class="item reveal">
+<article class="hc-chapter" data-hc-chapter>
 <span class="num mono">03</span>
-<h3><span lang="ko">덕트형 추진 프로펠러</span><span lang="en">Ducted propulsion propeller</span></h3>
+<h3 id="hc-propulsion-title"><span lang="ko">덕트형 추진 프로펠러</span><span lang="en">Ducted propulsion propeller</span></h3>
 <p><span lang="ko">후방 덕트 안의 프로펠러가 추력을 만들고, 덕트가 프로펠러를 감싸 보호합니다.</span><span lang="en">A propeller inside the stern duct produces thrust, with the duct enclosing and protecting it.</span></p>
 </article>
+</div>
+</div>
 </div>
 </section>
 <section class="sec wrap" id="information">
@@ -129,5 +149,8 @@
 <script src="footer.js">
 </script>
 <script src="product.js"></script>
+<script src="../assets/hovercraft-motion.js"></script>
+<script src="../assets/hovercraft-playback.js?v=2"></script>
+<script src="../assets/hovercraft-components.js?v=10"></script>
 </body>
 </html>
