@@ -1,9 +1,12 @@
 .av-slideshow{margin-top:24px;scroll-margin-top:100px}
-.av-slideshow-frame{position:relative;aspect-ratio:1000/438;overflow:hidden}
+.av-slideshow-frame{position:relative;aspect-ratio:1000/438;overflow:hidden;isolation:isolate}
+.av-slideshow-frame::after{content:"";position:absolute;inset:0;z-index:1;background:url("aegis-v-grain.svg") repeat;background-size:180px 180px;opacity:.4;mix-blend-mode:soft-light;pointer-events:none}
 .av-slide{position:absolute;inset:0;margin:0}
 .av-slide[hidden]{display:none}
+.av-slideshow-ready .av-slide{opacity:0;transition:opacity var(--av-slide-fade) ease;pointer-events:none}
+.av-slideshow-ready .av-slide[data-active="true"]{opacity:1}
 .av-slide img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
-.av-slide-arrow{position:absolute;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:48px;height:48px;padding:0;border:0;background:transparent;color:#f0ede8;cursor:pointer;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
+.av-slide-arrow{position:absolute;z-index:2;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:48px;height:48px;padding:0;border:0;background:transparent;color:#f0ede8;cursor:pointer;filter:drop-shadow(0 1px 3px rgba(0,0,0,.7))}
 .av-slide-arrow-prev{left:max(10px,calc(24 * var(--u)))}
 .av-slide-arrow-next{right:max(10px,calc(24 * var(--u)))}
 .av-slide-arrow svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5}
@@ -13,3 +16,4 @@
 .av-slide-tuner{position:fixed;bottom:20px;right:20px;z-index:2000;display:grid;gap:12px;width:min(320px,calc(100% - 40px));padding:20px;background:#151515;border:1px solid var(--line);font:13px sans-serif;color:#f0ede8}
 .av-slide-tuner label{display:grid;gap:6px}
 .av-slide-tuner button,.av-slide-tuner textarea{padding:8px;background:#000;color:#f0ede8;border:1px solid var(--line)}
+@media(prefers-reduced-motion:reduce){.av-slideshow-ready .av-slide{transition:none!important}}
