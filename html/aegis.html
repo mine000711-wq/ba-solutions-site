@@ -321,11 +321,12 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   filter:blur(0);
   transition:opacity .35s, filter .35s;
 }
-.lw-logo.is-seal{height:72px;}
+.lw-logo.is-loop{height:30px;filter:brightness(0) invert(1);}
 .lw-logo.is-mark{height:38px;}
 .lw-logo.is-wide{height:30px;}
 
 .lw-item:hover .lw-logo{opacity:.35;filter:blur(3px);}
+.lw-item:hover .lw-logo.is-loop{filter:brightness(0) invert(1) blur(3px);}
 .lw-name{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   text-align:center;font-size:15px;letter-spacing:0;color:rgba(240,237,232,.9); font-weight: 600; text-align: left;
@@ -569,8 +570,8 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
     </div>
 
     <div class="lw-item">
-      <img class="lw-logo is-seal" src="../images/djuniv_white.png" alt="Daejin University" data-ko-alt="대진대학교">
-      <span class="lw-name">DAEJIN<br>UNIVERSITY</span>
+      <img class="lw-logo is-loop" src="../images/loop_logo.png" alt="LOOP" data-ko-alt="주식회사 루프">
+      <span class="lw-name">LOOP</span>
     </div>
 
     <div class="lw-item">
