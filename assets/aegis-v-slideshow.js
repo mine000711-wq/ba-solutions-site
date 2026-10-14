@@ -5,6 +5,11 @@
 
   var timing = { intervalMs: 5000, fadeMs: 600 };
   var slides = Array.prototype.slice.call(root.querySelectorAll('.av-slide'));
+  if (!slides.length) return;
+  var hasMultiple = slides.length > 1;
+  Array.prototype.forEach.call(root.querySelectorAll('.av-slide-arrow'), function (button) {
+    button.hidden = !hasMultiple;
+  });
   var current = 0;
   var timer;
   var visible = false;
@@ -23,7 +28,7 @@
   }
   function schedule() {
     clearTimeout(timer);
-    if (!visible || document.hidden || frozen) return;
+    if (!hasMultiple || !visible || document.hidden || frozen) return;
     timer = setTimeout(function () { show(current + 1); schedule(); }, timing.intervalMs);
   }
   function move(direction) { show(current + direction); schedule(); }
@@ -84,6 +89,7 @@
     var milliseconds = Number(time.value) * 1000;
     var phase = milliseconds % timing.intervalMs;
     show(Math.floor(milliseconds / timing.intervalMs), true);
+    if (!hasMultiple) return;
     var progress = milliseconds === 0 ? 1 : Math.min(1, phase / timing.fadeMs);
     var previous = (current + slides.length - 1) % slides.length;
     slides[current].style.opacity = String(progress);

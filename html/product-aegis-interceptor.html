@@ -19,16 +19,19 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="description" content="A high-speed interceptor drone for countering aerial threats.">
 <link rel="stylesheet" href="product.css">
+<link rel="stylesheet" href="../assets/aegis-v-slideshow.css?v=20261014-gallery1">
 <style>
 
 .hero{padding-bottom:24px}
-.hero-top{padding:18px 0 48px}
+.hero-top{padding:18px 0 0}
 .hero-image{display:block;width:100%;height:max(190px,calc(290 * var(--u)));object-fit:cover;object-position:center 43%;filter:saturate(.45);opacity:.85;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .hero-meta{margin-top:0;border-top:0}
+
+.interceptor-gallery .av-slideshow-frame::after{display:none}
 .image-note{font-size:10px;color:var(--muted);line-height:1.7}
 .hero-image{object-position:center 47%}
 .hero h1{font-size:max(44px,calc(84 * var(--u)))}
-@media(max-width:768px){.hero-top{padding:12px 0 32px;gap:26px}.hero-image{height:190px}.hero h1{font-size:max(44px,calc(98 * var(--u)))}}
+@media(max-width:768px){.hero-top{padding:12px 0 0;gap:26px}.hero-image{height:190px}.hero h1{font-size:max(44px,calc(98 * var(--u)))}}
 </style>
 </head>
 <body class="air">
@@ -50,6 +53,19 @@
 <p class="intro"><span lang="ko">공중 위협에 맞서는 고속 요격 드론.</span><span lang="en">A high-speed interceptor drone for countering aerial threats.</span></p>
 <a class="text-link" href="#overview"><span lang="ko">제품 개요</span><span lang="en">Product overview</span> <span aria-hidden="true">↘</span>
 </a>
+</div>
+</div>
+<div class="av-slideshow interceptor-gallery" id="gallery" data-av-slideshow role="region" aria-roledescription="carousel" aria-label="AEGIS Interceptor photos" data-ko-aria-label="AEGIS Interceptor 사진">
+<div class="av-slideshow-frame">
+
+<div class="av-slide"><img src="../images/interceptor-meadow-panning.png" alt="AEGIS Interceptor flying over a meadow" data-ko-alt="초원 위를 비행하는 AEGIS Interceptor" width="1920" height="1080" decoding="async"></div>
+<div class="av-slide"><img src="../images/interceptor-wasteland-panning.png" alt="AEGIS Interceptor flying over a wasteland" data-ko-alt="황무지 위를 비행하는 AEGIS Interceptor" width="1920" height="1080" decoding="async"></div>
+<button class="av-slide-arrow av-slide-arrow-prev" type="button" data-av-prev aria-label="Previous photo" data-ko-aria-label="이전 사진" hidden>
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
+</button>
+<button class="av-slide-arrow av-slide-arrow-next" type="button" data-av-next aria-label="Next photo" data-ko-aria-label="다음 사진" hidden>
+<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
+</button>
 </div>
 </div>
 <div class="hero-meta">
@@ -131,5 +147,6 @@
 <script src="footer.js">
 </script>
 <script src="product.js"></script>
+<script src="../assets/aegis-v-slideshow.js?v=20261014-gallery1"></script>
 </body>
 </html>
