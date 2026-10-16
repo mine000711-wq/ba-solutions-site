@@ -452,7 +452,7 @@ section { width:100%; padding:200px var(--pad); position:relative; }
 
   <div class="domain" id="domain-air" data-domain="air">
     <div class="dbg"></div>
-    <img class="domain-thumb" src="images/interceptor-meadow-panning.png" alt=""
+    <img class="domain-thumb" src="images/interceptor-meadow-panning.webp" alt=""
          onload="this.classList.add('loaded')" onerror="this.style.display='none'">
     <video class="domain-video" src="video/interceptor-air-studio-grassland-short-desert-web.mp4"
            width="1920" height="1080" aria-hidden="true"
@@ -466,7 +466,7 @@ section { width:100%; padding:200px var(--pad); position:relative; }
 
   <div class="domain" id="domain-sea" data-domain="sea">
     <div class="dbg"></div>
-    <img class="domain-thumb" src="images/thumb_sea.jpg" alt=""
+    <img class="domain-thumb" src="images/thumb_sea.webp" alt=""
          style="transform:scale(1.8) translate(12%, -10%); transform-origin:center;"
          onload="this.classList.add('loaded')" onerror="this.style.display='none'">
     <video class="domain-video" src="video/hovercraft-reveal-web.mp4"
@@ -481,7 +481,7 @@ section { width:100%; padding:200px var(--pad); position:relative; }
 
   <div class="domain" id="domain-land" data-domain="land">
     <div class="dbg"></div>
-    <img class="domain-thumb" src="images/thumb_land.jpg" alt=""
+    <img class="domain-thumb" src="images/product_land_cuas.webp" alt=""
          style="transform:scale(1.6) translate(0, 18%); transform-origin:center;"
          onload="this.classList.add('loaded')" onerror="this.style.display='none'">
     <video class="domain-video" src="video/aegis_sense_v2.mp4"
@@ -847,9 +847,9 @@ setInterval(spawnP,700);
 })();
 
 const products = [
-  {domain:'LAND POWER', name:'AEGIS C-UAS System',     img:'images/product_land_cuas.jpg',        href:'html/product-aegis-cuas.html'},
-  {domain:'AIR POWER',  name:'AEGIS Interceptor',       img:'images/interceptor-meadow-panning.png', href:'html/product-aegis-interceptor.html', className:'product-card-interceptor'},
-  {domain:'LAND POWER', name:'AEGIS-B Backpack Jammer', img:'images/aegis-e.png',    href:'html/product-aegis-b-jammer.html'},
+  {domain:'LAND POWER', name:'AEGIS C-UAS System',     img:'images/product_land_cuas.webp',        href:'html/product-aegis-cuas.html'},
+  {domain:'AIR POWER',  name:'AEGIS Interceptor',       img:'images/interceptor-meadow-panning.webp', href:'html/product-aegis-interceptor.html', className:'product-card-interceptor'},
+  {domain:'LAND POWER', name:'AEGIS-B Backpack Jammer', img:'images/aegis-e.webp',    href:'html/product-aegis-b-jammer.html'},
   {domain:'SEA POWER',  name:'Hovercraft',              img:'images/hovercraft-reveal-last-frame.jpg', href:'html/product-hovercraft.html'},
 ];
 function PAIR(en, ko){ return window.baPair ? window.baPair(en, ko) : en; }

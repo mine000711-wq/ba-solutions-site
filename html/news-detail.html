@@ -46,18 +46,24 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
 #article-header h1{font-size:max(24px, calc(48 * var(--u)));font-weight:700;letter-spacing:-.01em;line-height:1.2;color:var(--ink);max-width:720px;margin-bottom:20px;}
 .art-date{font-size:13px;color:var(--ink3);letter-spacing:0;}
 
-#art-image{width:100%;aspect-ratio:16/7;background:var(--bg2);border-top:none;border-bottom:none;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-
 #art-body{padding:60px var(--pad) 80px;border-bottom:0.5px solid var(--line);}
-.art-grid{display:grid;grid-template-columns:max(200px, calc(280 * var(--u))) 1fr;gap:80px;align-items:start;}
+.art-grid{display:grid;grid-template-columns:max(260px, calc(380 * var(--u))) 1fr;gap:max(40px, calc(64 * var(--u)));align-items:start;}
 .art-subtitle{font-size:15px;font-weight:600;line-height:1.5;color:var(--ink);letter-spacing:-.01em;}
 .art-content{display:flex;flex-direction:column;gap:20px;}
 .art-content p{font-size:15px;color:var(--ink);line-height:1.5;letter-spacing:0;text-indent: 0.5em;}
 .art-content p strong{color:var(--ink);font-weight:600;}
 
+.art-side{display:flex;flex-direction:column;gap:28px;}
+#art-image{margin:0;background:var(--bg2);}
+#art-image img{display:block;width:100%;height:auto;}
+
 @media (max-width:860px){
   .art-grid{grid-template-columns:1fr;gap:28px;}
   #art-body{padding-top:40px;}
+
+  .art-side{display:contents;}
+  .art-content{order:1;}
+  #art-image{order:2;}
 }
 
 #related{padding:max(20px, calc(40 * var(--u))) var(--pad) max(40px, calc(43.2 * var(--u)));}
@@ -113,14 +119,13 @@ body{background:var(--bg);color:var(--ink);font-family:'Helvetica Neue',Helvetic
   <span class="art-date"></span>
 </div>
 
-<div id="art-image">
-  <img alt="" style="width:100%;height:100%;object-fit:cover;">
-</div>
-
 <div id="art-body" class="fade-in">
   <div class="art-grid">
-    <div>
+    <div class="art-side">
       <p class="art-subtitle"></p>
+      <figure id="art-image">
+        <img alt="">
+      </figure>
     </div>
     <div class="art-content"></div>
   </div>
