@@ -150,14 +150,4 @@
     }).observe(section);
   } else { inView = true; enable(); }
 
-  if (section.hasAttribute('data-hc-preview')) window.HovercraftPreview = {
-    settings,
-    select(index) { manualShot = index; select(index); },
-    scroll() { manualShot = null; onScroll(); },
-    replay() { phase = 0; loopStarted = false; paused = false; motion.replay(active); lastTime = 0; wake(); },
-    pause(value) { paused = value; lastTime = 0; wake(); },
-    seek(value) { motion.tick(100, settings.transitionSeconds); phase = Math.max(0, Math.min(.99999, value)); fade = 0; paused = true; loopStarted = true; drawn = ''; wake(); },
-    refresh() { lastTime = 0; wake(); },
-    state() { return { active, phase, paused, moving: motion.moving }; }
-  };
 })();
