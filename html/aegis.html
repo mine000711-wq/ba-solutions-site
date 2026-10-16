@@ -35,8 +35,6 @@
 body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Arial,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;overflow-x:hidden;}
 
 #hero{height:100vh;min-height:600px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
-#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;}
-.hero-fade{position:absolute;inset:0;z-index:2;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 42%,rgba(0,0,0,.28) 80%,rgba(0,0,0,.6) 100%);pointer-events:none;}
 .hero-center{position:relative;z-index:3;text-align:center;display:flex;flex-direction:column;align-items:center;gap:20px;}
 .hero-title{font-size:clamp(80px,14vw,160px);  font-weight:700;letter-spacing:0;line-height:1;}
 
@@ -454,8 +452,6 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 <script src="nav.js"></script>
 
 <div id="hero">
-  <canvas id="hero-canvas"></canvas>
-  <div class="hero-fade"></div>
   <div class="hero-center">
     <h1 class="hero-title">AEGIS</h1>
   </div>
@@ -594,44 +590,8 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
 
 <script src="footer.js"></script>
 
+<script src="../assets/aegis-intro.js"></script>
 <script>
-
-(function(){
-  var cv=document.getElementById('hero-canvas'),ctx=cv.getContext('2d');
-  var W=0,H=0,DPR=Math.min(2,window.devicePixelRatio||1),cx,cy,N,gap;
-  function resize(){W=window.innerWidth;H=window.innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);cx=W/2;cy=H/2;
-    gap=Math.max(8,Math.min(12,H/78));N=Math.floor(H/gap)+2;}
-  window.addEventListener('resize',resize);
-  function heartbeat(tt){var P=3.5,ph=tt%P;var a=Math.exp(-Math.pow(ph/0.045,2));var b=0.65*Math.exp(-Math.pow((ph-0.17)/0.05,2));return a+b;}
-  var t=0;
-  function draw(){
-    t+=0.016;ctx.clearRect(0,0,W,H);
-    var breath=0.6+0.4*Math.sin(t*0.5);
-    var hbEnv=heartbeat(t);
-    var globalDrift=Math.sin(t*0.5)*6;
-    for(var i=0;i<N;i++){
-      var yb=i*gap - (H%gap)/2 + globalDrift;
-      var dc=Math.abs(yb-cy)/(H*0.5);
-      var focus=Math.exp(-dc*dc*0.85);
-      var amp=(1.2 + focus*6.0) * breath * (1 + hbEnv*1.4*focus);
-      var al=(0.06 + focus*0.20) * (0.8 + hbEnv*0.5*focus);
-      ctx.strokeStyle='rgba(240,237,232,'+Math.min(0.5,al)+')';
-      ctx.lineWidth=0.7;
-      ctx.beginPath();
-      var step=Math.max(4,W/300);
-      for(var x=0;x<=W;x+=step){
-        var nx=x/W;
-        var voice=Math.sin(nx*22 - t*2.4 + i*0.5)*0.5 + Math.sin(nx*47 + t*1.7 - i*0.3)*0.28;
-        var wave=Math.sin(nx*6.3 - t*1.1 + i*0.15);
-        var y=yb + (wave*0.7 + voice)*amp + hbEnv*Math.sin(nx*9 - t*6)*focus*4;
-        x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-      }
-      ctx.stroke();
-    }
-    requestAnimationFrame(draw);
-  }
-  resize();requestAnimationFrame(draw);
-})();
 
 (function(){
   const wrap  = document.getElementById('flow');
@@ -1101,7 +1061,7 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   }
   function release(){
 
-    if(released||section.getBoundingClientRect().top>-innerHeight*.3)return;
+    if(released||window.AEGIS_INTRO.moving||section.getBoundingClientRect().top>-innerHeight*window.AEGIS_INTRO.timing.effectScrollRatio)return;
     released=true;
     startTyping();
     section.classList.add('no-start');
@@ -1137,6 +1097,16 @@ body{background:var(--bg);color:#fff;font-family:'Helvetica Neue',Helvetica,Aria
   window.addEventListener('scroll',schedule,{passive:true});
   window.addEventListener('resize',schedule);
   window.addEventListener('load',schedule,{once:true});
+  window.addEventListener('aegis-intro-replay',()=>{
+    timers.forEach(clearTimeout);
+    typingTimers.forEach(clearTimeout);
+    started=false;released=false;
+    section.classList.remove('words-start','no-start','cloud-clear','relay-focus');
+    desc.classList.remove('visible');
+    letters.textContent='';cursor.style.display='';
+    window.addEventListener('scroll',schedule,{passive:true});
+    window.addEventListener('resize',schedule);
+  });
   reduced.addEventListener('change',()=>{
     if(!reduced.matches)return;
     timers.forEach(clearTimeout);

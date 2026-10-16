@@ -14,6 +14,7 @@
   var timer;
   var visible = false;
   var frozen = false;
+  var paused = root.hasAttribute('data-av-intro');
   function applyTiming() { root.style.setProperty('--av-slide-fade', timing.fadeMs + 'ms'); }
   function show(index, instant) {
     current = (index + slides.length) % slides.length;
@@ -28,10 +29,18 @@
   }
   function schedule() {
     clearTimeout(timer);
-    if (!hasMultiple || !visible || document.hidden || frozen) return;
+    if (!hasMultiple || !visible || document.hidden || frozen || paused) return;
     timer = setTimeout(function () { show(current + 1); schedule(); }, timing.intervalMs);
   }
-  function move(direction) { show(current + direction); schedule(); }
+  function move(direction) { if (!paused) { show(current + direction); schedule(); } }
+
+  root.avSlideshow = {
+    setPaused: function (value, reset) {
+      paused = value;
+      if (reset) show(0, true);
+      schedule();
+    }
+  };
   root.querySelector('[data-av-prev]').addEventListener('click', function () { move(-1); });
   root.querySelector('[data-av-next]').addEventListener('click', function () { move(1); });
   root.addEventListener('keydown', function (event) {

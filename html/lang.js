@@ -7,10 +7,6 @@
   function valid(l){ return l === 'ko' || l === 'en'; }
   function load(){ try { return localStorage.getItem(KEY); } catch(e) { return null; } }
   function save(l){ try { localStorage.setItem(KEY, l); } catch(e) {} }
-  function browserLang(){
-    var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
-    return /^ko\b/i.test(list[0] || '') ? 'ko' : 'en';
-  }
 
   var m = /[?&]lang=([a-z]{2})\b/i.exec(location.search);
   var fromUrl = m && valid(m[1].toLowerCase()) ? m[1].toLowerCase() : null;
@@ -22,7 +18,7 @@
     }
   }
   var saved = load();
-  var lang = fromUrl || (valid(saved) ? saved : browserLang());
+  var lang = fromUrl || (valid(saved) ? saved : 'en');
 
   var ATTRS = ['aria-label', 'alt', 'title', 'placeholder', 'data-text'];
   function swapAttrs(){
