@@ -62,12 +62,32 @@ html::-webkit-scrollbar { display:none; }
 }
 .domain-thumb.loaded { opacity:1; }
 
+#domain-air .domain-thumb {
+  object-position:40% 40%;
+  transform:translate(-18%, 3%) scale(2.2);
+  transform-origin:40% 40%;
+}
+@media (max-width:640px) {
+  #domain-air .domain-thumb { transform:translate(-15%, -4%); }
+}
+
 .domain-video {
   position:absolute; inset:0; z-index:2;
   width:100%; height:100%; object-fit:cover;
   opacity:0; transition:opacity .5s;
 }
 .domain-video.playing { opacity:1; }
+
+#domain-air .domain-video {
+  transform:translateX(-22%);
+}
+@media (max-width:640px) and (orientation:portrait) {
+  #domain-air .domain-video {
+
+    height:calc(50% + 29vw);
+    object-position:52% center;
+  }
+}
 
 .domain-overlay {
   position:absolute; inset:0; z-index:3;
@@ -185,6 +205,18 @@ section { width:100%; padding:200px var(--pad); position:relative; }
 }
 .card-bg.loaded { opacity:1; }
 .product-card:hover .card-bg { transform:scale(1.04); filter:brightness(1.15); }
+
+.product-card-interceptor .card-bg {
+  inset:auto; top:50%; left:0; width:100%; height:400%; object-position:40% 40%;
+  transform:translateY(var(--interceptor-y, -40%)); transform-origin:40% 40%;
+  filter:brightness(1.15);
+}
+.product-card-interceptor:hover .card-bg {
+  transform:translateY(var(--interceptor-y, -40%)) scale(1.04); filter:brightness(1.25);
+}
+@media(max-width:600px) {
+  .product-card-interceptor .card-bg { --interceptor-y:-46%; height:300%; object-position:38% 40%; }
+}
 
 .card-dark {
   position:absolute; inset:0; z-index:1;
@@ -420,9 +452,11 @@ section { width:100%; padding:200px var(--pad); position:relative; }
 
   <div class="domain" id="domain-air" data-domain="air">
     <div class="dbg"></div>
-    <img class="domain-thumb" src="images/spider.jpg" alt=""
-         style="transform:translate(-25%, 0); transform-origin:center;"
+    <img class="domain-thumb" src="images/interceptor-meadow-panning.png" alt=""
          onload="this.classList.add('loaded')" onerror="this.style.display='none'">
+    <video class="domain-video" src="video/interceptor-air-studio-grassland-short-desert-web.mp4"
+           width="1920" height="1080" aria-hidden="true"
+           muted loop playsinline preload="none"></video>
     <div class="domain-overlay"></div>
     <div class="dlabel">
       <span class="pname">AIR</span>
@@ -814,7 +848,7 @@ setInterval(spawnP,700);
 
 const products = [
   {domain:'LAND POWER', name:'AEGIS C-UAS System',     img:'images/product_land_cuas.jpg',        href:'html/product-aegis-cuas.html'},
-  {domain:'AIR POWER',  name:'AEGIS Spider',            img:'images/spider.jpg',                   href:'html/product-aegis-spider.html'},
+  {domain:'AIR POWER',  name:'AEGIS Interceptor',       img:'images/interceptor-meadow-panning.png', href:'html/product-aegis-interceptor.html', className:'product-card-interceptor'},
   {domain:'LAND POWER', name:'AEGIS-B Backpack Jammer', img:'images/aegis-e.png',    href:'html/product-aegis-b-jammer.html'},
   {domain:'SEA POWER',  name:'Hovercraft',              img:'images/hovercraft-reveal-last-frame.jpg', href:'html/product-hovercraft.html'},
 ];
@@ -822,7 +856,7 @@ function PAIR(en, ko){ return window.baPair ? window.baPair(en, ko) : en; }
 const grid = document.getElementById('productGrid');
 products.forEach(p => {
   const card = document.createElement('a');
-  card.className = 'product-card';
+  card.className = 'product-card' + (p.className ? ' ' + p.className : '');
   card.href = p.href;
   card.innerHTML = `
     ${p.img ? `<img class="card-bg" src="${p.img}" alt="${p.name}" onload="this.classList.add('loaded')" onerror="this.style.display='none'">` : ''}

@@ -20,6 +20,7 @@
 <meta name="description" content="A high-speed interceptor drone for countering aerial threats.">
 <link rel="stylesheet" href="product.css">
 <link rel="stylesheet" href="../assets/aegis-v-slideshow.css?v=20261014-gallery1">
+<link rel="stylesheet" href="../assets/interceptor-gallery-intro.css?v=20261015-intro2">
 <style>
 
 .hero{padding-bottom:24px}
@@ -55,11 +56,18 @@
 </a>
 </div>
 </div>
-<div class="av-slideshow interceptor-gallery" id="gallery" data-av-slideshow role="region" aria-roledescription="carousel" aria-label="AEGIS Interceptor photos" data-ko-aria-label="AEGIS Interceptor 사진">
+<div class="av-slideshow interceptor-gallery" id="gallery" data-av-slideshow data-av-intro role="region" aria-roledescription="carousel" aria-label="AEGIS Interceptor gallery" data-ko-aria-label="AEGIS Interceptor 갤러리">
 <div class="av-slideshow-frame">
+<div class="interceptor-intro" data-interceptor-intro aria-hidden="true" hidden>
+<div class="interceptor-intro-mask">
+<video muted playsinline preload="auto" width="1920" height="1080" tabindex="-1" disablepictureinpicture>
+<source src="../video/interceptor-studio-intro-2s-1080p.mp4" type="video/mp4">
+</video>
+</div>
+</div>
 
 <div class="av-slide"><img src="../images/interceptor-meadow-panning.png" alt="AEGIS Interceptor flying over a meadow" data-ko-alt="초원 위를 비행하는 AEGIS Interceptor" width="1920" height="1080" decoding="async"></div>
-<div class="av-slide"><img src="../images/interceptor-wasteland-panning.png" alt="AEGIS Interceptor flying over a wasteland" data-ko-alt="황무지 위를 비행하는 AEGIS Interceptor" width="1920" height="1080" decoding="async"></div>
+<div class="av-slide"><img src="../images/interceptor-wasteland-final-v17-frame-0005.png" alt="AEGIS Interceptor flying over a wasteland" data-ko-alt="황무지 위를 비행하는 AEGIS Interceptor" width="1920" height="1080" decoding="async"></div>
 <button class="av-slide-arrow av-slide-arrow-prev" type="button" data-av-prev aria-label="Previous photo" data-ko-aria-label="이전 사진" hidden>
 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg>
 </button>
@@ -67,9 +75,6 @@
 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
 </button>
 </div>
-</div>
-<div class="hero-meta">
-<span><span lang="ko">AEGIS 연계 / 요격 대응</span><span lang="en">AEGIS-linked / Interception response</span></span>
 </div>
 </header>
 <section class="sec wrap" id="overview">
@@ -118,7 +123,6 @@
 <div class="facts-area">
 <div class="reveal">
 <h2 class="section-heading"><span lang="ko">주요 정보</span><span lang="en">Key information</span></h2>
-<p class="note"><span lang="ko">AEGIS 연계 / 요격 대응</span><span lang="en">AEGIS-linked / Interception response</span></p>
 </div>
 <dl class="facts reveal">
 <div class="fact">
@@ -147,6 +151,7 @@
 <script src="footer.js">
 </script>
 <script src="product.js"></script>
-<script src="../assets/aegis-v-slideshow.js?v=20261014-gallery1"></script>
+<script src="../assets/aegis-v-slideshow.js?v=20261015-intro1"></script>
+<script src="../assets/interceptor-gallery-intro.js?v=20261015-intro3"></script>
 </body>
 </html>
